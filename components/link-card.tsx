@@ -79,13 +79,15 @@ export function LinkCard({ link, themeColor = '#3b82f6' }: LinkCardProps) {
             >
               {link.title}
             </h3>
-            <p
-              className="mt-1 text-slate-500 truncate transition-all duration-300 group-hover:translate-x-1 text-xs sm:text-sm"
-              title={link.url}
-              id={`link-url-${link.id}`}
-            >
-              {link.url}
-            </p>
+            {link.short_code && (
+              <p
+                className="mt-1 font-mono truncate transition-all duration-300 group-hover:translate-x-1 text-xs sm:text-sm"
+                style={{ color: `${themeColor}cc` }}
+                title={`${typeof window !== 'undefined' ? window.location.origin : ''}/${link.short_code}`}
+              >
+                {typeof window !== 'undefined' ? window.location.origin : ''}/{link.short_code}
+              </p>
+            )}
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
             {link.qr_code && (
@@ -95,9 +97,9 @@ export function LinkCard({ link, themeColor = '#3b82f6' }: LinkCardProps) {
                   setShowQrModal(true)
                 }}
                 className={cn(
-                  "transition-all duration-300 opacity-0 group-hover:opacity-100",
+                  "transition-all duration-300 opacity-100",
                   "text-slate-400 hover:scale-125 hover:rotate-12 hover:text-slate-600",
-                  "h-4 w-4 sm:h-5 sm:w-5"  // Smaller on mobile
+                  "h-4 w-4 sm:h-5 sm:w-5"
                 )}
                 title="Lihat QR Code"
                 aria-label="Lihat QR Code untuk link ini"
@@ -114,7 +116,7 @@ export function LinkCard({ link, themeColor = '#3b82f6' }: LinkCardProps) {
               className={cn(
                 "transition-all duration-300",
                 "text-slate-400 group-hover:scale-125 group-hover:rotate-12",
-                "h-4 w-4 sm:h-5 sm:w-5"  // Smaller on mobile
+                "h-4 w-4 sm:h-5 sm:w-5"
               )}
               style={{
                 color: isClicked ? themeColor : undefined,
