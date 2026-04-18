@@ -9,7 +9,7 @@ import { generatePublicProfileMetadata, generatePublicProfileStructuredData } fr
 import { siteConfig } from '@/lib/seo'
 import { StructuredDataScript } from '@/components/structured-data-script'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
