@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import {
   Dialog,
   DialogContent,
@@ -20,6 +19,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { Link, Category } from '@/lib/supabase'
+import { LinkStatusSegmentedControl, linkStatusToFlags, flagsToLinkStatus } from './link-status-segmented-control'
+
+type LinkStatus = 'public' | 'private' | 'draft'
 
 type LinkFormDialogProps = {
   open: boolean
@@ -38,8 +40,7 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
     title: '',
     url: '',
     category_id: '',
-    is_active: true,
-    is_public: true,
+    status: 'public' as LinkStatus,
     short_code: ''
   })
 
@@ -55,8 +56,7 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
         title: link.title,
         url: link.url,
         category_id: link.category_id,
-        is_active: link.is_active,
-        is_public: link.is_public,
+        status: flagsToLinkStatus(link.is_public, link.is_active),
         short_code: link.short_code || ''
       })
     } else {
@@ -64,8 +64,7 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
         title: '',
         url: '',
         category_id: categories[0]?.id || '',
-        is_active: true,
-        is_public: true,
+        status: 'public',
         short_code: ''
       })
     }
@@ -145,18 +144,23 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
       const url = link ? `/api/links/${link.id}` : '/api/links'
       const method = link ? 'PATCH' : 'POST'
 
-      // Build body data, excluding empty short_code and empty category_id
-      const bodyData: Record<string, any> = link
-        ? { ...formData, id: link.id }
-        : { ...formData, user_id: userId }
+      // Convert status to flags
+      const { is_public, is_active } = linkStatusToFlags(formData.status)
 
-      // Remove short_code if empty (don't send "" to backend)
-      if (!bodyData.short_code) {
-        delete bodyData.short_code
+      // Build body data, excluding empty short_code and empty category_id
+      const bodyData: Record<string, any> = {
+        title: formData.title,
+        url: formData.url,
+        category_id: formData.category_id || undefined,
+        is_public,
+        is_active,
+        short_code: formData.short_code || undefined
       }
-      // Remove category_id if empty (don't send "" to backend)
-      if (!bodyData.category_id) {
-        delete bodyData.category_id
+
+      if (link) {
+        bodyData.id = link.id
+      } else {
+        bodyData.user_id = userId
       }
 
       const response = await fetch(url, {
@@ -261,33 +265,10 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
             </Select>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border border-slate-200 p-4">
-            <div className="space-y-0.5">
-              <Label htmlFor="is_active" className="text-base">Status</Label>
-              <div className="text-sm text-slate-500">
-                {formData.is_active ? 'Link akan ditampilkan' : 'Link disembunyikan'}
-              </div>
-            </div>
-            <Switch
-              id="is_active"
-              checked={formData.is_active}
-              onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-            />
-          </div>
-
-          <div className="flex items-center justify-between rounded-lg border border-slate-200 p-4">
-            <div className="space-y-0.5">
-              <Label htmlFor="is_public" className="text-base">Visibilitas</Label>
-              <div className="text-sm text-slate-500">
-                {formData.is_public ? 'Link publik di halaman Anda' : 'Link privat, hanya Anda yang bisa lihat'}
-              </div>
-            </div>
-            <Switch
-              id="is_public"
-              checked={formData.is_public}
-              onCheckedChange={(checked) => setFormData({ ...formData, is_public: checked })}
-            />
-          </div>
+          <LinkStatusSegmentedControl
+            value={formData.status}
+            onChange={(status) => setFormData({ ...formData, status })}
+          />
 
           <div className="flex justify-end gap-3 pt-4">
             <Button
