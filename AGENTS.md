@@ -98,6 +98,53 @@ components/
 - Result modal shows: short link (with copy), QR code preview (with download), link details
 - Uses `POST /api/links` which auto-generates both short code and QR code
 
+### Responsive Design Patterns
+
+**Reference implementations:**
+- `components/user/dashboard-sidebar.tsx` - Full-height sticky sidebar
+- `components/user/quick-create-result-modal.tsx` - Responsive modal with overflow handling
+
+**Modal/Dialog Components:**
+```tsx
+// Width: mobile-first with max-width constraint
+className="max-w-[95vw] sm:max-w-[520px]"
+
+// Height and scroll: prevent overflow on small screens
+className="max-h-[90vh] overflow-y-auto overflow-x-hidden"
+
+// Padding: responsive spacing
+className="p-4 sm:p-6"
+```
+
+**Text Overflow Handling:**
+```tsx
+// For URLs and long text - prevent horizontal overflow
+<div className="overflow-hidden">
+  <p className="truncate">{longUrl}</p>
+</div>
+
+// For titles - allow word wrap
+<p className="break-words">{title}</p>
+```
+
+**Buttons:**
+```tsx
+// Full width on mobile, auto on desktop
+className="w-full sm:w-auto"
+
+// Layout: stack on mobile, horizontal on desktop
+className="flex flex-col-reverse sm:flex-row gap-3"
+```
+
+**Sidebar Components:**
+```tsx
+// Full height with sticky positioning
+className="h-screen sticky top-0 flex flex-col"
+
+// Navigation fills remaining space with scroll
+<nav className="flex-1 overflow-y-auto">
+```
+
 ## Database Schema
 
 | Table | Purpose |
