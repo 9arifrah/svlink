@@ -81,8 +81,7 @@ export function LinkCard({ link, themeColor = '#3b82f6' }: LinkCardProps) {
             </h3>
             {link.short_code && (
               <p
-                className="mt-1 font-mono truncate transition-all duration-300 group-hover:translate-x-1 text-xs sm:text-sm"
-                style={{ color: `${themeColor}cc` }}
+                className="mt-1 font-mono text-slate-500 truncate transition-all duration-300 group-hover:translate-x-1 text-xs sm:text-sm"
                 title={`${typeof window !== 'undefined' ? window.location.origin : ''}/${link.short_code}`}
               >
                 {typeof window !== 'undefined' ? window.location.origin : ''}/{link.short_code}
