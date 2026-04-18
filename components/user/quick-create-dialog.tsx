@@ -11,6 +11,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { Link2, QrCode, Loader2 } from 'lucide-react'
 import type { Link } from '@/lib/supabase'
@@ -90,7 +91,7 @@ export function QuickCreateDialog({ open, onOpenChange, mode, onSuccess }: Quick
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[450px]">
+      <DialogContent className="sm:max-w-[460px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             {isShortLinkMode ? (
@@ -100,59 +101,66 @@ export function QuickCreateDialog({ open, onOpenChange, mode, onSuccess }: Quick
             )}
             {isShortLinkMode ? 'Quick Create Short Link' : 'Quick Create QR Code'}
           </DialogTitle>
+          <DialogDescription>
+            {isShortLinkMode
+              ? 'Buat short link dengan cepat. Short code dan QR code akan di-generate otomatis.'
+              : 'Buat QR code dengan cepat. Short link dan QR code akan di-generate otomatis.'}
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Judul Link</Label>
-            <Input
-              id="title"
-              placeholder="Contoh: Grup WhatsApp Peserta"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              required
-            />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Judul Link</Label>
+              <Input
+                id="title"
+                placeholder="Contoh: Grup WhatsApp Peserta"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="url">URL Tujuan</Label>
+              <Input
+                id="url"
+                type="url"
+                placeholder="https://example.com"
+                value={formData.url}
+                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                required
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="url">URL Tujuan</Label>
-            <Input
-              id="url"
-              type="url"
-              placeholder="https://example.com"
-              value={formData.url}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-              required
-            />
-          </div>
-
-          <div className="rounded-lg bg-slate-50 border border-slate-200 p-3 space-y-1">
+          <div className="rounded-lg bg-blue-50/50 border border-blue-100 p-3 space-y-1.5">
             {isShortLinkMode ? (
               <>
-                <div className="flex items-center gap-2 text-sm text-slate-600">
-                  <Link2 className="h-4 w-4" />
+                <div className="flex items-center gap-2 text-sm text-blue-700">
+                  <Link2 className="h-4 w-4 shrink-0" />
                   <span>Short code akan otomatis di-generate</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-slate-600">
-                  <QrCode className="h-4 w-4" />
+                <div className="flex items-center gap-2 text-sm text-blue-700">
+                  <QrCode className="h-4 w-4 shrink-0" />
                   <span>QR code juga akan di-generate otomatis</span>
                 </div>
               </>
             ) : (
               <>
-                <div className="flex items-center gap-2 text-sm text-slate-600">
-                  <QrCode className="h-4 w-4" />
+                <div className="flex items-center gap-2 text-sm text-blue-700">
+                  <QrCode className="h-4 w-4 shrink-0" />
                   <span>QR code akan otomatis di-generate</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-slate-600">
-                  <Link2 className="h-4 w-4" />
+                <div className="flex items-center gap-2 text-sm text-blue-700">
+                  <Link2 className="h-4 w-4 shrink-0" />
                   <span>Short link juga akan otomatis di-generate</span>
                 </div>
               </>
             )}
           </div>
 
-          <div className="flex justify-end gap-3 pt-4">
+          <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"

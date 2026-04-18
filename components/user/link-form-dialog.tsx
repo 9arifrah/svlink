@@ -10,6 +10,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import {
   Select,
@@ -20,6 +21,7 @@ import {
 } from '@/components/ui/select'
 import type { Link, Category } from '@/lib/supabase'
 import { LinkStatusSegmentedControl, linkStatusToFlags, flagsToLinkStatus } from './link-status-segmented-control'
+import { Link2, Settings2, Globe } from 'lucide-react'
 
 type LinkStatus = 'public' | 'private' | 'draft'
 
@@ -187,35 +189,47 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <DialogTitle>{link ? 'Edit Link' : 'Tambah Link Baru'}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Link2 className="h-5 w-5 text-blue-600" />
+            {link ? 'Edit Link' : 'Tambah Link Baru'}
+          </DialogTitle>
+          <DialogDescription>
+            {link ? 'Ubah detail link di bawah ini.' : 'Kelola link dan atur visibilitasnya.'}
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Judul Link</Label>
-            <Input
-              id="title"
-              placeholder="Contoh: Grup WhatsApp Peserta"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              required
-            />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Basic Info Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">Judul Link</Label>
+              <Input
+                id="title"
+                placeholder="Contoh: Grup WhatsApp Peserta"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="url">URL Tujuan</Label>
+              <Input
+                id="url"
+                type="url"
+                placeholder="https://example.com"
+                value={formData.url}
+                onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+                required
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="url">URL Tujuan</Label>
-            <Input
-              id="url"
-              type="url"
-              placeholder="https://example.com"
-              value={formData.url}
-              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-              required
-            />
-          </div>
+          <div className="border-t border-slate-100" />
 
+          {/* Short Code Section */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="short_code">Short Code (Opsional)</Label>
@@ -246,6 +260,9 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
             )}
           </div>
 
+          <div className="border-t border-slate-100" />
+
+          {/* Category Section */}
           <div className="space-y-2">
             <Label htmlFor="category">Pilih Kategori</Label>
             <Select
@@ -265,12 +282,21 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
             </Select>
           </div>
 
-          <LinkStatusSegmentedControl
-            value={formData.status}
-            onChange={(status) => setFormData({ ...formData, status })}
-          />
+          <div className="border-t border-slate-100" />
 
-          <div className="flex justify-end gap-3 pt-4">
+          {/* Status Section */}
+          <div className="flex items-start gap-2">
+            <Settings2 className="h-4 w-4 text-slate-500 mt-0.5" />
+            <div className="flex-1">
+              <LinkStatusSegmentedControl
+                value={formData.status}
+                onChange={(status) => setFormData({ ...formData, status })}
+              />
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"

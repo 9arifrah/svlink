@@ -10,7 +10,9 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
+import { User, Shield, KeyRound } from 'lucide-react'
 
 type User = {
   id: string
@@ -130,91 +132,120 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
-          <DialogTitle>{user ? 'Edit User' : 'Tambah User Baru'}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <User className="h-5 w-5 text-blue-600" />
+            {user ? 'Edit User' : 'Tambah User Baru'}
+          </DialogTitle>
+          <DialogDescription>
+            {user ? 'Ubah detail pengguna di bawah ini.' : 'Buat akun pengguna baru untuk platform.'}
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="Contoh: admin@example.com"
-              value={formData.email}
-              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              required
-            />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {/* Profile Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="Contoh: admin@example.com"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="display_name">Nama Tampilan</Label>
+              <Input
+                id="display_name"
+                type="text"
+                placeholder="Contoh: John Doe"
+                value={formData.display_name}
+                onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="custom_slug">Custom Slug (opsional)</Label>
+              <Input
+                id="custom_slug"
+                type="text"
+                placeholder="Contoh: john-doe"
+                value={formData.custom_slug}
+                onChange={(e) => setFormData({ ...formData, custom_slug: e.target.value })}
+              />
+              <p className="text-xs text-slate-500">
+                Digunakan untuk URL publik (misal: /u/john-doe)
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="display_name">Nama Tampilan</Label>
-            <Input
-              id="display_name"
-              type="text"
-              placeholder="Contoh: John Doe"
-              value={formData.display_name}
-              onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
-            />
+          <div className="border-t border-slate-100" />
+
+          {/* Admin Access */}
+          <div className="flex items-start gap-2">
+            <Shield className="h-4 w-4 text-slate-500 mt-0.5" />
+            <div className="space-y-1 flex-1">
+              <div className="flex items-center space-x-2">
+                <input
+                  type="checkbox"
+                  id="is_admin"
+                  checked={formData.is_admin}
+                  onChange={(e) => setFormData({ ...formData, is_admin: e.target.checked })}
+                  className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
+                />
+                <Label htmlFor="is_admin" className="cursor-pointer">
+                  Berikan akses admin
+                </Label>
+              </div>
+              <p className="text-xs text-slate-500 ml-6">
+                Pengguna dengan akses admin dapat mengelola semua pengguna dan link.
+              </p>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="custom_slug">Custom Slug (opsional)</Label>
-            <Input
-              id="custom_slug"
-              type="text"
-              placeholder="Contoh: john-doe"
-              value={formData.custom_slug}
-              onChange={(e) => setFormData({ ...formData, custom_slug: e.target.value })}
-            />
-            <p className="text-xs text-slate-500">
-              Digunakan untuk URL publik (misal: /u/john-doe)
-            </p>
+          <div className="border-t border-slate-100" />
+
+          {/* Password Section */}
+          <div className="flex items-start gap-2">
+            <KeyRound className="h-4 w-4 text-slate-500 mt-0.5" />
+            <div className="space-y-4 flex-1">
+              <div className="space-y-2">
+                <Label htmlFor="password">
+                  {user ? 'Password Baru (opsional)' : 'Password'}
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder={user ? 'Biarkan kosong jika tidak ingin mengubah' : 'Masukkan password'}
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  required={!user}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">
+                  {user ? 'Konfirmasi Password Baru' : 'Konfirmasi Password'}
+                </Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder={user ? 'Ulangi password baru' : 'Ulangi password'}
+                  value={formData.confirmPassword}
+                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  required={!user || formData.password.length > 0}
+                />
+              </div>
+            </div>
           </div>
 
-          <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="is_admin"
-              checked={formData.is_admin}
-              onChange={(e) => setFormData({ ...formData, is_admin: e.target.checked })}
-              className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-600"
-            />
-            <Label htmlFor="is_admin" className="cursor-pointer">
-              Berikan akses admin
-            </Label>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="password">
-              {user ? 'Password Baru (opsional)' : 'Password'}
-            </Label>
-            <Input
-              id="password"
-              type="password"
-              placeholder={user ? 'Biarkan kosong jika tidak ingin mengubah' : 'Masukkan password'}
-              value={formData.password}
-              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              required={!user}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">
-              {user ? 'Konfirmasi Password Baru' : 'Konfirmasi Password'}
-            </Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              placeholder={user ? 'Ulangi password baru' : 'Ulangi password'}
-              value={formData.confirmPassword}
-              onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
-              required={!user || formData.password.length > 0}
-            />
-          </div>
-
-          <div className="flex justify-end gap-3 pt-4">
+          {/* Footer */}
+          <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"

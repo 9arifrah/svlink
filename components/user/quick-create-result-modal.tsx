@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { CheckCircle, Copy, Download, ExternalLink, Link2, QrCode } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
@@ -91,44 +92,47 @@ export function QuickCreateResultModal({ open, onOpenChange, link }: QuickCreate
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[520px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-green-600">
             <CheckCircle className="h-6 w-6" />
             Link Berhasil Dibuat!
           </DialogTitle>
+          <DialogDescription className="text-slate-600">
+            Short link dan QR code Anda sudah siap digunakan.
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* Link Info */}
-          <div className="space-y-3">
+        <div className="space-y-5 py-2">
+          {/* Link Info Card */}
+          <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-4 space-y-3">
             <div>
-              <p className="text-sm font-medium text-slate-700">Judul</p>
-              <p className="text-sm text-slate-900 font-semibold">{link.title}</p>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Judul</p>
+              <p className="text-sm text-slate-900 font-semibold mt-0.5">{link.title}</p>
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-700">URL Tujuan</p>
-              <p className="text-sm text-slate-600 truncate" title={link.url}>
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">URL Tujuan</p>
+              <p className="text-sm text-slate-600 truncate mt-0.5" title={link.url}>
                 {link.url}
               </p>
             </div>
           </div>
 
-          {/* Short Link Section */}
+          {/* Short Link Card */}
           <div className="space-y-2">
-            <p className="text-sm font-medium text-slate-700 flex items-center gap-1">
-              <Link2 className="h-4 w-4" />
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+              <Link2 className="h-3.5 w-3.5" />
               Short Link
             </p>
             <div className="flex items-center gap-2">
-              <div className="flex-1 bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm font-mono text-slate-700 truncate">
+              <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-mono text-slate-700 truncate">
                 {shortLink}
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleCopyShortLink}
-                className={copied ? 'bg-green-50 border-green-200 text-green-700' : ''}
+                className={copied ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-50' : ''}
               >
                 {copied ? (
                   <CheckCircle className="h-4 w-4" />
@@ -140,15 +144,15 @@ export function QuickCreateResultModal({ open, onOpenChange, link }: QuickCreate
             </div>
           </div>
 
-          {/* QR Code Section */}
+          {/* QR Code Card */}
           {link.qr_code && (
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-slate-700 flex items-center gap-1">
-                <QrCode className="h-4 w-4" />
+            <div className="space-y-3">
+              <p className="text-xs font-medium text-slate-500 uppercase tracking-wide flex items-center gap-1.5">
+                <QrCode className="h-3.5 w-3.5" />
                 QR Code
               </p>
-              <div className="flex flex-col items-center gap-3">
-                <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+              <div className="rounded-lg border border-slate-200/60 bg-white p-6 shadow-sm flex flex-col items-center gap-4">
+                <div className="rounded-lg border border-slate-100 bg-white p-3">
                   <img
                     src={link.qr_code}
                     alt={`QR Code untuk ${link.title}`}
@@ -169,12 +173,12 @@ export function QuickCreateResultModal({ open, onOpenChange, link }: QuickCreate
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4 border-t border-slate-200">
+        <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4 border-t border-slate-100">
           <Button variant="outline" onClick={handleClose} className="w-full sm:w-auto">
             Tutup
           </Button>
-          <Button 
-            onClick={handleViewInLinks} 
+          <Button
+            onClick={handleViewInLinks}
             className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
           >
             Lihat di Link Saya
