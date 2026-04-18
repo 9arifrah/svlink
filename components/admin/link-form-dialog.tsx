@@ -7,7 +7,6 @@ import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import {
   Dialog,
   DialogContent,
@@ -22,6 +21,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import type { Link, Category } from '@/lib/supabase'
+import { LinkStatusSegmentedControl, linkStatusToFlags, flagsToLinkStatus } from '@/components/user/link-status-segmented-control'
+
+type LinkStatus = 'public' | 'private' | 'draft'
 
 type LinkFormDialogProps = {
   open: boolean
@@ -37,7 +39,7 @@ export function LinkFormDialog({ open, onOpenChange, link, categories }: LinkFor
     title: '',
     url: '',
     category_id: '',
-    is_active: true
+    status: 'public' as LinkStatus
   })
 
   useEffect(() => {
@@ -46,14 +48,14 @@ export function LinkFormDialog({ open, onOpenChange, link, categories }: LinkFor
         title: link.title,
         url: link.url,
         category_id: link.category_id,
-        is_active: link.is_active
+        status: flagsToLinkStatus(link.is_public, link.is_active)
       })
     } else {
       setFormData({
         title: '',
         url: '',
         category_id: categories[0]?.id || '',
-        is_active: true
+        status: 'public'
       })
     }
   }, [link, categories])
@@ -63,10 +65,24 @@ export function LinkFormDialog({ open, onOpenChange, link, categories }: LinkFor
     setLoading(true)
 
     try {
+      const { is_public, is_active } = linkStatusToFlags(formData.status)
+
+      const bodyData: Record<string, any> = {
+        title: formData.title,
+        url: formData.url,
+        category_id: formData.category_id || undefined,
+        is_public,
+        is_active
+      }
+
+      if (link) {
+        bodyData.id = link.id
+      }
+
       const response = await fetch('/api/admin/links', {
         method: link ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(link ? { ...formData, id: link.id } : formData)
+        body: JSON.stringify(bodyData)
       })
 
       if (response.ok) {
@@ -130,19 +146,10 @@ export function LinkFormDialog({ open, onOpenChange, link, categories }: LinkFor
             </Select>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border border-slate-600/50 p-4">
-            <div className="space-y-0.5">
-              <Label htmlFor="is_active" className="text-base">Status</Label>
-              <div className="text-sm text-slate-500">
-                {formData.is_active ? 'Link akan ditampilkan' : 'Link disembunyikan'}
-              </div>
-            </div>
-            <Switch
-              id="is_active"
-              checked={formData.is_active}
-              onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
-            />
-          </div>
+          <LinkStatusSegmentedControl
+            value={formData.status}
+            onChange={(status) => setFormData({ ...formData, status })}
+          />
 
           <div className="flex justify-end gap-3 pt-4">
             <Button

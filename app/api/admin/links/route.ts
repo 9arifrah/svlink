@@ -87,7 +87,7 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    const { id, title, url, category_id, is_public } = { ...body, ...validationResult.data }
+    const { id, title, url, category_id, is_public, is_active } = { ...body, ...validationResult.data }
 
     if (!id) {
       return NextResponse.json(
@@ -100,7 +100,8 @@ export async function PUT(request: NextRequest) {
       title,
       url,
       category_id,
-      is_public
+      is_public,
+      is_active
     })
 
     return NextResponse.json({ success: true, data: link })
