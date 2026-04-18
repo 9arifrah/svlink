@@ -189,3 +189,32 @@ if (resource.user_id !== userId) {
 - ✅ Reserved words validation for slugs/short codes
 - ⚠️ Always use `bcrypt.compare()` - never direct password comparison
 - ⚠️ Never store plain text passwords
+
+## Development Notes
+
+### Dev Server Quirk: Repeated Log Entries on Link Status Change
+
+Ketika admin mengubah status link (Draft → Private/Publik), dev server akan
+menampilkan log berulang seperti:
+
+```
+✓ Compiled in 330ms (445 modules)
+GET /dashboard/links 200 in 351ms
+GET /a375ak 200 in 527ms
+✓ Compiled in 366ms (445 modules)
+GET /dashboard/links 200 in 395ms
+GET /a375ak 200 in 509ms
+```
+
+**Penyebab:** Next.js dev server mendeteksi perubahan file database SQLite
+(`svlink.db`) dan trigger recompilation + hot reload di semua tab browser
+yang terbuka.
+
+**Solusi:** Ini hanya terjadi di dev mode. Di production, tidak ada issue ini.
+Tidak perlu fix - cukup refresh browser jika log terlalu berisik.
+
+### Link Status: Draft Links Return 404
+
+Short link dengan `is_active=false` (status Draft) akan mengembalikan 404.
+Halaman `/[slug]` menggunakan `dynamic = 'force-dynamic'` untuk memastikan
+status selalu fresh dari database tanpa caching.
