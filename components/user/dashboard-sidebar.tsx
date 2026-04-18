@@ -16,8 +16,8 @@ export function DashboardSidebar() {
   const pathname = usePathname()
 
   return (
-    <div className="hidden lg:block w-64 border-r border-slate-200/60 bg-white/80 backdrop-blur-sm">
-      <div className="flex h-16 items-center border-b border-slate-200/60 px-6">
+    <div className="hidden lg:flex lg:flex-col w-64 h-screen border-r border-slate-200/60 bg-white/80 backdrop-blur-sm sticky top-0">
+      <div className="flex h-16 items-center border-b border-slate-200/60 px-6 shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg shadow-purple-500/30">
             <ExternalLink className="h-5 w-5 text-white" />
@@ -29,7 +29,7 @@ export function DashboardSidebar() {
         </div>
       </div>
 
-      <nav className="space-y-1 p-4">
+      <nav className="flex-1 space-y-1 p-4 overflow-y-auto">
         {navigation.map((item) => {
           const isActive = pathname === item.href
           return (

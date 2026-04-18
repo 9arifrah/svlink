@@ -92,29 +92,31 @@ export function QuickCreateResultModal({ open, onOpenChange, link }: QuickCreate
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[520px]">
-        <DialogHeader>
+      <DialogContent className="max-w-[95vw] sm:max-w-[520px] p-4 sm:p-6 max-h-[90vh] overflow-y-auto overflow-x-hidden">
+        <DialogHeader className="overflow-hidden">
           <DialogTitle className="flex items-center gap-2 text-green-600">
-            <CheckCircle className="h-6 w-6" />
-            Link Berhasil Dibuat!
+            <CheckCircle className="h-6 w-6 flex-shrink-0" />
+            <span className="truncate">Link Berhasil Dibuat!</span>
           </DialogTitle>
           <DialogDescription className="text-slate-600">
             Short link dan QR code Anda sudah siap digunakan.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-5 py-2">
+        <div className="space-y-5 py-2 w-full min-w-0">
           {/* Link Info Card */}
-          <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-4 space-y-3">
+          <div className="rounded-lg border border-slate-200/60 bg-slate-50/50 p-3 sm:p-4 space-y-3 overflow-hidden">
             <div>
               <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">Judul</p>
-              <p className="text-sm text-slate-900 font-semibold mt-0.5">{link.title}</p>
+              <p className="text-sm text-slate-900 font-semibold mt-0.5 break-words">{link.title}</p>
             </div>
             <div>
               <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">URL Tujuan</p>
-              <p className="text-sm text-slate-600 truncate mt-0.5" title={link.url}>
-                {link.url}
-              </p>
+              <div className="overflow-hidden">
+                <p className="text-sm text-slate-600 mt-0.5 truncate" title={link.url}>
+                  {link.url}
+                </p>
+              </div>
             </div>
           </div>
 
@@ -124,22 +126,22 @@ export function QuickCreateResultModal({ open, onOpenChange, link }: QuickCreate
               <Link2 className="h-3.5 w-3.5" />
               Short Link
             </p>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-mono text-slate-700 truncate">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div className="flex-1 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2.5 text-sm font-mono text-slate-700 truncate min-w-0">
                 {shortLink}
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleCopyShortLink}
-                className={copied ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-50' : ''}
+                className={`w-full sm:w-auto ${copied ? 'bg-green-50 border-green-200 text-green-700 hover:bg-green-50' : ''}`}
               >
                 {copied ? (
                   <CheckCircle className="h-4 w-4" />
                 ) : (
                   <Copy className="h-4 w-4" />
                 )}
-                <span className="ml-2 hidden sm:inline">{copied ? 'Tersalin' : 'Copy'}</span>
+                <span className="ml-2">{copied ? 'Tersalin' : 'Copy'}</span>
               </Button>
             </div>
           </div>
@@ -152,11 +154,11 @@ export function QuickCreateResultModal({ open, onOpenChange, link }: QuickCreate
                 QR Code
               </p>
               <div className="rounded-lg border border-slate-200/60 bg-white p-6 shadow-sm flex flex-col items-center gap-4">
-                <div className="rounded-lg border border-slate-100 bg-white p-3">
+                <div className="rounded-lg border border-slate-100 bg-white p-2 sm:p-3">
                   <img
                     src={link.qr_code}
                     alt={`QR Code untuk ${link.title}`}
-                    className="h-40 w-40"
+                    className="h-32 w-32 sm:h-40 sm:w-40"
                   />
                 </div>
                 <Button
@@ -173,7 +175,7 @@ export function QuickCreateResultModal({ open, onOpenChange, link }: QuickCreate
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4 border-t border-slate-100">
+        <div className="flex flex-col-reverse sm:flex-row justify-between gap-3 pt-4 border-t border-slate-100">
           <Button variant="outline" onClick={handleClose} className="w-full sm:w-auto">
             Tutup
           </Button>
