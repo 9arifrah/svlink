@@ -103,6 +103,11 @@ export default async function PublicSlugPage({ params }: { params: Promise<{ slu
   // Priority 1: Check if it's a short code (redirect)
   const link = await getLinkByShortCode(slug)
   if (link) {
+    // If link is not active (draft), return 404
+    if (!link.is_active) {
+      notFound()
+    }
+
     // Increment click count
     try {
       await db.incrementClickCount(link.id)
