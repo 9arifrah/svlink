@@ -39,17 +39,17 @@ export function LinkStatusSegmentedControl({ value, onChange }: LinkStatusSegmen
         <span className="text-sm font-medium text-slate-700">Status Link</span>
       </div>
 
-      <div className="flex rounded-lg bg-slate-100 p-1">
+      <div className="flex gap-1.5">
         {segments.map((segment) => (
           <button
             key={segment.value}
             type="button"
             onClick={() => onChange(segment.value)}
             className={cn(
-              'flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200',
+              'flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
               value === segment.value
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'text-slate-600 hover:bg-slate-200/50'
+                ? 'bg-blue-600 text-white shadow-sm shadow-blue-200'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
             )}
           >
             <span className="text-base">{segment.icon}</span>
