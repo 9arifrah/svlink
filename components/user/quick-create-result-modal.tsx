@@ -1,0 +1,187 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { CheckCircle, Copy, Download, ExternalLink, Link2, QrCode } from 'lucide-react'
+import { useToast } from '@/hooks/use-toast'
+import type { Link } from '@/lib/supabase'
+import { downloadDataUri } from '@/lib/qr-code'
+
+type QuickCreateResultModalProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  link: Link | null
+}
+
+export function QuickCreateResultModal({ open, onOpenChange, link }: QuickCreateResultModalProps) {
+  const router = useRouter()
+  const { toast } = useToast()
+  const [copied, setCopied] = useState(false)
+
+  if (!link) return null
+
+  const shortLink = typeof window !== 'undefined' 
+    ? `${window.location.origin}/${link.short_code}` 
+    : `/${link.short_code}`
+
+  const handleCopyShortLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shortLink)
+      setCopied(true)
+      toast({
+        title: 'Berhasil!',
+        description: 'Short link telah disalin ke clipboard',
+      })
+      setTimeout(() => setCopied(false), 2000)
+    } catch (error) {
+      console.error('[v0] Error copying short link:', error)
+      toast({
+        title: 'Gagal menyalin',
+        description: 'Terjadi kesalahan saat menyalin link',
+        variant: 'destructive'
+      })
+    }
+  }
+
+  const handleDownloadQR = () => {
+    if (!link.qr_code) {
+      toast({
+        title: 'QR Code tidak tersedia',
+        description: 'QR code belum di-generate untuk link ini',
+        variant: 'destructive'
+      })
+      return
+    }
+
+    try {
+      const sanitizedTitle = link.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '')
+      downloadDataUri(link.qr_code, `qr-${sanitizedTitle}.png`)
+      toast({
+        title: 'Berhasil!',
+        description: 'QR code berhasil di-download',
+      })
+    } catch (error) {
+      console.error('[v0] Error downloading QR code:', error)
+      toast({
+        title: 'Gagal mendownload',
+        description: 'Terjadi kesalahan saat mendownload QR code',
+        variant: 'destructive'
+      })
+    }
+  }
+
+  const handleViewInLinks = () => {
+    onOpenChange(false)
+    router.push('/dashboard/links')
+  }
+
+  const handleClose = () => {
+    onOpenChange(false)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-[500px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-green-600">
+            <CheckCircle className="h-6 w-6" />
+            Link Berhasil Dibuat!
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6 py-4">
+          {/* Link Info */}
+          <div className="space-y-3">
+            <div>
+              <p className="text-sm font-medium text-slate-700">Judul</p>
+              <p className="text-sm text-slate-900 font-semibold">{link.title}</p>
+            </div>
+            <div>
+              <p className="text-sm font-medium text-slate-700">URL Tujuan</p>
+              <p className="text-sm text-slate-600 truncate" title={link.url}>
+                {link.url}
+              </p>
+            </div>
+          </div>
+
+          {/* Short Link Section */}
+          <div className="space-y-2">
+            <p className="text-sm font-medium text-slate-700 flex items-center gap-1">
+              <Link2 className="h-4 w-4" />
+              Short Link
+            </p>
+            <div className="flex items-center gap-2">
+              <div className="flex-1 bg-slate-50 border border-slate-200 rounded-md px-3 py-2 text-sm font-mono text-slate-700 truncate">
+                {shortLink}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCopyShortLink}
+                className={copied ? 'bg-green-50 border-green-200 text-green-700' : ''}
+              >
+                {copied ? (
+                  <CheckCircle className="h-4 w-4" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+                <span className="ml-2 hidden sm:inline">{copied ? 'Tersalin' : 'Copy'}</span>
+              </Button>
+            </div>
+          </div>
+
+          {/* QR Code Section */}
+          {link.qr_code && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-slate-700 flex items-center gap-1">
+                <QrCode className="h-4 w-4" />
+                QR Code
+              </p>
+              <div className="flex flex-col items-center gap-3">
+                <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                  <img
+                    src={link.qr_code}
+                    alt={`QR Code untuk ${link.title}`}
+                    className="h-40 w-40"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={handleDownloadQR}
+                  className="w-full sm:w-auto"
+                >
+                  <Download className="mr-2 h-4 w-4" />
+                  Download QR Code
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row justify-between gap-3 pt-4 border-t border-slate-200">
+          <Button variant="outline" onClick={handleClose} className="w-full sm:w-auto">
+            Tutup
+          </Button>
+          <Button 
+            onClick={handleViewInLinks} 
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
+          >
+            Lihat di Link Saya
+            <ExternalLink className="ml-2 h-4 w-4" />
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  )
+}

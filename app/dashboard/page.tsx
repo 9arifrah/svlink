@@ -2,8 +2,8 @@ import { getUserSession } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
 import { DashboardLayout } from '@/components/user/dashboard-layout'
-import { LinksTable } from '@/components/user/links-table'
 import { AutoRefreshStats } from '@/components/user/auto-refresh-stats'
+import { QuickActions } from '@/components/user/quick-actions'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 async function checkAuth() {
@@ -14,24 +14,6 @@ async function checkAuth() {
   }
 
   return session.userId
-}
-
-async function getLinks(userId: string) {
-  try {
-    return await db.getLinks(userId)
-  } catch (error) {
-    console.error('[v0] Error fetching user links:', error)
-    return []
-  }
-}
-
-async function getCategories(userId: string) {
-  try {
-    return await db.getCategories(userId)
-  } catch (error) {
-    console.error('[v0] Error fetching user categories:', error)
-    return []
-  }
 }
 
 async function getStats(userId: string) {
@@ -50,12 +32,7 @@ async function getStats(userId: string) {
 
 export default async function UserDashboard() {
   const userId = await checkAuth()
-
-  const [links, categories, stats] = await Promise.all([
-    getLinks(userId),
-    getCategories(userId),
-    getStats(userId)
-  ])
+  const stats = await getStats(userId)
 
   return (
     <DashboardLayout>
@@ -65,6 +42,8 @@ export default async function UserDashboard() {
           <p className="text-slate-600">Kelola semua link dan kategori Anda</p>
         </div>
 
+        <QuickActions />
+
         <Card>
           <CardHeader>
             <CardTitle>Statistik Link</CardTitle>
@@ -73,8 +52,6 @@ export default async function UserDashboard() {
             <AutoRefreshStats initialStats={stats} />
           </CardContent>
         </Card>
-
-        <LinksTable links={links} categories={categories} userId={userId} />
       </div>
     </DashboardLayout>
   )
