@@ -3,26 +3,17 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Link2, QrCode } from 'lucide-react'
+import { Plus, Link2, QrCode } from 'lucide-react'
 import { QuickCreateDialog } from '@/components/user/quick-create-dialog'
 import { QuickCreateResultModal } from '@/components/user/quick-create-result-modal'
 import type { Link } from '@/lib/supabase'
 
-type QuickCreateMode = 'shortlink' | 'qrcode'
-
 export function QuickActions() {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const [dialogMode, setDialogMode] = useState<QuickCreateMode>('shortlink')
   const [resultModalOpen, setResultModalOpen] = useState(false)
   const [createdLink, setCreatedLink] = useState<Link | null>(null)
 
-  const handleOpenShortLink = () => {
-    setDialogMode('shortlink')
-    setDialogOpen(true)
-  }
-
-  const handleOpenQRCode = () => {
-    setDialogMode('qrcode')
+  const handleOpenDialog = () => {
     setDialogOpen(true)
   }
 
@@ -42,28 +33,26 @@ export function QuickActions() {
           <div className="flex flex-wrap gap-3">
             <Button
               variant="outline"
-              onClick={handleOpenShortLink}
-              className="flex-1 min-w-[180px]"
+              onClick={handleOpenDialog}
+              className="w-full sm:w-[200px]"
             >
-              <Link2 className="mr-2 h-4 w-4" />
-              Quick Create: Short Link
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleOpenQRCode}
-              className="flex-1 min-w-[180px]"
-            >
-              <QrCode className="mr-2 h-4 w-4" />
-              Quick Create: QR Code
+              <Plus className="mr-2 h-4 w-4" />
+              Quick Create
             </Button>
           </div>
+          <p className="text-sm text-muted-foreground mt-3 flex items-center gap-2">
+            <Link2 className="h-3.5 w-3.5" />
+            Short link
+            <span className="text-slate-300">|</span>
+            <QrCode className="h-3.5 w-3.5" />
+            QR code
+          </p>
         </CardContent>
       </Card>
 
       <QuickCreateDialog 
         open={dialogOpen} 
         onOpenChange={setDialogOpen} 
-        mode={dialogMode}
         onSuccess={handleSuccess}
       />
 

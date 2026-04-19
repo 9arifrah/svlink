@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,7 +8,10 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ExternalLink, Save, Eye, EyeOff } from 'lucide-react'
+import { ExternalLink, Save, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react'
+
+const MAX_FILE_SIZE = 500 * 1024 // 500KB
+const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
 
 type SettingsFormProps = {
   user: any
@@ -18,8 +21,15 @@ type SettingsFormProps = {
 
 export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
   const router = useRouter()
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string>('')
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [logoError, setLogoError] = useState('')
+  const [deleteLogo, setDeleteLogo] = useState(false)
   
   const [formData, setFormData] = useState({
     displayName: user?.display_name || '',
@@ -48,8 +58,42 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
         themeColor: settings.theme_color || '#3b82f6',
         showCategories: settings.show_categories ?? true
       }))
+      if (settings.logo_url) {
+        setLogoPreview(settings.logo_url)
+      }
     }
   }, [user, settings])
+
+  const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setLogoError('')
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setLogoError('Format file tidak didukung. Gunakan PNG, JPG, GIF, atau WebP')
+      return
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      setLogoError('File terlalu besar (max 500KB)')
+      return
+    }
+
+    setLogoFile(file)
+    setDeleteLogo(false)
+    setLogoPreview(URL.createObjectURL(file))
+  }
+
+  const handleDeleteLogo = () => {
+    setLogoFile(null)
+    setLogoPreview('')
+    setDeleteLogo(true)
+    setLogoError('')
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -57,6 +101,42 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
     setMessage('')
 
     try {
+      let finalLogoUrl = formData.logoUrl
+
+      // Handle logo deletion
+      if (deleteLogo && formData.logoUrl) {
+        await fetch('/api/upload-logo', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ logoUrl: formData.logoUrl })
+        })
+        finalLogoUrl = ''
+      }
+
+      // Handle logo upload
+      if (logoFile) {
+        setUploadingLogo(true)
+        const uploadFormData = new FormData()
+        uploadFormData.append('file', logoFile)
+
+        const uploadResponse = await fetch('/api/upload-logo', {
+          method: 'POST',
+          body: uploadFormData
+        })
+
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json()
+          setLogoError(errorData.error || 'Gagal mengupload logo')
+          setUploadingLogo(false)
+          setLoading(false)
+          return
+        }
+
+        const uploadData = await uploadResponse.json()
+        finalLogoUrl = uploadData.url
+        setUploadingLogo(false)
+      }
+
       // Update user profile
       if (formData.displayName || formData.customSlug) {
         await fetch('/api/user/profile', {
@@ -76,7 +156,7 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
         body: JSON.stringify({
           profile_description: formData.profileDescription,
           page_title: formData.pageTitle,
-          logo_url: formData.logoUrl,
+          logo_url: finalLogoUrl || null,
           theme_color: formData.themeColor,
           show_categories: formData.showCategories
         })
@@ -84,6 +164,9 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
 
       if (response.ok) {
         setMessage('Pengaturan berhasil disimpan!')
+        setLogoFile(null)
+        setDeleteLogo(false)
+        setLogoError('')
         setTimeout(() => setMessage(''), 3000)
         router.refresh()
       } else {
@@ -178,15 +261,57 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="logoUrl">URL Logo</Label>
-              <Input
-                id="logoUrl"
-                type="url"
-                value={formData.logoUrl}
-                onChange={(e) => setFormData({ ...formData, logoUrl: e.target.value })}
-                placeholder="https://example.com/logo.png"
-              />
-              <p className="text-xs text-slate-500">URL gambar logo untuk halaman publik Anda</p>
+              <Label>Logo</Label>
+              <div className="flex items-start gap-4">
+                <div className="h-20 w-20 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden shrink-0">
+                  {logoPreview ? (
+                    <img
+                      src={logoPreview}
+                      alt="Logo preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <ImageIcon className="h-8 w-8 text-slate-400" />
+                  )}
+                </div>
+                <div className="flex flex-col gap-2 flex-1">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/gif,image/webp"
+                    onChange={handleLogoSelect}
+                    className="hidden"
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingLogo}
+                    >
+                      <Upload className="mr-2 h-4 w-4" />
+                      Pilih Gambar
+                    </Button>
+                    {(logoPreview || formData.logoUrl) && !deleteLogo && (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={handleDeleteLogo}
+                        className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                      >
+                        <X className="mr-2 h-4 w-4" />
+                        Hapus Logo
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-500">PNG, JPG, GIF, WebP. Max 500KB. Rekomendasi: 200x200px</p>
+                </div>
+              </div>
+              {logoError && (
+                <p className="text-sm text-red-600">{logoError}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -234,11 +359,20 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
             <div className="flex gap-3">
               <Button 
                 type="submit" 
-                disabled={loading}
+                disabled={loading || uploadingLogo}
                 className="bg-blue-600 hover:bg-blue-700"
               >
-                <Save className="mr-2 h-4 w-4" />
-                {loading ? 'Menyimpan...' : 'Simpan Pengaturan'}
+                {(loading || uploadingLogo) ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Menyimpan...
+                  </>
+                ) : (
+                  <>
+                    <Save className="mr-2 h-4 w-4" />
+                    Simpan Pengaturan
+                  </>
+                )}
               </Button>
             </div>
           </form>

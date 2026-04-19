@@ -133,7 +133,11 @@ export const categorySchema = z.object({
  */
 export const userSettingsSchema = z.object({
   theme_color: z.string().regex(/^#[0-9A-Fa-f]{6}$/, 'Warna theme tidak valid').default('#3b82f6'),
-  logo_url: z.union([urlSchema, z.literal('')]).optional().nullable(),
+  logo_url: z.union([
+    urlSchema,
+    z.string().startsWith('/uploads/', 'URL logo tidak valid'),
+    z.literal('')
+  ]).optional().nullable(),
   page_title: z.string().max(100).optional(),
   profile_description: z.string().max(500).optional(),
   show_categories: z.boolean().default(true)

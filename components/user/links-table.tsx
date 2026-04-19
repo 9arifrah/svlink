@@ -216,16 +216,10 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
                     <span className="font-medium text-slate-700">{link.click_count || 0}</span> klik
                   </span>
                   <Badge
-                    variant={link.is_active ? 'default' : 'secondary'}
-                    className={link.is_active ? 'text-xs' : 'text-xs'}
+                    variant="secondary"
+                    className={`text-xs ${!link.is_active ? 'bg-slate-100 text-slate-600' : link.is_public ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}
                   >
-                    {link.is_active ? 'Aktif' : 'Nonaktif'}
-                  </Badge>
-                  <Badge
-                    variant={link.is_public ? 'default' : 'secondary'}
-                    className={link.is_public ? 'text-xs bg-green-600 hover:bg-green-700' : 'text-xs'}
-                  >
-                    {link.is_public ? 'Publik' : 'Privat'}
+                    {!link.is_active ? 'Draf' : link.is_public ? 'Publik' : 'Privat'}
                   </Badge>
                 </div>
 
@@ -339,16 +333,10 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
                   <td className="hidden lg:table-cell py-4 pr-4 whitespace-nowrap">
                     <div className="flex gap-2">
                       <Badge
-                        variant={link.is_active ? 'default' : 'secondary'}
-                        className={`text-xs ${link.is_active ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                        variant="secondary"
+                        className={`text-xs ${!link.is_active ? 'bg-slate-100 text-slate-600 hover:bg-slate-200' : link.is_public ? 'bg-green-100 text-green-700 hover:bg-green-200' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'}`}
                       >
-                        {link.is_active ? 'Aktif' : 'Nonaktif'}
-                      </Badge>
-                      <Badge
-                        variant={link.is_public ? 'default' : 'secondary'}
-                        className={`text-xs ${link.is_public ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-                      >
-                        {link.is_public ? 'Publik' : 'Privat'}
+                        {!link.is_active ? 'Draf' : link.is_public ? 'Publik' : 'Privat'}
                       </Badge>
                     </div>
                   </td>

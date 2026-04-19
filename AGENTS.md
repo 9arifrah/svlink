@@ -93,7 +93,7 @@ components/
 
 **Quick Create Feature:**
 - Located on `/dashboard` page
-- Two buttons: "Quick Create: Short Link" and "Quick Create: QR Code"
+- Single button: "Quick Create" (creates both short link + QR code)
 - Flow: Input Dialog → Submit → Result Modal (instant preview)
 - Result modal shows: short link (with copy), QR code preview (with download), link details
 - Uses `POST /api/links` which auto-generates both short code and QR code
@@ -198,6 +198,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 | Rate limiting | `lib/rate-limit.ts` |
 | Short code + profile route | `app/[slug]/page.tsx` |
 | Link tracking API | `app/api/track-click/route.ts` |
+| Storage abstraction | `lib/storage.ts` (Supabase Storage + local fallback) |
+| Logo upload API | `app/api/upload-logo/route.ts` |
 
 ## API Route Patterns
 
@@ -265,3 +267,14 @@ Tidak perlu fix - cukup refresh browser jika log terlalu berisik.
 Short link dengan `is_active=false` (status Draft) akan mengembalikan 404.
 Halaman `/[slug]` menggunakan `dynamic = 'force-dynamic'` untuk memastikan
 status selalu fresh dari database tanpa caching.
+
+### Logo Upload
+
+Logo user diupload via `/dashboard/settings` dengan spesifikasi:
+- **Format:** PNG, JPG, GIF, WebP
+- **Max size:** 500KB
+- **Rekomendasi:** 200x200px
+- **Storage:** Supabase Storage bucket `user-logos` (production) atau `public/uploads/logos/` (local fallback)
+- **Upload flow:** File dipilih → preview → upload saat klik "Simpan Pengaturan"
+- **Delete flow:** File dihapus dari storage + URL di-clear dari database saat save
+- **API:** `POST /api/upload-logo` (upload), `DELETE /api/upload-logo` (delete)

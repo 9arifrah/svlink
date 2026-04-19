@@ -13,19 +13,16 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { Link2, QrCode, Loader2 } from 'lucide-react'
+import { Plus, Link2, QrCode, Loader2 } from 'lucide-react'
 import type { Link } from '@/lib/supabase'
-
-type QuickCreateMode = 'shortlink' | 'qrcode'
 
 type QuickCreateDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  mode: QuickCreateMode
   onSuccess?: (link: Link) => void
 }
 
-export function QuickCreateDialog({ open, onOpenChange, mode, onSuccess }: QuickCreateDialogProps) {
+export function QuickCreateDialog({ open, onOpenChange, onSuccess }: QuickCreateDialogProps) {
   const router = useRouter()
   const { toast } = useToast()
   const [loading, setLoading] = useState(false)
@@ -33,8 +30,6 @@ export function QuickCreateDialog({ open, onOpenChange, mode, onSuccess }: Quick
     title: '',
     url: ''
   })
-
-  const isShortLinkMode = mode === 'shortlink'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -94,17 +89,11 @@ export function QuickCreateDialog({ open, onOpenChange, mode, onSuccess }: Quick
       <DialogContent className="sm:max-w-[460px]">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            {isShortLinkMode ? (
-              <Link2 className="h-5 w-5 text-blue-600" />
-            ) : (
-              <QrCode className="h-5 w-5 text-blue-600" />
-            )}
-            {isShortLinkMode ? 'Quick Create Short Link' : 'Quick Create QR Code'}
+            <Plus className="h-5 w-5 text-blue-600" />
+            Quick Create
           </DialogTitle>
           <DialogDescription>
-            {isShortLinkMode
-              ? 'Buat short link dengan cepat. Short code dan QR code akan di-generate otomatis.'
-              : 'Buat QR code dengan cepat. Short link dan QR code akan di-generate otomatis.'}
+            Buat link dengan cepat. Short link dan QR code akan otomatis di-generate.
           </DialogDescription>
         </DialogHeader>
 
@@ -135,29 +124,14 @@ export function QuickCreateDialog({ open, onOpenChange, mode, onSuccess }: Quick
           </div>
 
           <div className="rounded-lg bg-blue-50/50 border border-blue-100 p-3 space-y-1.5">
-            {isShortLinkMode ? (
-              <>
-                <div className="flex items-center gap-2 text-sm text-blue-700">
-                  <Link2 className="h-4 w-4 shrink-0" />
-                  <span>Short code akan otomatis di-generate</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-blue-700">
-                  <QrCode className="h-4 w-4 shrink-0" />
-                  <span>QR code juga akan di-generate otomatis</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center gap-2 text-sm text-blue-700">
-                  <QrCode className="h-4 w-4 shrink-0" />
-                  <span>QR code akan otomatis di-generate</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-blue-700">
-                  <Link2 className="h-4 w-4 shrink-0" />
-                  <span>Short link juga akan otomatis di-generate</span>
-                </div>
-              </>
-            )}
+            <div className="flex items-center gap-2 text-sm text-blue-700">
+              <Link2 className="h-4 w-4 shrink-0" />
+              <span>Short link akan otomatis di-generate</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-blue-700">
+              <QrCode className="h-4 w-4 shrink-0" />
+              <span>QR code juga akan otomatis di-generate</span>
+            </div>
           </div>
 
           <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
@@ -179,15 +153,10 @@ export function QuickCreateDialog({ open, onOpenChange, mode, onSuccess }: Quick
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Membuat...
                 </>
-              ) : isShortLinkMode ? (
-                <>
-                  <Link2 className="mr-2 h-4 w-4" />
-                  Buat Short Link
-                </>
               ) : (
                 <>
-                  <QrCode className="mr-2 h-4 w-4" />
-                  Buat QR Code
+                  <Plus className="mr-2 h-4 w-4" />
+                  Buat Link
                 </>
               )}
             </Button>
