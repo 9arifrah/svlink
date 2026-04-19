@@ -40,6 +40,7 @@ function initializeSchema() {
       page_title TEXT,
       show_categories INTEGER DEFAULT 1,
       profile_description TEXT,
+      layout_style TEXT DEFAULT 'list',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -198,8 +199,8 @@ export const sqliteClient: DatabaseClient = {
 
   async createUserSettings(settings: any) {
     const stmt = db.prepare(`
-      INSERT INTO user_settings (id, user_id, theme_color, logo_url, page_title, show_categories, profile_description)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO user_settings (id, user_id, theme_color, logo_url, page_title, show_categories, profile_description, layout_style)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `)
     stmt.run(
       settings.id,
@@ -208,7 +209,8 @@ export const sqliteClient: DatabaseClient = {
       settings.logo_url || null,
       settings.page_title || null,
       settings.show_categories !== undefined ? (settings.show_categories ? 1 : 0) : 1,
-      settings.profile_description || null
+      settings.profile_description || null,
+      settings.layout_style || 'list'
     )
     return this.getUserSettings(settings.user_id)
   },
@@ -236,6 +238,10 @@ export const sqliteClient: DatabaseClient = {
     if (data.profile_description !== undefined) {
       fields.push('profile_description = ?')
       values.push(data.profile_description)
+    }
+    if (data.layout_style !== undefined) {
+      fields.push('layout_style = ?')
+      values.push(data.layout_style)
     }
 
     if (fields.length > 0) {

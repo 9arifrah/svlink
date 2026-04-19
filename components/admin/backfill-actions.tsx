@@ -46,7 +46,7 @@ export function BackfillActions() {
   }
 
   return (
-    <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-slack-md">
+    <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-soft-md">
       <div className="mb-4 sm:mb-6 flex items-center gap-3">
         <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-amber-600">
           <QrCode className="h-5 w-5 sm:h-6 sm:w-6 text-white" />

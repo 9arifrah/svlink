@@ -48,7 +48,7 @@ export function LinksTable({ links, categories }: LinksTableProps) {
   }
 
   return (
-    <Card className="shadow-slack-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
+    <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
       <CardHeader className="border-b border-slate-700/50">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-white">Daftar Semua Link</CardTitle>

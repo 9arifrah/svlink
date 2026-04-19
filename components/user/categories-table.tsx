@@ -57,7 +57,7 @@ export function CategoriesTable({ categories, userId }: CategoriesTableProps) {
           {categories.map((category, index) => (
             <div
               key={category.id}
-              className="group flex items-center justify-between rounded-xl border border-slate-200/60 bg-white p-4 shadow-slack-sm transition-all duration-300 hover:shadow-slack-md hover:-translate-y-0.5 hover:border-brand-200/60"
+              className="group flex items-center justify-between rounded-xl border border-slate-200/60 bg-white p-4 shadow-soft-sm transition-all duration-300 hover:shadow-soft-md hover:-translate-y-0.5 hover:border-brand-200/60"
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <div className="flex items-center gap-4">

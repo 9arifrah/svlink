@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { ExternalLink, FolderTree, BarChart3, Settings, LogOut, Home } from 'lucide-react'
+import { ExternalLink, FolderTree, BarChart3, Settings, LogOut, Home, Link2 } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -20,11 +20,11 @@ export function DashboardSidebar() {
       <div className="flex h-16 items-center border-b border-slate-200/60 px-6 shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 shadow-lg shadow-purple-500/30">
-            <ExternalLink className="h-5 w-5 text-white" />
+            <Link2 className="h-5 w-5 text-white" />
           </div>
           <div>
-            <div className="text-sm font-bold text-slate-900">User Panel</div>
-            <p className="text-xs text-slate-500">Link Manager</p>
+            <div className="text-sm font-bold text-slate-900">svlink</div>
+            <p className="text-xs text-slate-500">Link Management</p>
           </div>
         </div>
       </div>

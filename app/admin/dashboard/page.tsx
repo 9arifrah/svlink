@@ -148,7 +148,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Stats Cards */}
-        <Card className="shadow-slack-md border-slate-700/50 bg-slate-800/50 backdrop-blur animate-scale-in" style={{ animationDelay: '0.1s' }}>
+        <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur animate-scale-in" style={{ animationDelay: '0.1s' }}>
           <CardHeader className="border-b border-slate-700/50">
             <CardTitle className="text-lg font-semibold text-white">Statistik Platform</CardTitle>
           </CardHeader>
@@ -163,7 +163,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Recent Links */}
-        <Card className="shadow-slack-md border-slate-700/50 bg-slate-800/50 backdrop-blur animate-scale-in" style={{ animationDelay: '0.3s' }}>
+        <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur animate-scale-in" style={{ animationDelay: '0.3s' }}>
           <CardHeader className="border-b border-slate-700/50">
             <CardTitle className="text-lg font-semibold text-white">Link Terbaru</CardTitle>
           </CardHeader>

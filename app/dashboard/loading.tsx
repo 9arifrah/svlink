@@ -13,7 +13,7 @@ export default function DashboardLoading() {
       </div>
 
       {/* Stats Card */}
-      <Card className="border-slate-200/60 shadow-slack-md">
+      <Card className="border-slate-200/60 shadow-soft-md">
         <CardHeader>
           <CardTitle><Skeleton className="h-6 w-32" /></CardTitle>
         </CardHeader>

@@ -22,8 +22,6 @@ export function LoginForm() {
     setError('')
     setLoading(true)
 
-    console.log('[v0] Login form submitting with email:', email)
-
     try {
       const response = await fetch('/api/admin/login', {
         method: 'POST',
@@ -31,10 +29,7 @@ export function LoginForm() {
         body: JSON.stringify({ email, password })
       })
 
-      console.log('[v0] Login response status:', response.status)
-
       const data = await response.json()
-      console.log('[v0] Login response data:', data)
 
       if (!response.ok) {
         setError(data.error || 'Login gagal')
@@ -42,7 +37,6 @@ export function LoginForm() {
         return
       }
 
-      console.log('[v0] Login successful, redirecting to dashboard')
       // Redirect to admin dashboard
       router.push('/admin/dashboard')
       router.refresh()

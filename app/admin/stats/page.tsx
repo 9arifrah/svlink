@@ -135,7 +135,7 @@ export default async function AdminStats() {
           {statCards.map((card) => (
             <div
               key={card.title}
-              className="group relative overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/50 backdrop-blur p-6 shadow-slack-md transition-all duration-300 hover:shadow-slack-xl hover:-translate-y-1"
+              className="group relative overflow-hidden rounded-xl border border-slate-700/50 bg-slate-800/50 backdrop-blur p-6 shadow-soft-md transition-all duration-300 hover:shadow-soft-xl hover:-translate-y-1"
             >
               {/* Gradient overlay on hover */}
               <div
@@ -172,7 +172,7 @@ export default async function AdminStats() {
 
         {/* Progress Stats */}
         <div className="grid gap-6 md:grid-cols-2 animate-scale-in" style={{ animationDelay: '0.2s' }}>
-          <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 backdrop-blur p-6 shadow-slack-md">
+          <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 backdrop-blur p-6 shadow-soft-md">
             <h3 className="mb-4 flex items-center gap-2 text-lg font-semibold text-white">
               <TrendingUp className="h-5 w-5 text-green-400" />
               Link Aktif vs Non-Aktif
@@ -209,7 +209,7 @@ export default async function AdminStats() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 backdrop-blur p-6 shadow-slack-md">
+          <div className="rounded-xl border border-slate-700/50 bg-slate-800/50 backdrop-blur p-6 shadow-soft-md">
             <h3 className="mb-4 text-lg font-semibold text-white">
               Distribusi User
             </h3>

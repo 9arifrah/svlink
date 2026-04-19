@@ -10,6 +10,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Plus Jakarta Sans', 'system-ui', '-apple-system', 'sans-serif'],
+      },
       colors: {
         // Brand colors - unified color system
         brand: {
@@ -156,11 +159,11 @@ const config: Config = {
         'pulse-subtle': 'pulse-subtle 2s ease-in-out infinite',
       },
       boxShadow: {
-        'slack-sm': '0 1px 3px rgba(0,0,0,0.12)',
-        'slack-md': '0 4px 6px rgba(0,0,0,0.1)',
-        'slack-lg': '0 8px 24px rgba(0,0,0,0.08)',
-        'slack-xl': '0 12px 32px rgba(0,0,0,0.12)',
-        'purple': '0 8px 24px rgba(74, 21, 75, 0.15)',
+        'soft-sm': '0 1px 3px rgba(0,0,0,0.12)',
+        'soft-md': '0 4px 6px rgba(0,0,0,0.1)',
+        'soft-lg': '0 8px 24px rgba(0,0,0,0.08)',
+        'soft-xl': '0 12px 32px rgba(0,0,0,0.12)',
+        'brand': '0 8px 24px rgba(37, 99, 235, 0.15)',
         'gold': '0 8px 24px rgba(236, 178, 46, 0.2)',
         'success': '0 8px 24px rgba(29, 154, 107, 0.15)',
       },

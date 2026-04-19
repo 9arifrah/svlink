@@ -82,7 +82,6 @@ export async function POST(request: NextRequest) {
 
     // Hash password before storing
     const passwordHash = await bcrypt.hash(password, 10)
-    console.log('[v0] Password hashed for admin user creation by admin:', session.userId)
 
     // Create new user with settings
     const userId = crypto.randomUUID()

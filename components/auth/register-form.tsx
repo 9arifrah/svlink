@@ -1,13 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Eye, EyeOff, Lock, Mail, User, Link as LinkIcon } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail, User, Link as LinkIcon, Check, X, AlertCircle } from 'lucide-react'
 import { getPasswordStrength } from '@/lib/password-strength'
 
 export function RegisterForm() {
@@ -23,6 +22,29 @@ export function RegisterForm() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
+  const errorRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (error && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+  }, [error])
+
+  const getErrorMessage = (response: Response, data: any): string => {
+    if (response.status === 429) {
+      return 'Terlalu banyak percobaan. Silakan coba lagi nanti.'
+    }
+    if (response.status === 409) {
+      return 'Slug sudah digunakan, coba slug lain'
+    }
+    if (response.status === 400) {
+      const msg = data.error?.toLowerCase() || ''
+      if (msg.includes('email')) return 'Format email tidak valid'
+      if (msg.includes('password')) return 'Password terlalu lemah'
+      return data.error || 'Terjadi kesalahan, coba lagi'
+    }
+    return 'Terjadi kesalahan, coba lagi'
+  }
 
   const passwordStrength = getPasswordStrength(formData.password)
 
@@ -48,8 +70,6 @@ export function RegisterForm() {
 
     setLoading(true)
 
-    console.log('[v0] Registration form submitting with email:', formData.email)
-
     try {
       const response = await fetch('/api/auth/register', {
         method: 'POST',
@@ -62,18 +82,14 @@ export function RegisterForm() {
         })
       })
 
-      console.log('[v0] Registration response status:', response.status)
-
       const data = await response.json()
-      console.log('[v0] Registration response data:', data)
 
       if (!response.ok) {
-        setError(data.error || 'Registrasi gagal')
+        setError(getErrorMessage(response, data))
         setLoading(false)
         return
       }
 
-      console.log('[v0] Registration successful, redirecting to dashboard')
       router.push('/dashboard')
       router.refresh()
     } catch (err) {
@@ -84,7 +100,7 @@ export function RegisterForm() {
   }
 
   return (
-    <Card className="border-slate-200/60 shadow-slack-lg bg-white/80 backdrop-blur-sm">
+    <Card className="border-slate-200/60 shadow-soft-lg bg-white/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-slate-900">Registrasi</CardTitle>
       </CardHeader>
@@ -175,25 +191,33 @@ export function RegisterForm() {
                         : passwordStrength.score === 2
                         ? 'text-yellow-600'
                         : passwordStrength.score === 3
-                        ? 'text-blue-600'
-                        : 'text-green-600'
+                        ? 'text-green-600'
+                        : 'text-blue-600'
                     }`}
                   >
                     {passwordStrength.label}
                   </span>
                 </div>
-                <Progress value={(passwordStrength.score / 5) * 100} className="h-2" />
-
-                {passwordStrength.suggestions.length > 0 && (
-                  <ul className="space-y-1 text-xs text-slate-600">
-                    {passwordStrength.suggestions.map((suggestion, i) => (
-                      <li key={i} className="flex items-center gap-2">
-                        <span className="text-yellow-600">•</span>
-                        {suggestion}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-300 ${passwordStrength.color}`}
+                    style={{ width: `${(passwordStrength.score / 5) * 100}%` }}
+                  />
+                </div>
+                <ul className="space-y-1 text-xs text-slate-600">
+                  {passwordStrength.criteria.map((criterion, i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      {criterion.met ? (
+                        <Check className="h-3.5 w-3.5 text-green-600 flex-shrink-0" />
+                      ) : (
+                        <X className="h-3.5 w-3.5 text-red-400 flex-shrink-0" />
+                      )}
+                      <span className={criterion.met ? 'text-green-700' : 'text-slate-500'}>
+                        {criterion.label}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
@@ -223,8 +247,9 @@ export function RegisterForm() {
           </div>
 
           {error && (
-            <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-600 animate-scale-in">
-              {error}
+            <div ref={errorRef} className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm animate-scale-in">
+              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 

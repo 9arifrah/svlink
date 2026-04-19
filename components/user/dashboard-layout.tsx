@@ -2,18 +2,19 @@
 
 import { DashboardSidebar } from './dashboard-sidebar'
 import { DashboardHeader } from './dashboard-header'
+import { MobileBottomNav } from './mobile-bottom-nav'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { ExternalLink, Menu } from 'lucide-react'
+import { ExternalLink, Home, Link2, FolderTree, Settings } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const mobileNavigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: Menu },
-  { name: 'Kelola Link', href: '/dashboard/links', icon: ExternalLink },
-  { name: 'Kategori', href: '/dashboard/categories', icon: ExternalLink },
-  { name: 'Pengaturan', href: '/dashboard/settings', icon: ExternalLink },
+  { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Kelola Link', href: '/dashboard/links', icon: Link2 },
+  { name: 'Kategori', href: '/dashboard/categories', icon: FolderTree },
+  { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
 ]
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -37,7 +38,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         <div className="flex">
           <DashboardSidebar />
 
-          <main className="flex-1 p-6 lg:p-8 animate-fade-in">
+          <main className="flex-1 p-6 pb-20 lg:pb-8 lg:p-8 animate-fade-in">
             <BreadcrumbNav />
             {children}
           </main>
@@ -50,11 +51,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <SheetHeader className="border-b border-slate-200/60 px-6 py-4 bg-gradient-to-r from-brand-50/50 to-accent-50/50">
             <div className="flex items-center gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg shadow-brand-500/30 transition-transform hover:scale-105">
-                <ExternalLink className="h-5 w-5 text-white" />
+                <Link2 className="h-5 w-5 text-white" />
               </div>
               <SheetTitle className="text-left">
-                <div className="font-semibold text-slate-900">User Panel</div>
-                <div className="text-xs text-slate-500">Link Manager</div>
+                <div className="font-semibold text-slate-900">svlink</div>
+                <div className="text-xs text-slate-500">Link Management</div>
               </SheetTitle>
             </div>
           </SheetHeader>
@@ -80,6 +81,9 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           </nav>
         </SheetContent>
       </Sheet>
+
+      {/* Mobile Bottom Navigation */}
+      <MobileBottomNav />
     </div>
   )
 }

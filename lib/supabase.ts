@@ -82,6 +82,7 @@ export type Link = {
   id: string
   title: string
   url: string
+  description?: string | null
   category_id: string
   is_active: boolean
   is_public: boolean
@@ -110,6 +111,7 @@ export type UserSettings = {
   logo_url?: string | null
   page_title?: string | null
   show_categories: boolean
+  layout_style: 'list' | 'grid' | 'compact'
   created_at: string
   updated_at: string
 }

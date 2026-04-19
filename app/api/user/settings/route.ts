@@ -63,7 +63,8 @@ export async function PATCH(request: NextRequest) {
       page_title,
       logo_url,
       theme_color,
-      show_categories
+      show_categories,
+      layout_style
     } = validationResult.data
 
     // Convert empty string to null for optional fields
@@ -78,6 +79,7 @@ export async function PATCH(request: NextRequest) {
     if (page_title !== undefined) updateData.page_title = page_title
     if (show_categories !== undefined) updateData.show_categories = show_categories
     if (profile_description !== undefined) updateData.profile_description = profile_description
+    if (layout_style !== undefined) updateData.layout_style = layout_style
 
     let settings
     if (existingSettings) {
@@ -92,7 +94,8 @@ export async function PATCH(request: NextRequest) {
         logo_url: finalLogoUrl,
         page_title,
         show_categories: show_categories ?? true,
-        profile_description: profile_description || null
+        profile_description: profile_description || null,
+        layout_style: layout_style || 'list'
       })
     }
 

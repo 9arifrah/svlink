@@ -43,7 +43,7 @@ export function GrowthChart({ links, users }: GrowthChartProps) {
     }, [links, users])
 
     return (
-        <Card className="shadow-slack-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
             <CardHeader>
                 <CardTitle className="text-sm font-medium text-slate-300">
                     Tren Pertumbuhan (7 Hari Terakhir)

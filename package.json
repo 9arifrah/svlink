@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "migrate:sqlite": "node scripts/migrate-sqlite-qr-code.js",
-    "migrate:shortener": "node scripts/migrate-sqlite-shortener.js"
+    "migrate:sqlite": "node scripts/migrate-sqlite-qr-code.js && node scripts/migrate-sqlite-layout-style.js",
+    "migrate:shortener": "node scripts/migrate-sqlite-shortener.js",
+    "migrate:layout": "node scripts/migrate-sqlite-layout-style.js"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "1.2.2",

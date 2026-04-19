@@ -353,7 +353,7 @@ async function checkAuth() {
 - Gunakan `cn()` utility untuk conditional classes
 - Mobile-first responsive design dengan Tailwind breakpoints
 - Theme color customization via `user_settings.theme_color`
-- Design system di `lib/design-system.ts`
+- Design system via Tailwind config (`tailwind.config.ts`) + CSS variables (`app/globals.css`)
 
 ### Public Profile Pages
 - Custom URL via `custom_slug` field (e.g., `/johndoe`)
@@ -499,7 +499,7 @@ Short code mengikuti pola validasi yang sama dengan `custom_slug`:
 - `lib/qr-code.ts` - QR code generation
 - `lib/rate-limit.ts` - Rate limiting
 - `lib/password-strength.ts` - Password strength calculator
-- `lib/design-system.ts` - Design tokens
+- `lib/component-styles.ts` - Reusable component style presets
 - `lib/animations.ts` - Animation utilities
 - `lib/accessibility.ts` - A11y helpers
 

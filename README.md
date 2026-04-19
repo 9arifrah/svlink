@@ -6,13 +6,17 @@ Platform manajemen tautan profesional yang memungkinkan pengguna mengatur, memba
 
 ### Untuk Pengguna:
 - 🔐 **Autentikasi Aman** - Sistem login/registrasi dengan password hashing (bcrypt)
-- 📊 **Dashboard Personal** - Statistik penggunaan tautan dan kategori
+- 📊 **Dashboard Personal** - Statistik penggunaan tautan, kategori, dan grafik klik 7 hari
 - 🔗 **Manajemen Tautan** - Tambah, edit, hapus tautan dengan pelacakan klik
 - 🔗 **URL Shortener** - Setiap link memiliki short code untuk share individual (domain.com/[code])
 - 📁 **Organisasi Kategori** - Kelompokkan tautan berdasarkan kategori dengan ikon kustom
-- 🎨 **Kustomisasi Profil** - Atur warna tema, logo, judul halaman
-- 🌐 **Halaman Publik** - Bagikan tautan melalui URL kustom (`/[slug]`)
+- 🎨 **Kustomisasi Profil** - Atur warna tema, logo, judul halaman, dan layout (list/grid/compact)
+- 🌐 **Halaman Publik** - Bagikan tautan melalui URL kustom (`/[slug]`) dengan dark mode toggle
 - 🔍 **Pencarian** - Temukan tautan dengan cepat di halaman publik
+- 📱 **Mobile-First** - Bottom navigation, responsive design, PWA support
+- 🔑 **Password Strength** - Indikator kekuatan password saat registrasi
+- 📈 **Recent Links** - Lihat 5 link terbaru langsung di dashboard
+- 🏆 **Top Links** - Link terpopuler berdasarkan klik
 
 ### Untuk Admin:
 - 📈 **Dashboard Admin** - Statistik platform secara keseluruhan
@@ -29,6 +33,8 @@ Platform manajemen tautan profesional yang memungkinkan pengguna mengatur, memba
 - **Autentikasi:** Custom JWT dengan bcryptjs
 - **Bahasa:** TypeScript 5.7.3
 - **Linting:** ESLint 9 (flat config)
+- **Font:** Plus Jakarta Sans (Google Fonts)
+- **QR Code:** qrcode package
 
 > **💡 Mode Development Lokal:** Project ini sekarang support SQLite untuk development lokal tanpa perlu setup Supabase. Lihat [SETUP_LOCAL_DEV.md](SETUP_LOCAL_DEV.md) untuk panduan lengkap.
 
@@ -377,6 +383,21 @@ components/
 5. Akses short link via browser (harus redirect ke URL target)
 6. Verifikasi click count bertambah setelah redirect
 7. Test 404 untuk short code tidak valid
+
+## 🎨 UI/UX Improvements (v2.0)
+
+Skor UI/UX: 6.6/10 → 8.7/10 (A-)
+
+### Highlights:
+- **Custom Font:** Plus Jakarta Sans untuk typography modern
+- **Dark Mode:** Toggle di public page, contrast fixes di semua komponen
+- **Loading States:** Skeleton loading di semua halaman
+- **Mobile Navigation:** Fixed bottom nav dengan 5 icon
+- **Dashboard Enrichment:** Recent links, top links, click chart
+- **Landing Page:** CTA above fold, social proof, demo preview
+- **Auth UX:** Password strength indicator, better error messages
+
+Lihat `UI_UX_IMPROVEMENT_PLAN.md` untuk detail lengkap.
 
 ## 📄 Lisensi
 

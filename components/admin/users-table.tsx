@@ -45,7 +45,6 @@ export function UsersTable({ users }: UsersTableProps) {
       ...user,
       is_admin: user.is_admin ?? false
     }
-    console.log('[v0] Passing user to dialog:', userWithAdmin)
     setSelectedUser(userWithAdmin)
     setFormOpen(true)
   }
@@ -86,7 +85,7 @@ export function UsersTable({ users }: UsersTableProps) {
   }
   return (
     <>
-      <Card className="shadow-slack-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
+      <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
         <CardHeader className="border-b border-slate-700/50">
           <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-2">

@@ -238,7 +238,7 @@ export function LinkPreviewCard({
   }, [url, title])
 
   return (
-    <div className="group relative overflow-hidden rounded-xl border border-slate-200/60 bg-white shadow-slack-md transition-all duration-300 hover:shadow-slack-xl hover:-translate-y-1">
+    <div className="group relative overflow-hidden rounded-xl border border-slate-200/60 bg-white shadow-soft-md transition-all duration-300 hover:shadow-soft-xl hover:-translate-y-1">
       {/* Background gradient overlay */}
       <div
         className="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-5"

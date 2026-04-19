@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ExternalLink, Save, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react'
+import { ExternalLink, Save, Upload, X, Image as ImageIcon, Loader2, Eye } from 'lucide-react'
 
 const MAX_FILE_SIZE = 500 * 1024 // 500KB
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
@@ -38,7 +38,8 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
     pageTitle: settings?.page_title || '',
     logoUrl: settings?.logo_url || '',
     themeColor: settings?.theme_color || '#3b82f6',
-    showCategories: settings?.show_categories ?? true
+    showCategories: settings?.show_categories ?? true,
+    layoutStyle: settings?.layout_style || 'list'
   })
 
   useEffect(() => {
@@ -56,7 +57,8 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
         pageTitle: settings.page_title || '',
         logoUrl: settings.logo_url || '',
         themeColor: settings.theme_color || '#3b82f6',
-        showCategories: settings.show_categories ?? true
+        showCategories: settings.show_categories ?? true,
+        layoutStyle: settings.layout_style || 'list'
       }))
       if (settings.logo_url) {
         setLogoPreview(settings.logo_url)
@@ -158,7 +160,8 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
           page_title: formData.pageTitle,
           logo_url: finalLogoUrl || null,
           theme_color: formData.themeColor,
-          show_categories: formData.showCategories
+          show_categories: formData.showCategories,
+          layout_style: formData.layoutStyle
         })
       })
 
@@ -346,6 +349,33 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
               />
             </div>
 
+            <div className="space-y-2">
+              <Label className="text-base">Gaya Layout</Label>
+              <p className="text-sm text-slate-500">Pilih tampilan link di halaman publik Anda</p>
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { value: 'list', label: 'List', icon: '☰', desc: 'Vertikal' },
+                  { value: 'grid', label: 'Grid', icon: '⊞', desc: '2 Kolom' },
+                  { value: 'compact', label: 'Compact', icon: '⊟', desc: 'Ringkas' },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, layoutStyle: option.value })}
+                    className={`rounded-lg border-2 p-3 text-center transition-all ${
+                      formData.layoutStyle === option.value
+                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                        : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                    }`}
+                  >
+                    <div className="text-2xl mb-1">{option.icon}</div>
+                    <div className="font-semibold text-sm">{option.label}</div>
+                    <div className="text-xs text-slate-500">{option.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
             {message && (
               <div className={`rounded-lg p-4 text-sm ${
                 message.includes('berhasil') 
@@ -376,6 +406,142 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
               </Button>
             </div>
           </form>
+        </CardContent>
+      </Card>
+
+      {/* Live Preview */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Eye className="h-5 w-5" />
+            Preview Halaman Publik
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-6 overflow-hidden">
+            {/* Mini public page preview */}
+            <div className="mx-auto max-w-md">
+              {/* Header */}
+              <div className="mb-8 text-center">
+                {logoPreview ? (
+                  <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-xl bg-white shadow border border-white/50 overflow-hidden">
+                    <img
+                      src={logoPreview}
+                      alt="Logo preview"
+                      className="h-12 w-12 rounded-lg object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-xl shadow border border-white/50"
+                    style={{ backgroundColor: formData.themeColor }}
+                  >
+                    <ExternalLink className="h-8 w-8 text-white" />
+                  </div>
+                )}
+                <h1 className="mb-2 text-xl font-bold text-slate-900">
+                  {formData.pageTitle || formData.displayName || 'Nama Halaman'}
+                </h1>
+                {formData.profileDescription && (
+                  <p className="text-sm text-slate-600 leading-relaxed">
+                    {formData.profileDescription}
+                  </p>
+                )}
+              </div>
+
+              {/* Sample link cards */}
+              <div className="space-y-3">
+                <div
+                  className="rounded-lg border bg-white p-3 sm:p-4 shadow-sm"
+                  style={{ borderColor: `${formData.themeColor}30` }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900 truncate text-sm">
+                        Contoh Link 1
+                      </h3>
+                      <p className="mt-0.5 font-mono text-xs text-slate-500 truncate">
+                        svlink.id/{formData.customSlug || 'link'}
+                      </p>
+                    </div>
+                    <ExternalLink
+                      className="h-4 w-4 flex-shrink-0"
+                      style={{ color: formData.themeColor }}
+                    />
+                  </div>
+                </div>
+
+                <div
+                  className="rounded-lg border bg-white p-3 sm:p-4 shadow-sm"
+                  style={{ borderColor: `${formData.themeColor}30` }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900 truncate text-sm">
+                        Contoh Link 2
+                      </h3>
+                      <p className="mt-0.5 font-mono text-xs text-slate-500 truncate">
+                        svlink.id/{formData.customSlug || 'link'}
+                      </p>
+                    </div>
+                    <ExternalLink
+                      className="h-4 w-4 flex-shrink-0"
+                      style={{ color: formData.themeColor }}
+                    />
+                  </div>
+                </div>
+
+                <div
+                  className="rounded-lg border bg-white p-3 sm:p-4 shadow-sm"
+                  style={{ borderColor: `${formData.themeColor}30` }}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-slate-900 truncate text-sm">
+                        Contoh Link 3
+                      </h3>
+                      <p className="mt-0.5 font-mono text-xs text-slate-500 truncate">
+                        svlink.id/{formData.customSlug || 'link'}
+                      </p>
+                    </div>
+                    <ExternalLink
+                      className="h-4 w-4 flex-shrink-0"
+                      style={{ color: formData.themeColor }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Theme color indicator */}
+              <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500">
+                <div
+                  className="h-3 w-3 rounded-full border border-white shadow"
+                  style={{ backgroundColor: formData.themeColor }}
+                />
+                <span>Warna tema: {formData.themeColor}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* View public page button */}
+          {formData.customSlug && (
+            <div className="mt-4 flex justify-center">
+              <Button
+                type="button"
+                variant="outline"
+                asChild
+              >
+                <a
+                  href={`/${formData.customSlug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  Lihat Halaman Publik
+                </a>
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

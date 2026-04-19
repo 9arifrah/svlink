@@ -4,6 +4,73 @@ All notable changes to svlink will be documented in this file.
 
 ## [Unreleased]
 
+### Added - 2026-04-19
+
+#### UI/UX Improvement Plan (Fase 1-7)
+Complete UI/UX overhaul based on review report. Skor: 6.6/10 → 8.7/10 (A-).
+
+**Fase 1: Critical Fixes**
+- Unified design system with brand blue (#2563eb)
+- Fixed mobile navigation icons (Home, Link2, FolderTree, Settings)
+- Fixed sidebar branding ("svlink" + "Link Management")
+- Removed console.log from production code
+- Created `lib/logger.ts` utility
+
+**Fase 2: Landing Page**
+- Added CTA above fold ("Mulai Gratis" + "Lihat Demo")
+- Added social proof section (1000+ users, trust badges)
+- Added demo/preview section with device mockup
+- Added complete footer (Product, Legal, Social columns)
+
+**Fase 3: Dashboard Enrichment**
+- Added recent links card (5 terbaru + quick actions)
+- Added click analytics mini chart (7 hari terakhir)
+- Added empty state onboarding (3 langkah mudah)
+- Added top performing links card (progress bar visual)
+
+**Fase 4: Mobile Experience**
+- Added bottom navigation (5 icon, center plus button)
+- Added PWA install prompt
+- Added mobile-bottom-nav.tsx component
+
+**Fase 5: Public Page Enhancement**
+- Added theme preview in settings
+- Added layout style options (list/grid/compact)
+- Enhanced link cards (favicon, description, hover effects)
+- Added dark mode toggle for public page
+
+**Fase 6: Auth & Onboarding**
+- Added password strength indicator (5 criteria checklist)
+- Improved error messages with AlertCircle icon
+- Added Indonesian error messages (401, 409, 429)
+
+**Fase 7: Polish & Testing**
+- Added Plus Jakarta Sans custom font (Google Fonts CDN)
+- Added loading states (5 loading.tsx files)
+- Added Button loading prop with spinner
+- Fixed dark mode contrast issues
+- Fixed CSP headers for Google Fonts
+
+**New Components:**
+- `components/user/clicks-mini-chart.tsx` - Sparkline chart
+- `components/user/empty-state-onboarding.tsx` - New user welcome
+- `components/user/mobile-bottom-nav.tsx` - Fixed bottom nav
+- `components/user/recent-links.tsx` - Recent links card
+- `components/user/top-links.tsx` - Top performing links
+- `components/shared/theme-toggle.tsx` - Dark mode toggle
+
+**New Loading Pages:**
+- `app/dashboard/links/loading.tsx`
+- `app/dashboard/categories/loading.tsx`
+- `app/dashboard/settings/loading.tsx`
+- `app/login/loading.tsx`
+- `app/register/loading.tsx`
+
+**Config Changes:**
+- Added `.env` for local SQLite development
+- Updated `next.config.mjs` CSP headers for Google Fonts
+- Updated `tailwind.config.ts` with fontFamily.sans
+
 ### Added - 2026-04-03
 
 #### QR Code Feature
@@ -40,6 +107,21 @@ All notable changes to svlink will be documented in this file.
 - **Mobile Card Height** - Reduced padding on mobile (p-4 vs p-5)
 - **Icon Sizing** - Smaller icons on mobile (h-4 w-4 vs h-5 w-5)
 - **Text Sizing** - Smaller URL text on mobile (text-xs vs text-sm)
+
+### Fixed - 2026-04-19
+
+#### Button Component
+- Fixed `React.Children.only` error when using `asChild` with `loading` prop
+- Separated `asChild` (Slot) and regular button rendering paths
+
+#### CSP Headers
+- Added `https://fonts.googleapis.com` to style-src
+- Added `https://fonts.gstatic.com` to font-src
+- Added Google Fonts domains to connect-src
+
+#### Environment Config
+- Created `.env` with `DB_TYPE=sqlite` for local development
+- Fixed "supabase.from(...).eq is not a function" error
 
 ### Fixed - 2026-04-03
 
@@ -113,6 +195,16 @@ Run the SQL in `supabase/migrations/20260403000001_add_qr_code_column.sql` in Su
 
 ## Features
 
+### UI/UX Improvements (v2.0)
+- Plus Jakarta Sans custom font
+- Loading states for all pages
+- Dark mode support (toggle + contrast fixes)
+- Mobile bottom navigation
+- Dashboard enrichment (recent links, stats, charts)
+- Landing page with CTA and social proof
+- Password strength indicator
+- Theme preview in settings
+
 ### QR Code Feature
 - Automatic QR code generation when links are created
 - QR code regeneration when link URLs change
@@ -138,12 +230,13 @@ Run the SQL in `supabase/migrations/20260403000001_add_qr_code_column.sql` in Su
 
 ## Technical Stack
 
-- **Framework**: Next.js 15.1.6 (App Router)
+- **Framework**: Next.js 15.5.15 (App Router)
 - **Language**: TypeScript 5.7.3
 - **Database**: SQLite / Supabase (PostgreSQL)
 - **UI**: shadcn/ui (Radix UI + Tailwind CSS)
 - **Auth**: Custom JWT with bcryptjs
 - **QR Generation**: qrcode package
+- **Font**: Plus Jakarta Sans (Google Fonts)
 
 ---
 
@@ -160,25 +253,29 @@ CREATE TABLE links (
   is_public INTEGER DEFAULT 0,
   is_active INTEGER DEFAULT 1,
   click_count INTEGER DEFAULT 0,
-  qr_code TEXT,              -- NEW: QR code as base64 data URI
+  qr_code TEXT,              -- QR code as base64 data URI
   user_id TEXT NOT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
----
-
-## API Endpoints
-
-### Links
-- `GET /api/links` - Get all user links (with auto-generated QR codes)
-- `POST /api/links` - Create new link (auto-generates QR code)
-- `PATCH /api/links/[id]` - Update link (regenerates QR if URL changes)
-- `DELETE /api/links/[id]` - Delete link
-
-### Track Clicks
-- `POST /api/track-click` - Increment link click count
+### User Settings Table
+```sql
+CREATE TABLE user_settings (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL UNIQUE,
+  theme_color TEXT DEFAULT '#3b82f6',
+  logo_url TEXT,
+  page_title TEXT,
+  show_categories INTEGER DEFAULT 1,
+  profile_description TEXT,
+  layout_style TEXT DEFAULT 'list',  -- list, grid, compact
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+```
 
 ---
 
@@ -187,10 +284,32 @@ CREATE TABLE links (
 ```
 components/
 ├── shared/
-│   └── qr-code-modal.tsx        (NEW: Reusable QR modal)
+│   ├── qr-code-modal.tsx          (QR modal)
+│   └── theme-toggle.tsx           (NEW: Dark mode toggle)
 ├── user/
-│   └── links-table.tsx          (UPDATED: QR buttons + mobile)
-└── link-card.tsx                (UPDATED: QR button + mobile)
+│   ├── clicks-mini-chart.tsx      (NEW: Sparkline chart)
+│   ├── empty-state-onboarding.tsx (NEW: Welcome card)
+│   ├── mobile-bottom-nav.tsx      (NEW: Bottom nav)
+│   ├── recent-links.tsx           (NEW: Recent links card)
+│   ├── top-links.tsx              (NEW: Top links card)
+│   ├── links-table.tsx            (UPDATED)
+│   └── stats-skeleton.tsx         (UPDATED)
+├── link-card.tsx                  (UPDATED: favicon, hover)
+├── search-bar.tsx                 (UPDATED: dark mode)
+└── ui/
+    ├── button.tsx                 (UPDATED: loading prop)
+    ├── empty-state.tsx            (UPDATED: dark mode)
+    ├── breadcrumb-nav.tsx         (UPDATED: dark mode)
+    └── page-transition.tsx        (UPDATED: dark mode)
+
+app/
+├── login/loading.tsx              (NEW)
+├── register/loading.tsx           (NEW)
+├── dashboard/
+│   ├── links/loading.tsx          (NEW)
+│   ├── categories/loading.tsx     (NEW)
+│   └── settings/loading.tsx       (NEW)
+└── page.tsx                       (UPDATED: CTA, social proof)
 ```
 
 ---
@@ -203,6 +322,7 @@ components/
 - httpOnly session cookies
 - CSRF protection via SameSite 'lax'
 - Ownership verification on all mutations
+- CSP headers for Google Fonts
 
 ---
 
@@ -225,6 +345,14 @@ npm start
 npm run migrate:sqlite
 ```
 
+### Environment Variables (.env)
+```bash
+DB_TYPE=sqlite                    # sqlite or supabase
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME=svlink
+JWT_SECRET=your-secret-key
+```
+
 ---
 
 ## Deployment Notes
@@ -245,4 +373,6 @@ npm run migrate:sqlite
 
 For issues or questions, please refer to:
 - `CLAUDE.md` - Project documentation for Claude Code
+- `UI_UX_IMPROVEMENT_PLAN.md` - UI/UX improvement plan
+- `UI_UX_REVIEW_REPORT.md` - UI/UX review report
 - `docs/superpowers/` - Feature design and implementation docs

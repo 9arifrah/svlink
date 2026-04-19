@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail, AlertCircle } from 'lucide-react'
 
 export function LoginForm() {
   const router = useRouter()
@@ -18,13 +18,31 @@ export function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const errorRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (error && errorRef.current) {
+      errorRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    }
+  }, [error])
+
+  const getErrorMessage = (response: Response, data: any): string => {
+    if (response.status === 429) {
+      return 'Terlalu banyak percobaan. Silakan coba lagi nanti.'
+    }
+    if (response.status === 401) {
+      return 'Email atau password salah'
+    }
+    if (response.status === 400) {
+      return data.error || 'Terjadi kesalahan, coba lagi'
+    }
+    return 'Terjadi kesalahan, coba lagi'
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
-
-    console.log('[v0] User login form submitting with email:', email)
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -33,18 +51,14 @@ export function LoginForm() {
         body: JSON.stringify({ email, password, rememberMe })
       })
 
-      console.log('[v0] User login response status:', response.status)
-
       const data = await response.json()
-      console.log('[v0] User login response data:', data)
 
       if (!response.ok) {
-        setError(data.error || 'Login gagal')
+        setError(getErrorMessage(response, data))
         setLoading(false)
         return
       }
 
-      console.log('[v0] User login successful, redirecting to dashboard')
       router.push('/dashboard')
       router.refresh()
     } catch (err) {
@@ -55,7 +69,7 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="border-slate-200/60 shadow-slack-lg bg-white/80 backdrop-blur-sm">
+    <Card className="border-slate-200/60 shadow-soft-lg bg-white/80 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-slate-900">Login</CardTitle>
       </CardHeader>
@@ -124,8 +138,9 @@ export function LoginForm() {
           </div>
 
           {error && (
-            <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-sm text-red-600 animate-scale-in">
-              {error}
+            <div ref={errorRef} className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm animate-scale-in">
+              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
+              <span>{error}</span>
             </div>
           )}
 

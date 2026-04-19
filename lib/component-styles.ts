@@ -6,9 +6,9 @@
  * Card variants with consistent styling
  */
 export const cardVariants = {
-  default: 'border-slate-200/60 bg-white shadow-slack-md',
-  elevated: 'border-slate-200/60 bg-white shadow-slack-lg hover:shadow-slack-xl transition-all duration-300',
-  interactive: 'border-slate-200/60 bg-white shadow-slack-md hover:shadow-slack-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer',
+  default: 'border-slate-200/60 bg-white shadow-soft-md',
+  elevated: 'border-slate-200/60 bg-white shadow-soft-lg hover:shadow-soft-xl transition-all duration-300',
+  interactive: 'border-slate-200/60 bg-white shadow-soft-md hover:shadow-soft-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer',
   glass: 'border-white/20 bg-white/10 backdrop-blur-sm shadow-xl',
 } as const
 

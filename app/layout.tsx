@@ -1,6 +1,7 @@
 import React from "react"
 import type { Metadata } from 'next'
 import { Toaster } from '@/components/ui/toaster'
+import { ThemeProvider } from '@/components/theme-provider'
 
 import './globals.css'
 
@@ -17,17 +18,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className="font-sans antialiased" suppressHydrationWarning>
-        <a
-          href="#main-content"
-          className="skip-link"
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
         >
-          Langsung ke konten utama
-        </a>
-        <div id="main-content" tabIndex={-1}>
-          {children}
-        </div>
-        <Toaster />
+          <a
+            href="#main-content"
+            className="skip-link"
+          >
+            Langsung ke konten utama
+          </a>
+          <div id="main-content" tabIndex={-1}>
+            {children}
+          </div>
+          <Toaster />
+        </ThemeProvider>
       </body>
     </html>
   )

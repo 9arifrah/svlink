@@ -26,7 +26,7 @@ export default async function AdminSettings() {
         </div>
 
         {/* Platform Info */}
-        <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-slack-md">
+        <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-soft-md">
           <div className="mb-4 sm:mb-6 flex items-center gap-3">
             <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-blue-600">
               <Globe className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
@@ -72,7 +72,7 @@ export default async function AdminSettings() {
         </div>
 
         {/* Features */}
-        <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-slack-md">
+        <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-soft-md">
           <div className="mb-4 sm:mb-6 flex items-center gap-3">
             <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-purple-600">
               <Building2 className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
@@ -139,7 +139,7 @@ export default async function AdminSettings() {
         </div>
 
         {/* Quick Actions */}
-        <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-slack-md">
+        <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-soft-md">
           <div className="mb-4 sm:mb-6 flex items-center gap-3">
             <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-red-600">
               <LogOut className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
@@ -195,7 +195,7 @@ export default async function AdminSettings() {
         <BackfillActions />
 
         {/* Support */}
-        <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-slack-md">
+        <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-soft-md">
           <h3 className="mb-3 sm:mb-4 text-base sm:text-lg font-semibold text-white">Bantuan & Dukungan</h3>
           <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-slate-300">
             <p>

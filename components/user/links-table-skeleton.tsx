@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card'
 
 export function LinksTableSkeleton() {
   return (
-    <Card className="border-slate-200/60 shadow-slack-md">
+    <Card className="border-slate-200/60 shadow-soft-md">
       <CardHeader>
         <Skeleton className="h-7 w-32" />
         <div className="flex items-center gap-2 mt-4">

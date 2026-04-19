@@ -43,9 +43,6 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
 
   useEffect(() => {
     if (user) {
-      console.log('[v0] Editing user in dialog:', user)
-      console.log('[v0] user.is_admin value:', user.is_admin)
-      
       setFormData({
         email: user.email,
         password: '',

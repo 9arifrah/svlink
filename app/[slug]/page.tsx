@@ -8,6 +8,8 @@ import { PublicPageHeader } from '@/components/user/public-page-header'
 import { generatePublicProfileMetadata, generatePublicProfileStructuredData } from '@/lib/seo'
 import { siteConfig } from '@/lib/seo'
 import { StructuredDataScript } from '@/components/structured-data-script'
+import { cn } from '@/lib/utils'
+import { ThemeToggle } from '@/components/shared/theme-toggle'
 
 export const dynamic = 'force-dynamic'
 
@@ -154,6 +156,7 @@ export default async function PublicSlugPage({ params }: { params: Promise<{ slu
   const themeColor = settings.theme_color || '#3b82f6'
   const pageTitle = settings.page_title || user.display_name || user.custom_slug
   const description = settings.profile_description || `Link publik dari ${pageTitle}`
+  const layoutStyle = settings.layout_style || 'list'
 
   // Generate structured data
   const structuredData = generatePublicProfileStructuredData({
@@ -172,6 +175,8 @@ export default async function PublicSlugPage({ params }: { params: Promise<{ slu
     <>
       <StructuredDataScript data={structuredData} />
       <div className="min-h-screen relative overflow-hidden">
+      {/* Dark mode toggle */}
+      <ThemeToggle />
       {/* Animated gradient background using user's theme color */}
       <div className="absolute inset-0 opacity-30">
         <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-white animate-pulse" style={{ animationDuration: '10s' }} />
@@ -202,21 +207,26 @@ export default async function PublicSlugPage({ params }: { params: Promise<{ slu
         </div>
 
         {/* Links by Category */}
-        <div className="space-y-10 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+        <div className={cn("animate-fade-in", layoutStyle === 'compact' ? 'space-y-6' : 'space-y-10')} style={{ animationDelay: '0.2s' }}>
           {groupedLinks.map((group, index) => (
             <div key={group.id} className="animate-fade-in" style={{ animationDelay: `${0.3 + index * 0.1}s` }}>
-              <div className="mb-4 flex items-center gap-3">
-                <span className="text-3xl">{group.icon}</span>
+              <div className={cn("flex items-center gap-3", layoutStyle === 'compact' ? 'mb-2' : 'mb-4')}>
+                <span className={cn(layoutStyle === 'compact' ? 'text-2xl' : 'text-3xl')}>{group.icon}</span>
                 <h2
-                  className="text-2xl font-semibold"
+                  className={cn(
+                    "font-semibold",
+                    layoutStyle === 'compact' ? 'text-lg' : 'text-2xl'
+                  )}
                   style={{ color: themeColor }}
                 >
                   {group.name}
                 </h2>
               </div>
-              <div className="space-y-3">
+              <div className={cn(
+                layoutStyle === 'grid' ? 'grid grid-cols-2 gap-3' : layoutStyle === 'compact' ? 'space-y-2' : 'space-y-3'
+              )}>
                 {group.links.map((link: any) => (
-                  <LinkCard key={link.id} link={link} themeColor={themeColor} />
+                  <LinkCard key={link.id} link={link} themeColor={themeColor} variant={layoutStyle === 'list' ? 'default' : layoutStyle} />
                 ))}
               </div>
             </div>

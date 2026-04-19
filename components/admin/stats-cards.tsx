@@ -51,7 +51,7 @@ export function StatsCards({ stats }: { stats: Stats }) {
   return (
     <div className="grid gap-2 sm:gap-4 grid-cols-1 min-[450px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       {cards.map((card) => (
-        <Card key={card.title} className="shadow-slack-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
+        <Card key={card.title} className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 p-2 sm:pb-2 sm:p-4 sm:lg:p-6">
             <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium text-slate-300">
               {card.title}

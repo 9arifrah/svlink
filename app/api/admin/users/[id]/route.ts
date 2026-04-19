@@ -65,7 +65,6 @@ export async function PUT(
     if (password) {
       // Hash password before updating
       updateData.password_hash = await bcrypt.hash(password, 10)
-      console.log('[v0] Password hashed for admin user update by admin:', session.userId)
     }
     if (display_name) {
       updateData.display_name = display_name

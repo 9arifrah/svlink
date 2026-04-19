@@ -1,13 +1,13 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { 
-  ExternalLink, 
-  Lock, 
-  Palette, 
-  Users, 
-  Shield, 
-  Zap, 
+import {
+  ExternalLink,
+  Lock,
+  Palette,
+  Users,
+  Shield,
+  Zap,
   Globe,
   Star,
   Check,
@@ -17,7 +17,8 @@ import {
   Linkedin,
   Github,
   Mail,
-  Send
+  Send,
+  Link2
 } from 'lucide-react'
 
 export default function HomePage() {
@@ -60,23 +61,23 @@ export default function HomePage() {
               berbagi, dan menampilkan link penting dengan cara yang elegan dan personal.
             </p>
 
-            <div className="mb-12 flex flex-wrap justify-center gap-4 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <div className="mb-12 flex flex-col sm:flex-row justify-center gap-4 animate-scale-in" style={{ animationDelay: '0.3s' }}>
               <Link href="/register">
                 <Button
                   size="lg"
-                  className="h-14 px-8 text-lg bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 hover:-translate-y-0.5 transition-all duration-300"
+                  className="py-4 px-8 text-lg bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 shadow-lg shadow-brand-500/30 hover:shadow-xl hover:shadow-brand-500/40 hover:-translate-y-0.5 transition-all duration-300 w-full sm:w-auto"
                 >
-                  Mulai Gratis Sekarang
+                  Mulai Gratis
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
-              <Link href="/login">
+              <Link href="#features">
                 <Button
                   size="lg"
                   variant="outline"
-                  className="h-14 px-8 text-lg border-2 border-slate-800 text-slate-700 hover:bg-white hover:text-brand-600 hover:-translate-y-0.5 transition-all duration-300"
+                  className="py-4 px-6 text-lg border-2 border-brand-600 text-brand-700 hover:bg-brand-50 hover:text-brand-700 hover:-translate-y-0.5 transition-all duration-300 w-full sm:w-auto"
                 >
-                  Sudah Punya Akun? Masuk
+                  Lihat Demo
                 </Button>
               </Link>
             </div>
@@ -84,8 +85,34 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* Social Proof Section */}
+      <div className="bg-white py-12">
+        <div className="mx-auto max-w-4xl px-4">
+          {/* Trust Badges */}
+          <div className="flex flex-wrap justify-center gap-6 mb-12">
+            <div className="flex items-center gap-2 text-slate-600">
+              <Check className="w-5 h-5 text-green-500" />
+              <span>Gratis Selamanya</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-600">
+              <Shield className="w-5 h-5 text-blue-500" />
+              <span>Data Aman</span>
+            </div>
+            <div className="flex items-center gap-2 text-slate-600">
+              <Zap className="w-5 h-5 text-yellow-500" />
+              <span>Setup 1 Menit</span>
+            </div>
+          </div>
+
+          {/* User Count */}
+          <p className="text-center text-slate-500 mb-8">
+            Dipercaya oleh <span className="font-bold text-slate-900">1,000+</span> pengguna
+          </p>
+        </div>
+      </div>
+
       {/* Features Section */}
-      <div className="bg-white py-24">
+      <div id="features" className="bg-white py-24">
         <div className="mx-auto max-w-7xl px-4">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-4xl font-bold text-slate-900">
@@ -183,6 +210,53 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* Preview/Demo Section */}
+      <section className="py-20 bg-slate-50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-slate-900 mb-4">
+              Seperti Ini Halaman Publik Anda
+            </h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              Bagikan semua link penting Anda dalam satu halaman elegan yang bisa dikustomisasi
+            </p>
+          </div>
+          
+          {/* Mockup Browser Frame */}
+          <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden border border-slate-200">
+            {/* Browser Chrome */}
+            <div className="bg-slate-100 px-4 py-3 flex items-center gap-2 border-b">
+              <div className="flex gap-1.5">
+                <div className="w-3 h-3 rounded-full bg-red-400" />
+                <div className="w-3 h-3 rounded-full bg-yellow-400" />
+                <div className="w-3 h-3 rounded-full bg-green-400" />
+              </div>
+              <div className="flex-1 text-center">
+                <span className="text-xs text-slate-500 bg-white px-3 py-1 rounded-md">svlink.com/yourname</span>
+              </div>
+            </div>
+            
+            {/* Mock Public Page Content */}
+            <div className="p-8 bg-gradient-to-br from-brand-50 to-white">
+              <div className="text-center mb-6">
+                <div className="w-16 h-16 bg-brand-100 rounded-full mx-auto mb-3 flex items-center justify-center">
+                  <span className="text-2xl font-bold text-brand-600">Y</span>
+                </div>
+                <h3 className="font-bold text-slate-900">Your Name</h3>
+                <p className="text-sm text-slate-500">Developer & Creator</p>
+              </div>
+              <div className="space-y-3">
+                {['Portfolio Website', 'GitHub Profile', 'Blog', 'LinkedIn'].map((name, i) => (
+                  <div key={i} className="bg-white rounded-lg p-3 shadow-sm border border-slate-100 text-center hover:shadow-md transition-shadow cursor-pointer">
+                    <span className="text-sm font-medium text-slate-700">{name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* How It Works Section */}
       <div className="bg-gradient-to-br from-slate-50 to-blue-50 py-24">
@@ -290,41 +364,56 @@ export default function HomePage() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 bg-slate-900 py-12">
-        <div className="mx-auto max-w-4xl px-4">
-          <div className="flex flex-col items-center gap-8 text-center">
-            {/* Logo & Brand */}
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/20">
-                <ExternalLink className="h-6 w-6 text-white" />
+      <footer className="bg-slate-900 text-slate-400 py-12">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600">
+                  <Link2 className="h-4 w-4 text-white" />
+                </div>
+                <span className="font-bold text-white">svlink</span>
               </div>
-              <h3 className="text-xl font-bold text-white">
-                svlink
-              </h3>
+              <p className="text-sm">Platform manajemen tautan profesional</p>
             </div>
 
-            {/* Description */}
-            <p className="max-w-md text-slate-400">
-              Platform link management profesional untuk mengatur dan berbagi link penting dengan cara yang elegan dan personal.
-            </p>
-
-            {/* Quick Links */}
-            <div className="flex flex-wrap justify-center gap-6 text-sm">
-              <Link href="/register" className="text-slate-300 transition-colors hover:text-blue-400">
-                Daftar Gratis
-              </Link>
-              <Link href="/login" className="text-slate-300 transition-colors hover:text-blue-400">
-                Login
-              </Link>
-              <Link href="/admin/login" className="text-slate-300 transition-colors hover:text-blue-400">
-                Admin
-              </Link>
+            {/* Product */}
+            <div>
+              <h4 className="font-semibold text-white mb-3">Produk</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/#features" className="hover:text-white transition-colors">Fitur</Link></li>
+                <li><Link href="/register" className="hover:text-white transition-colors">Daftar Gratis</Link></li>
+                <li><Link href="/login" className="hover:text-white transition-colors">Masuk</Link></li>
+              </ul>
             </div>
 
-            {/* Copyright */}
-            <div className="text-xs text-slate-500">
-              © {new Date().getFullYear()} svlink. All rights reserved.
+            {/* Legal */}
+            <div>
+              <h4 className="font-semibold text-white mb-3">Legal</h4>
+              <ul className="space-y-2 text-sm">
+                <li><Link href="/terms" className="hover:text-white transition-colors">Syarat & Ketentuan</Link></li>
+                <li><Link href="/privacy" className="hover:text-white transition-colors">Kebijakan Privasi</Link></li>
+              </ul>
             </div>
+
+            {/* Social */}
+            <div>
+              <h4 className="font-semibold text-white mb-3">Ikuti Kami</h4>
+              <div className="flex gap-3">
+                <a href="https://github.com/9arifrah/svlink" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  <Github className="h-5 w-5" />
+                </a>
+                <a href="#" className="hover:text-white transition-colors">
+                  <Twitter className="h-5 w-5" />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Copyright */}
+          <div className="border-t border-slate-800 pt-6 text-center text-sm">
+            <p>&copy; {new Date().getFullYear()} svlink. Semua hak dilindungi.</p>
           </div>
         </div>
       </footer>
