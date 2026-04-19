@@ -23,11 +23,12 @@ Platform manajemen tautan profesional yang memungkinkan pengguna mengatur, memba
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** Next.js 15.1.6, React 18.3.1
+- **Frontend:** Next.js 15.5.15, React 18.3.1
 - **Backend:** SQLite (Development) / Supabase (Production)
 - **UI:** shadcn/ui (Radix UI + Tailwind CSS)
 - **Autentikasi:** Custom JWT dengan bcryptjs
 - **Bahasa:** TypeScript 5.7.3
+- **Linting:** ESLint 9 (flat config)
 
 > **💡 Mode Development Lokal:** Project ini sekarang support SQLite untuk development lokal tanpa perlu setup Supabase. Lihat [SETUP_LOCAL_DEV.md](SETUP_LOCAL_DEV.md) untuk panduan lengkap.
 
@@ -235,6 +236,35 @@ npm run build    # Build untuk production
 npm run start    # Start production server
 npm run lint     # Run ESLint
 ```
+
+## 🚀 Deploy ke Vercel
+
+### Environment Variables (WAJIB diset di Vercel Dashboard)
+
+Project ini **tidak bisa menggunakan SQLite di Vercel** karena serverless functions bersifat ephemeral. Anda harus menggunakan Supabase:
+
+```
+DB_TYPE=supabase
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+JWT_SECRET=minimum-32-character-secret-key-here
+NEXT_PUBLIC_SITE_URL=https://svlink.vercel.app
+```
+
+> **Penting:** Environment variables harus diset di Vercel Dashboard (Settings → Environment Variables), bukan di file `.env`. File `.env` tidak ter-deploy ke Vercel.
+
+### Database Setup
+
+1. Buat project di [Supabase](https://supabase.com)
+2. Copy URL dan Anon Key dari Settings → API
+3. Set environment variables di Vercel Dashboard
+4. Apply schema database (ada di `supabase/migrations/`)
+
+### Catatan Deploy
+
+- SQLite **tidak support** di Vercel serverless
+- `better-sqlite3` di-exclude dari bundling via `serverExternalPackages` di `next.config.mjs`
+- ESLint menggunakan flat config (ESLint 9) dengan ignore patterns untuk `.next/`, `node_modules/`, `data/`, dan `public/uploads/`
 
 ## 🌐 Halaman Utama
 
