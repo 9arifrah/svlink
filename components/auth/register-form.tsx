@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Eye, EyeOff, Lock, Mail, User, Link as LinkIcon, Check, X, AlertCircle } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail, User, Check, X, AlertCircle } from 'lucide-react'
 import { getPasswordStrength } from '@/lib/password-strength'
 
 export function RegisterForm() {
@@ -15,8 +15,7 @@ export function RegisterForm() {
     email: '',
     password: '',
     confirmPassword: '',
-    displayName: '',
-    customSlug: ''
+    displayName: ''
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -33,9 +32,6 @@ export function RegisterForm() {
   const getErrorMessage = (response: Response, data: any): string => {
     if (response.status === 429) {
       return 'Terlalu banyak percobaan. Silakan coba lagi nanti.'
-    }
-    if (response.status === 409) {
-      return 'Slug sudah digunakan, coba slug lain'
     }
     if (response.status === 400) {
       const msg = data.error?.toLowerCase() || ''
@@ -63,11 +59,6 @@ export function RegisterForm() {
       return
     }
 
-    if (formData.customSlug && !/^[a-z0-9-]+$/.test(formData.customSlug)) {
-      setError('Slug hanya boleh berisi huruf kecil, angka, dan tanda hubung')
-      return
-    }
-
     setLoading(true)
 
     try {
@@ -77,8 +68,7 @@ export function RegisterForm() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          displayName: formData.displayName || undefined,
-          customSlug: formData.customSlug || undefined
+          displayName: formData.displayName
         })
       })
 
@@ -135,24 +125,6 @@ export function RegisterForm() {
                 className="pl-10 border-slate-200 focus:border-blue-400 focus:ring-blue-400/20 transition-all"
               />
             </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="customSlug" className="text-slate-700">URL Kustom (Opsional)</Label>
-            <div className="relative group">
-              <LinkIcon className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
-              <Input
-                id="customSlug"
-                type="text"
-                placeholder="nama-anda"
-                value={formData.customSlug}
-                onChange={(e) => setFormData({ ...formData, customSlug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
-                className="pl-10 border-slate-200 focus:border-blue-400 focus:ring-blue-400/20 transition-all"
-              />
-            </div>
-            <p className="text-xs text-slate-500">
-              Halaman publik Anda akan diakses di: /{formData.customSlug || '<id>'}
-            </p>
           </div>
 
           <div className="space-y-2">
