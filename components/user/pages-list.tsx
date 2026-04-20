@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { FileText, Edit, Eye, Trash2, ExternalLink, Plus } from 'lucide-react'
+import { FileText, Edit, Trash2, ExternalLink, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -24,6 +24,7 @@ interface Page {
   layout_style: string
   is_active: number
   click_count: number
+  link_count?: number
   created_at: string
 }
 
@@ -109,6 +110,7 @@ export function PagesList({ pages }: PagesListProps) {
                     </p>
                     <div className="flex items-center gap-4 text-xs text-slate-500">
                       <span className="font-mono">/{page.slug}</span>
+                      <span>{page.link_count || 0} link{page.link_count === 1 ? '' : 's'}</span>
                       <span>{page.click_count || 0} klik</span>
                     </div>
                   </div>
@@ -120,16 +122,7 @@ export function PagesList({ pages }: PagesListProps) {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-                    title="Lihat"
-                  >
-                    <Eye className="w-4 h-4" />
-                  </a>
-                  <a
-                    href={`/${page.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
-                    title="Buka"
+                    title="Buka di Tab Baru"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>

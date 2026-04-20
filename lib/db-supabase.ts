@@ -661,12 +661,15 @@ export const supabaseClient: DatabaseClient = {
   async getPublicPages(userId: string) {
     const { data, error } = await supabase
       .from('public_pages')
-      .select('*')
+      .select('*, public_page_links(link_id)')
       .eq('user_id', userId)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false })
     if (error) throw error
-    return data || []
+    return (data || []).map((page: any) => ({
+      ...page,
+      link_count: page.public_page_links?.length || 0,
+    }))
   },
 
   async getPublicPageById(id: string) {

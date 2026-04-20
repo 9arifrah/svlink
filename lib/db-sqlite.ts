@@ -892,7 +892,15 @@ export const sqliteClient: DatabaseClient = {
 
   // Public Pages
   async getPublicPages(userId: string) {
-    const stmt = db.prepare('SELECT * FROM public_pages WHERE user_id = ? ORDER BY sort_order ASC, created_at DESC')
+    const stmt = db.prepare(`
+      SELECT pp.*,
+        COUNT(ppl.link_id) as link_count
+      FROM public_pages pp
+      LEFT JOIN public_page_links ppl ON pp.id = ppl.page_id
+      WHERE pp.user_id = ?
+      GROUP BY pp.id
+      ORDER BY pp.sort_order ASC, pp.created_at DESC
+    `)
     const rows = stmt.all(userId)
     return rows.map(rowToObject)
   },
