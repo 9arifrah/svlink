@@ -2,14 +2,13 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, Link2, Plus, FolderTree, Settings } from 'lucide-react'
+import { Home, Link2, Plus, FileText, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
-
 const navItems = [
   { name: 'Home', href: '/dashboard', icon: Home },
   { name: 'Link', href: '/dashboard/links', icon: Link2 },
   { name: 'Tambah', href: '/dashboard/links?action=create', icon: Plus, isCenter: true },
-  { name: 'Kategori', href: '/dashboard/categories', icon: FolderTree },
+  { name: 'Pages', href: '/dashboard/pages', icon: FileText },
   { name: 'Settings', href: '/dashboard/settings', icon: Settings },
 ]
 
