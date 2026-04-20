@@ -28,6 +28,7 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [editingLink, setEditingLink] = useState<Link | null>(null)
   const [deletingLink, setDeletingLink] = useState<Link | null>(null)
+  const [deletePageCount, setDeletePageCount] = useState<number | undefined>(undefined)
   const [qrLink, setQrLink] = useState<Link | null>(null)
   const [previousAddDialogState, setPreviousAddDialogState] = useState(false)
   const [previousEditDialogState, setPreviousEditDialogState] = useState(false)
@@ -76,6 +77,22 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
       link.url.toLowerCase().includes(searchQuery.toLowerCase())
     )
     : links
+
+  const handleDeleteClick = async (link: Link) => {
+    try {
+      const response = await fetch(`/api/links/${link.id}`)
+      if (response.ok) {
+        const data = await response.json()
+        setDeletePageCount(data.pageCount)
+      } else {
+        setDeletePageCount(undefined)
+      }
+    } catch (error) {
+      console.error('[v0] Error fetching page count:', error)
+      setDeletePageCount(undefined)
+    }
+    setDeletingLink(link)
+  }
 
   const handleDelete = async (linkId: string) => {
     try {
@@ -246,7 +263,7 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
                   <Button
                     size="sm"
                     variant="outline"
-                    onClick={() => setDeletingLink(link)}
+                    onClick={() => handleDeleteClick(link)}
                     className="h-8 text-xs text-red-600 hover:bg-red-50 hover:text-red-700"
                     title="Hapus"
                   >
@@ -362,7 +379,7 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
                       <Button
                         size="icon"
                         variant="outline"
-                        onClick={() => setDeletingLink(link)}
+                        onClick={() => handleDeleteClick(link)}
                         className="h-9 w-9 text-red-600 hover:bg-red-50 hover:text-red-700"
                       >
                         <Trash2 className="h-4 w-4" />
@@ -413,6 +430,7 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
         onOpenChange={(open: boolean) => !open && setDeletingLink(null)}
         onConfirm={() => deletingLink && handleDelete(deletingLink.id)}
         title={deletingLink?.title || ''}
+        pageCount={deletePageCount}
       />
 
       <QRCodeModal

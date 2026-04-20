@@ -1,6 +1,31 @@
 // Database Abstraction Layer Types
 // This interface allows switching between different database implementations
 
+export interface PublicPage {
+  id: string
+  user_id: string
+  slug: string
+  title: string
+  description: string | null
+  logo_url: string | null
+  theme_color: string
+  layout_style: string
+  show_categories: boolean
+  is_active: boolean
+  sort_order: number
+  click_count: number
+  created_at: string
+  updated_at: string
+}
+
+export interface PublicPageLink {
+  id: string
+  page_id: string
+  link_id: string
+  sort_order: number
+  created_at: string
+}
+
 export interface DatabaseClient {
   // Users
   getUserByEmail(email: string): Promise<any | null>
@@ -23,6 +48,7 @@ export interface DatabaseClient {
   updateLink(id: string, data: any, userId: string): Promise<any>
   deleteLink(id: string, userId: string): Promise<void>
   incrementClickCount(id: string): Promise<void>
+  getPageCountForLink(linkId: string): Promise<number>
 
   // Short code operations
   getLinkByShortCode(shortCode: string): Promise<any | null>
@@ -35,6 +61,18 @@ export interface DatabaseClient {
   createCategory(category: any): Promise<any>
   updateCategory(id: string, data: any, userId: string): Promise<any>
   deleteCategory(id: string, userId: string): Promise<void>
+
+  // Public Pages
+  getPublicPages(userId: string): Promise<any[]>
+  getPublicPageById(id: string): Promise<any | null>
+  getPublicPageBySlug(slug: string): Promise<any | null>
+  isSlugExists(slug: string, excludePageId?: string): Promise<boolean>
+  createPublicPage(page: any): Promise<any>
+  updatePublicPage(id: string, data: any, userId: string): Promise<any>
+  deletePublicPage(id: string, userId: string): Promise<void>
+  getPublicPageLinks(pageId: string): Promise<any[]>
+  setPublicPageLinks(pageId: string, linkIds: string[]): Promise<void>
+  incrementPageClickCount(pageId: string): Promise<void>
 
   // Admin
   getAdminUsers(): Promise<any[]>

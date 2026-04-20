@@ -4,6 +4,42 @@ import { getUserSession } from '@/lib/auth'
 import { linkSchema, formatZodError } from '@/lib/validation'
 import { generateQRCode } from '@/lib/qr-code'
 
+// GET check page usage
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params
+    const session = await getUserSession()
+
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const link = await db.getLinkById(id)
+
+    if (!link || link.user_id !== session.userId) {
+      return NextResponse.json(
+        { error: 'Forbidden' },
+        { status: 403 }
+      )
+    }
+
+    const pageCount = await db.getPageCountForLink(id)
+    return NextResponse.json({ pageCount, linkTitle: link.title })
+  } catch (error) {
+    console.error('[v0] Error in links GET:', error)
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
+
 // PATCH update link
 export async function PATCH(
   request: NextRequest,

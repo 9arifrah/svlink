@@ -26,7 +26,7 @@ const nextConfig = {
           },
           {
             key: 'Strict-Transport-Security',
-            value: 'max-age=63072000; includeSubDomains; preload'
+            value: 'max-age=0'
           },
           {
             key: 'X-Frame-Options',
@@ -57,7 +57,7 @@ const nextConfig = {
               "base-uri 'self'",
               "form-action 'self'",
               "frame-ancestors 'none'",
-              "upgrade-insecure-requests",
+// "upgrade-insecure-requests", // Disabled: no SSL configured yet
             ].join('; ')
           }
         ]

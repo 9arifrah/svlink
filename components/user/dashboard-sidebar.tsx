@@ -3,12 +3,13 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { ExternalLink, FolderTree, BarChart3, Settings, LogOut, Home, Link2 } from 'lucide-react'
+import { ExternalLink, FolderTree, BarChart3, Settings, LogOut, Home, Link2, FileText } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Kelola Link', href: '/dashboard/links', icon: ExternalLink },
   { name: 'Kategori', href: '/dashboard/categories', icon: FolderTree },
+  { name: 'Halaman Publik', href: '/dashboard/pages', icon: FileText },
   { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
 ]
 

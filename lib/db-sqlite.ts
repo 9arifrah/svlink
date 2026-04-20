@@ -91,6 +91,41 @@ function initializeSchema() {
     )
   `)
 
+  // Public pages table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS public_pages (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      slug TEXT NOT NULL UNIQUE,
+      title TEXT NOT NULL,
+      description TEXT,
+      logo_url TEXT,
+      theme_color TEXT DEFAULT '#3b82f6',
+      layout_style TEXT DEFAULT 'list',
+      show_categories INTEGER DEFAULT 1,
+      is_active INTEGER DEFAULT 1,
+      sort_order INTEGER DEFAULT 0,
+      click_count INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `)
+
+  // Public page links junction table
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS public_page_links (
+      id TEXT PRIMARY KEY,
+      page_id TEXT NOT NULL,
+      link_id TEXT NOT NULL,
+      sort_order INTEGER DEFAULT 0,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (page_id) REFERENCES public_pages(id) ON DELETE CASCADE,
+      FOREIGN KEY (link_id) REFERENCES links(id) ON DELETE CASCADE,
+      UNIQUE(page_id, link_id)
+    )
+  `)
+
   // Create indexes for better performance
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
@@ -102,7 +137,41 @@ function initializeSchema() {
     CREATE INDEX IF NOT EXISTS idx_links_is_public ON links(is_public);
     CREATE INDEX IF NOT EXISTS idx_links_qr_code ON links(qr_code) WHERE qr_code IS NOT NULL;
     CREATE INDEX IF NOT EXISTS idx_links_short_code ON links(short_code) WHERE short_code IS NOT NULL;
+    CREATE INDEX IF NOT EXISTS idx_public_pages_user_id ON public_pages(user_id);
+    CREATE INDEX IF NOT EXISTS idx_public_pages_slug ON public_pages(slug);
+    CREATE INDEX IF NOT EXISTS idx_public_pages_is_active ON public_pages(is_active);
+    CREATE INDEX IF NOT EXISTS idx_public_page_links_page_id ON public_page_links(page_id);
+    CREATE INDEX IF NOT EXISTS idx_public_page_links_link_id ON public_page_links(link_id);
   `)
+
+  // Data migration: create default public_page for existing users who have custom_slug
+  const usersWithSlug = db.prepare(
+    'SELECT id, custom_slug, display_name FROM users WHERE custom_slug IS NOT NULL AND custom_slug != ""'
+  ).all() as any[]
+
+  for (const user of usersWithSlug) {
+    const existingPage = db.prepare(
+      'SELECT 1 FROM public_pages WHERE user_id = ?'
+    ).get(user.id)
+    if (!existingPage) {
+      db.prepare(`
+        INSERT INTO public_pages (id, user_id, slug, title, is_active)
+        VALUES (?, ?, ?, ?, 1)
+      `).run(crypto.randomUUID(), user.id, user.custom_slug, user.display_name || 'My Links')
+
+      // Migrate existing public links for this user into the page
+      const publicLinks = db.prepare(
+        'SELECT id FROM links WHERE user_id = ? AND is_public = 1 ORDER BY created_at DESC'
+      ).all(user.id) as any[]
+
+      for (let i = 0; i < publicLinks.length; i++) {
+        db.prepare(`
+          INSERT OR IGNORE INTO public_page_links (id, page_id, link_id, sort_order)
+          VALUES (?, (SELECT id FROM public_pages WHERE user_id = ?), ?, ?)
+        `).run(crypto.randomUUID(), user.id, publicLinks[i].id, i)
+      }
+    }
+  }
 }
 
 // Initialize schema on import
@@ -432,6 +501,14 @@ export const sqliteClient: DatabaseClient = {
   async incrementClickCount(id: string) {
     const stmt = db.prepare('UPDATE links SET click_count = click_count + 1 WHERE id = ?')
     stmt.run(id)
+  },
+
+  async getPageCountForLink(linkId: string): Promise<number> {
+    const stmt = db.prepare(
+      'SELECT COUNT(*) as count FROM public_page_links WHERE link_id = ?'
+    )
+    const row = stmt.get(linkId) as { count: number }
+    return row.count
   },
 
   // Categories
@@ -811,6 +888,162 @@ export const sqliteClient: DatabaseClient = {
   async adminDeleteCategory(id: string) {
     const stmt = db.prepare('DELETE FROM categories WHERE id = ?')
     stmt.run(id)
+  },
+
+  // Public Pages
+  async getPublicPages(userId: string) {
+    const stmt = db.prepare('SELECT * FROM public_pages WHERE user_id = ? ORDER BY sort_order ASC, created_at DESC')
+    const rows = stmt.all(userId)
+    return rows.map(rowToObject)
+  },
+
+  async getPublicPageById(id: string) {
+    const stmt = db.prepare('SELECT * FROM public_pages WHERE id = ?')
+    const row = stmt.get(id)
+    return rowToObject(row)
+  },
+
+  async getPublicPageBySlug(slug: string) {
+    const stmt = db.prepare('SELECT * FROM public_pages WHERE slug = ? AND is_active = 1')
+    const row = stmt.get(slug)
+    return rowToObject(row)
+  },
+
+  async isSlugExists(slug: string, excludePageId?: string): Promise<boolean> {
+    let query = 'SELECT 1 FROM public_pages WHERE slug = ?'
+    const params: any[] = [slug]
+
+    if (excludePageId) {
+      query += ' AND id != ?'
+      params.push(excludePageId)
+    }
+
+    const stmt = db.prepare(query)
+    const row = stmt.get(...params)
+    return !!row
+  },
+
+  async createPublicPage(page: any) {
+    const stmt = db.prepare(`
+      INSERT INTO public_pages (id, user_id, slug, title, description, logo_url, theme_color, layout_style, show_categories, is_active, sort_order)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `)
+    stmt.run(
+      page.id,
+      page.user_id,
+      page.slug,
+      page.title,
+      page.description || null,
+      page.logo_url || null,
+      page.theme_color || '#3b82f6',
+      page.layout_style || 'list',
+      page.show_categories !== undefined ? (page.show_categories ? 1 : 0) : 1,
+      page.is_active !== undefined ? (page.is_active ? 1 : 0) : 1,
+      page.sort_order || 0
+    )
+    return this.getPublicPageById(page.id)
+  },
+
+  async updatePublicPage(id: string, data: any, userId: string) {
+    const fields: string[] = []
+    const values: any[] = []
+
+    if (data.slug !== undefined) {
+      fields.push('slug = ?')
+      values.push(data.slug)
+    }
+    if (data.title !== undefined) {
+      fields.push('title = ?')
+      values.push(data.title)
+    }
+    if (data.description !== undefined) {
+      fields.push('description = ?')
+      values.push(data.description)
+    }
+    if (data.logo_url !== undefined) {
+      fields.push('logo_url = ?')
+      values.push(data.logo_url)
+    }
+    if (data.theme_color !== undefined) {
+      fields.push('theme_color = ?')
+      values.push(data.theme_color)
+    }
+    if (data.layout_style !== undefined) {
+      fields.push('layout_style = ?')
+      values.push(data.layout_style)
+    }
+    if (data.show_categories !== undefined) {
+      fields.push('show_categories = ?')
+      values.push(data.show_categories ? 1 : 0)
+    }
+    if (data.is_active !== undefined) {
+      fields.push('is_active = ?')
+      values.push(data.is_active ? 1 : 0)
+    }
+    if (data.sort_order !== undefined) {
+      fields.push('sort_order = ?')
+      values.push(data.sort_order)
+    }
+
+    fields.push('updated_at = CURRENT_TIMESTAMP')
+
+    if (fields.length > 0) {
+      values.push(id, userId)
+      const stmt = db.prepare(`UPDATE public_pages SET ${fields.join(', ')} WHERE id = ? AND user_id = ?`)
+      stmt.run(...values)
+    }
+
+    return this.getPublicPageById(id)
+  },
+
+  async deletePublicPage(id: string, userId: string) {
+    const stmt = db.prepare('DELETE FROM public_pages WHERE id = ? AND user_id = ?')
+    stmt.run(id, userId)
+  },
+
+  async getPublicPageLinks(pageId: string) {
+    const stmt = db.prepare(`
+      SELECT l.*, c.name as category_name, c.icon as category_icon, pll.sort_order as page_sort_order
+      FROM public_page_links pll
+      INNER JOIN links l ON pll.link_id = l.id
+      LEFT JOIN categories c ON l.category_id = c.id
+      WHERE pll.page_id = ?
+      ORDER BY pll.sort_order ASC, pll.created_at ASC
+    `)
+    const rows = stmt.all(pageId)
+    return rows.map((row: any) => {
+      const obj = rowToObject(row)
+      if (obj.category_name) {
+        obj.category = {
+          id: row.category_id,
+          name: row.category_name,
+          icon: row.category_icon
+        }
+      }
+      return obj
+    })
+  },
+
+  async setPublicPageLinks(pageId: string, linkIds: string[]) {
+    // Remove existing links for this page
+    const deleteStmt = db.prepare('DELETE FROM public_page_links WHERE page_id = ?')
+    deleteStmt.run(pageId)
+
+    // Insert new links
+    if (linkIds.length > 0) {
+      const insertStmt = db.prepare(`
+        INSERT INTO public_page_links (id, page_id, link_id, sort_order)
+        VALUES (?, ?, ?, ?)
+      `)
+      for (let i = 0; i < linkIds.length; i++) {
+        insertStmt.run(crypto.randomUUID(), pageId, linkIds[i], i)
+      }
+    }
+  },
+
+  async incrementPageClickCount(pageId: string) {
+    const stmt = db.prepare('UPDATE public_pages SET click_count = click_count + 1 WHERE id = ?')
+    stmt.run(pageId)
   },
 
   // Stats

@@ -9,7 +9,6 @@ import { generatePublicProfileMetadata, generatePublicProfileStructuredData } fr
 import { siteConfig } from '@/lib/seo'
 import { StructuredDataScript } from '@/components/structured-data-script'
 import { cn } from '@/lib/utils'
-import { ThemeToggle } from '@/components/shared/theme-toggle'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,36 +28,28 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     }
   }
 
-  // Then try user profile
-  const user = await getUserBySlug(slug)
-  if (!user) {
+  // Then try public page
+  const page = await getPublicPageBySlug(slug)
+  if (!page) {
     return {
       title: 'Not Found',
     }
   }
 
-  const settings = user.user_settings || {}
-  const pageTitle = settings.page_title || user.display_name || user.custom_slug
-  const description = settings.bio || `Link publik dari ${pageTitle} di ${siteConfig.name}`
-  const logoUrl = settings.logo_url
-
   return generatePublicProfileMetadata({
-    title: pageTitle,
-    description,
-    logo: logoUrl,
-    slug: user.custom_slug,
-    linkCount: 0, // Will be updated dynamically
+    title: page.title,
+    description: page.description || '',
+    logo: page.logo_url,
+    slug: page.slug,
+    linkCount: 0,
   })
 }
 
 async function getLinkByShortCode(code: string) {
   try {
-    // Validasi basic - cek apakah code mengandung karakter invalid
     if (!/^[a-zA-Z0-9-]+$/.test(code)) {
       return null
     }
-
-    // Cari link berdasarkan short code (case-insensitive)
     const link = await db.getLinkByShortCode(code)
     return link
   } catch (error) {
@@ -67,34 +58,20 @@ async function getLinkByShortCode(code: string) {
   }
 }
 
-async function getUserBySlug(slug: string) {
+async function getPublicPageBySlug(slug: string) {
   try {
-    const user = await db.getUserBySlug(slug)
-    if (!user) return null
-
-    const settings = await db.getUserSettings(user.id)
-    return { ...user, user_settings: settings }
+    return await db.getPublicPageBySlug(slug)
   } catch (error) {
-    console.error('[v0] Error fetching user by slug:', error)
+    console.error('[v0] Error fetching public page by slug:', error)
     return null
   }
 }
 
-async function getPublicLinksWithCategories(userId: string) {
+async function getPublicPageLinks(pageId: string) {
   try {
-    const links = await db.getLinks(userId)
-    return links.filter(link => link.is_active && link.is_public)
+    return await db.getPublicPageLinks(pageId)
   } catch (error) {
-    console.error('[v0] Error fetching public links:', error)
-    return []
-  }
-}
-
-async function getPublicCategories(userId: string) {
-  try {
-    return await db.getCategories(userId)
-  } catch (error) {
-    console.error('[v0] Error fetching public categories:', error)
+    console.error('[v0] Error fetching public page links:', error)
     return []
   }
 }
@@ -105,66 +82,66 @@ export default async function PublicSlugPage({ params }: { params: Promise<{ slu
   // Priority 1: Check if it's a short code (redirect)
   const link = await getLinkByShortCode(slug)
   if (link) {
-    // If link is not active (draft), return 404
     if (!link.is_active) {
       notFound()
     }
 
-    // Increment click count
     try {
       await db.incrementClickCount(link.id)
     } catch (error) {
       console.error('[v0] Error incrementing click count:', error)
-      // Continue redirect even if tracking fails
     }
 
-    // Redirect with HTTP 302 (Temporary)
     redirect(link.url)
   }
 
-  // Priority 2: Check if it's a user profile
-  const user = await getUserBySlug(slug)
-  if (!user) {
+  // Priority 2: Check if it's a public page
+  const page = await getPublicPageBySlug(slug)
+  if (!page) {
     notFound()
   }
 
-  const settings = user.user_settings || {}
-  const [links, categories] = await Promise.all([
-    getPublicLinksWithCategories(user.id),
-    settings.show_categories !== false ? getPublicCategories(user.id) : []
-  ])
-
-  // Group links by category
-  const groupedLinks = categories.map(category => ({
-    ...category,
-    links: links.filter(link => link.category_id === category.id)
-  })).filter(group => group.links.length > 0)
-
-  // Add uncategorized links
-  const uncategorizedLinks = links.filter(link => !link.category_id)
-  if (uncategorizedLinks.length > 0) {
-    groupedLinks.push({
-      id: 'uncategorized',
-      name: 'Lainnya',
-      icon: '📌',
-      sort_order: 999,
-      user_id: user.id,
-      links: uncategorizedLinks
-    })
+  // Increment page click count
+  try {
+    await db.incrementPageClickCount(page.id)
+  } catch (error) {
+    console.error('[v0] Error incrementing page click count:', error)
   }
 
-  const themeColor = settings.theme_color || '#3b82f6'
-  const pageTitle = settings.page_title || user.display_name || user.custom_slug
-  const description = settings.profile_description || `Link publik dari ${pageTitle}`
-  const layoutStyle = settings.layout_style || 'list'
+  // Get links for this page
+  const links = await getPublicPageLinks(page.id)
+
+  const themeColor = page.theme_color || '#3b82f6'
+  const layoutStyle = page.layout_style || 'list'
+
+  // Group links by category
+  const groupedLinks = links.reduce((groups: any[], link: any) => {
+    const categoryName = link.category?.name || 'Lainnya'
+    const categoryIcon = link.category?.icon || '📌'
+    const categoryId = link.category?.id || 'uncategorized'
+    
+    let group = groups.find(g => g.id === categoryId)
+    if (!group) {
+      group = {
+        id: categoryId,
+        name: categoryName,
+        icon: categoryIcon,
+        sort_order: 999,
+        links: []
+      }
+      groups.push(group)
+    }
+    group.links.push(link)
+    return groups
+  }, [])
 
   // Generate structured data
   const structuredData = generatePublicProfileStructuredData({
-    name: pageTitle,
-    description,
-    logo: settings.logo_url,
-    slug: user.custom_slug,
-    links: links.map(link => ({
+    name: page.title,
+    description: page.description || '',
+    logo: page.logo_url,
+    slug: page.slug,
+    links: links.map((link: any) => ({
       title: link.title,
       url: link.url,
     })),
@@ -175,90 +152,95 @@ export default async function PublicSlugPage({ params }: { params: Promise<{ slu
     <>
       <StructuredDataScript data={structuredData} />
       <div className="min-h-screen relative overflow-hidden">
-      {/* Dark mode toggle */}
-      <ThemeToggle />
-      {/* Animated gradient background using user's theme color */}
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-white animate-pulse" style={{ animationDuration: '10s' }} />
-      </div>
-
-      {/* Theme-colored floating orbs */}
-      <div
-        className="absolute top-20 right-10 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"
-        style={{ backgroundColor: themeColor }}
-      />
-      <div
-        className="absolute bottom-20 left-10 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"
-        style={{ backgroundColor: themeColor, animationDelay: '2s' }}
-      />
-
-      <div className="relative mx-auto max-w-2xl px-4 py-12">
-        {/* Header */}
-        <div className="animate-scale-in">
-          <PublicPageHeader
-            displayName={user.display_name}
-            settings={settings}
-          />
+        {/* Animated gradient background using page's theme color */}
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-white animate-pulse" style={{ animationDuration: '10s' }} />
         </div>
 
-        {/* Search Bar */}
-        <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          <SearchBar links={links} themeColor={themeColor} />
-        </div>
+        {/* Theme-colored floating orbs */}
+        <div
+          className="absolute top-20 right-10 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"
+          style={{ backgroundColor: themeColor }}
+        />
+        <div
+          className="absolute bottom-20 left-10 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-float"
+          style={{ backgroundColor: themeColor, animationDelay: '2s' }}
+        />
 
-        {/* Links by Category */}
-        <div className={cn("animate-fade-in", layoutStyle === 'compact' ? 'space-y-6' : 'space-y-10')} style={{ animationDelay: '0.2s' }}>
-          {groupedLinks.map((group, index) => (
-            <div key={group.id} className="animate-fade-in" style={{ animationDelay: `${0.3 + index * 0.1}s` }}>
-              <div className={cn("flex items-center gap-3", layoutStyle === 'compact' ? 'mb-2' : 'mb-4')}>
-                <span className={cn(layoutStyle === 'compact' ? 'text-2xl' : 'text-3xl')}>{group.icon}</span>
-                <h2
-                  className={cn(
-                    "font-semibold",
-                    layoutStyle === 'compact' ? 'text-lg' : 'text-2xl'
-                  )}
-                  style={{ color: themeColor }}
-                >
-                  {group.name}
-                </h2>
-              </div>
-              <div className={cn(
-                layoutStyle === 'grid' ? 'grid grid-cols-2 gap-3' : layoutStyle === 'compact' ? 'space-y-2' : 'space-y-3'
-              )}>
-                {group.links.map((link: any) => (
-                  <LinkCard key={link.id} link={link} themeColor={themeColor} variant={layoutStyle === 'list' ? 'default' : layoutStyle} />
-                ))}
-              </div>
-            </div>
-          ))}
+        <div className="relative mx-auto max-w-2xl px-4 py-12">
+          {/* Header */}
+          <div className="animate-scale-in">
+            <PublicPageHeader
+              displayName={page.title}
+              settings={{
+                logo_url: page.logo_url,
+                profile_description: page.description
+              }}
+            />
+          </div>
 
-          {groupedLinks.length === 0 && (
-            <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-white/80 backdrop-blur-sm p-12 text-center animate-scale-in">
-              <div className="flex flex-col items-center justify-center">
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
-                  <ExternalLink className="h-8 w-8 text-slate-400" />
-                </div>
-                <h3 className="mb-2 text-lg font-semibold text-slate-900">Belum ada link publik</h3>
-                <p className="max-w-sm text-slate-500">
-                  Pengguna ini belum menambahkan link publik. Kembali lagi nanti untuk melihat update terbaru.
-                </p>
-              </div>
+          {/* Search Bar */}
+          {links.length > 0 && (
+            <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
+              <SearchBar links={links} themeColor={themeColor} />
             </div>
           )}
-        </div>
 
-        {/* Footer */}
-        <div className="mt-16 text-center text-sm text-slate-500 animate-fade-in" style={{ animationDelay: '0.5s' }}>
-          <p>
-            Powered by{' '}
-            <a href="/" className="text-slate-700 hover:underline hover:text-slate-900 transition-colors">
-              svlink
-            </a>
-          </p>
-          <p className="mt-2">© {new Date().getFullYear()}</p>
+          {/* Links by Category */}
+          <div className={cn("animate-fade-in", layoutStyle === 'compact' ? 'space-y-6' : 'space-y-10')} style={{ animationDelay: '0.2s' }}>
+            {groupedLinks.map((group, index) => (
+              <div key={group.id} className="animate-fade-in" style={{ animationDelay: `${0.3 + index * 0.1}s` }}>
+                {page.show_categories !== 0 && (
+                  <div className={cn("flex items-center gap-3", layoutStyle === 'compact' ? 'mb-2' : 'mb-4')}>
+                    <span className={cn(layoutStyle === 'compact' ? 'text-2xl' : 'text-3xl')}>{group.icon}</span>
+                    <h2
+                      className={cn(
+                        "font-semibold",
+                        layoutStyle === 'compact' ? 'text-lg' : 'text-2xl'
+                      )}
+                      style={{ color: themeColor }}
+                    >
+                      {group.name}
+                    </h2>
+                  </div>
+                )}
+                <div className={cn(
+                  layoutStyle === 'grid' ? 'grid grid-cols-2 gap-3' : layoutStyle === 'compact' ? 'space-y-2' : 'space-y-3'
+                )}>
+                  {group.links.map((link: any) => (
+                    <LinkCard key={link.id} link={link} themeColor={themeColor} variant={layoutStyle === 'list' ? 'default' : layoutStyle} />
+                  ))}
+                </div>
+              </div>
+            ))}
+
+            {links.length === 0 && (
+              <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-white/80 backdrop-blur-sm p-12 text-center animate-scale-in">
+                <div className="flex flex-col items-center justify-center">
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+                    <ExternalLink className="h-8 w-8 text-slate-400" />
+                  </div>
+                  <h3 className="mb-2 text-lg font-semibold text-slate-900">Belum ada link di halaman ini</h3>
+                  <p className="max-w-sm text-slate-500">
+                    Halaman ini belum memiliki link. Kembali lagi nanti untuk melihat update terbaru.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="mt-16 text-center text-sm text-slate-500 animate-fade-in" style={{ animationDelay: '0.5s' }}>
+            <p>
+              Powered by{' '}
+              <a href="/" className="text-slate-700 hover:underline hover:text-slate-900 transition-colors">
+                svlink
+              </a>
+            </p>
+            <p className="mt-2">© {new Date().getFullYear()}</p>
+          </div>
         </div>
       </div>
-    </div>
     </>
   )
 }

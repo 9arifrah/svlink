@@ -95,8 +95,7 @@ export const shortCodeSchema = z
 export const registerSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
-  displayName: z.string().min(2, 'Nama minimal 2 karakter').max(100),
-  customSlug: slugSchema.optional()
+  displayName: z.string().min(2, 'Nama minimal 2 karakter').max(100)
 })
 
 /**

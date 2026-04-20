@@ -93,7 +93,7 @@ export async function setUserSession(userId: string, maxAge: number = 60 * 60 * 
 
   cookieStore.set('user_session', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Disabled: no SSL configured. Set to true when HTTPS is enabled.
     sameSite: 'lax',
     maxAge,
     path: '/'
@@ -109,7 +109,7 @@ export async function setAdminSession(userId: string, maxAge: number = 60 * 60 *
 
   cookieStore.set('admin_session', token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: false, // Disabled: no SSL configured. Set to true when HTTPS is enabled.
     sameSite: 'lax',
     maxAge,
     path: '/'

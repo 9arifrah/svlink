@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { setUserSession } from '@/lib/auth'
-import { registerSchema, formatZodError, RESERVED_SLUGS } from '@/lib/validation'
+import { registerSchema, formatZodError } from '@/lib/validation'
 import { rateLimitMiddleware } from '@/lib/rate-limit'
 import bcrypt from 'bcryptjs'
 import { db } from '@/lib/db'
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
       return rateLimitResponse
     }
 
-    const { email, password, displayName, customSlug } = await request.json()
+    const { email, password, displayName } = await request.json()
 
     if (!email || !password) {
       return NextResponse.json(
@@ -27,20 +27,11 @@ export async function POST(request: NextRequest) {
       registerSchema.parse({
         email,
         password,
-        displayName: displayName || email.split('@')[0],
-        customSlug
+        displayName: displayName || email.split('@')[0]
       })
     } catch (error) {
       return NextResponse.json(
         { error: formatZodError(error) },
-        { status: 400 }
-      )
-    }
-
-    // Additional reserved slug validation (defense in depth)
-    if (customSlug && RESERVED_SLUGS.includes(customSlug)) {
-      return NextResponse.json(
-        { error: 'Slug ini tidak dapat digunakan' },
         { status: 400 }
       )
     }
@@ -58,18 +49,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if custom slug already exists
-    if (customSlug) {
-      const existingSlug = await db.getUserBySlug(customSlug)
-
-      if (existingSlug) {
-        return NextResponse.json(
-          { error: 'Slug sudah digunakan oleh user lain' },
-          { status: 409 }
-        )
-      }
-    }
-
     // Hash password before storing
     const passwordHash = await bcrypt.hash(password, 10)
 
@@ -82,7 +61,7 @@ export async function POST(request: NextRequest) {
       email,
       password_hash: passwordHash,
       display_name: displayName || email.split('@')[0],
-      custom_slug: customSlug || null
+      custom_slug: null
     })
 
     if (!newUser) {
@@ -104,8 +83,7 @@ export async function POST(request: NextRequest) {
       user: {
         id: newUser.id,
         email: newUser.email,
-        display_name: newUser.display_name,
-        custom_slug: newUser.custom_slug
+        display_name: newUser.display_name
       }
     })
 

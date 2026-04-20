@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ExternalLink, Save, Upload, X, Image as ImageIcon, Loader2, Eye } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 const MAX_FILE_SIZE = 500 * 1024 // 500KB
 const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
@@ -349,14 +350,49 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-3">
               <Label className="text-base">Gaya Layout</Label>
               <p className="text-sm text-slate-500">Pilih tampilan link di halaman publik Anda</p>
               <div className="grid grid-cols-3 gap-3">
                 {[
-                  { value: 'list', label: 'List', icon: '☰', desc: 'Vertikal' },
-                  { value: 'grid', label: 'Grid', icon: '⊞', desc: '2 Kolom' },
-                  { value: 'compact', label: 'Compact', icon: '⊟', desc: 'Ringkas' },
+                  {
+                    value: 'list',
+                    label: 'List',
+                    desc: 'Vertikal',
+                    preview: (
+                      <div className="flex flex-col gap-1 w-full px-2">
+                        <div className="h-2 rounded-sm w-full" style={{ backgroundColor: `${formData.themeColor}40` }} />
+                        <div className="h-2 rounded-sm w-full" style={{ backgroundColor: `${formData.themeColor}40` }} />
+                        <div className="h-2 rounded-sm w-full" style={{ backgroundColor: `${formData.themeColor}40` }} />
+                      </div>
+                    )
+                  },
+                  {
+                    value: 'grid',
+                    label: 'Grid',
+                    desc: '2 Kolom',
+                    preview: (
+                      <div className="grid grid-cols-2 gap-1 w-full px-2">
+                        <div className="h-4 rounded-sm" style={{ backgroundColor: `${formData.themeColor}40` }} />
+                        <div className="h-4 rounded-sm" style={{ backgroundColor: `${formData.themeColor}40` }} />
+                        <div className="h-4 rounded-sm" style={{ backgroundColor: `${formData.themeColor}40` }} />
+                        <div className="h-4 rounded-sm" style={{ backgroundColor: `${formData.themeColor}40` }} />
+                      </div>
+                    )
+                  },
+                  {
+                    value: 'compact',
+                    label: 'Compact',
+                    desc: 'Ringkas',
+                    preview: (
+                      <div className="flex flex-col gap-0.5 w-full px-2">
+                        <div className="h-1.5 rounded-sm w-full" style={{ backgroundColor: `${formData.themeColor}40` }} />
+                        <div className="h-1.5 rounded-sm w-full" style={{ backgroundColor: `${formData.themeColor}40` }} />
+                        <div className="h-1.5 rounded-sm w-full" style={{ backgroundColor: `${formData.themeColor}40` }} />
+                        <div className="h-1.5 rounded-sm w-full" style={{ backgroundColor: `${formData.themeColor}40` }} />
+                      </div>
+                    )
+                  },
                 ].map((option) => (
                   <button
                     key={option.value}
@@ -368,7 +404,9 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
                         : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
                     }`}
                   >
-                    <div className="text-2xl mb-1">{option.icon}</div>
+                    <div className="mb-2 flex items-center justify-center h-10">
+                      {option.preview}
+                    </div>
                     <div className="font-semibold text-sm">{option.label}</div>
                     <div className="text-xs text-slate-500">{option.desc}</div>
                   </button>
@@ -449,67 +487,50 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
                 )}
               </div>
 
-              {/* Sample link cards */}
-              <div className="space-y-3">
-                <div
-                  className="rounded-lg border bg-white p-3 sm:p-4 shadow-sm"
-                  style={{ borderColor: `${formData.themeColor}30` }}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-slate-900 truncate text-sm">
-                        Contoh Link 1
-                      </h3>
-                      <p className="mt-0.5 font-mono text-xs text-slate-500 truncate">
-                        svlink.id/{formData.customSlug || 'link'}
-                      </p>
+              {/* Sample link cards — adapts to layout style */}
+              <div className={cn(
+                formData.layoutStyle === 'grid'
+                  ? 'grid grid-cols-2 gap-3'
+                  : formData.layoutStyle === 'compact'
+                  ? 'space-y-2'
+                  : 'space-y-3'
+              )}>
+                {['Contoh Link 1', 'Contoh Link 2', 'Contoh Link 3'].map((title, i) => (
+                  <div
+                    key={i}
+                    className={cn(
+                      "rounded-lg border bg-white shadow-sm",
+                      "border-l-4",
+                      formData.layoutStyle === 'compact' ? 'p-2 sm:p-3' : 'p-3 sm:p-4'
+                    )}
+                    style={{
+                      borderLeftColor: formData.themeColor,
+                      borderTopColor: `${formData.themeColor}30`,
+                      borderRightColor: `${formData.themeColor}30`,
+                      borderBottomColor: `${formData.themeColor}30`,
+                    }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 min-w-0">
+                        <h3 className={cn(
+                          "font-semibold text-slate-900 truncate",
+                          formData.layoutStyle === 'compact' ? 'text-sm' : 'text-sm'
+                        )}>
+                          {title}
+                        </h3>
+                        {formData.layoutStyle !== 'compact' && (
+                          <p className="mt-0.5 text-xs text-slate-500 truncate">
+                            Deskripsi singkat link ini
+                          </p>
+                        )}
+                      </div>
+                      <ExternalLink
+                        className="h-4 w-4 flex-shrink-0"
+                        style={{ color: formData.themeColor }}
+                      />
                     </div>
-                    <ExternalLink
-                      className="h-4 w-4 flex-shrink-0"
-                      style={{ color: formData.themeColor }}
-                    />
                   </div>
-                </div>
-
-                <div
-                  className="rounded-lg border bg-white p-3 sm:p-4 shadow-sm"
-                  style={{ borderColor: `${formData.themeColor}30` }}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-slate-900 truncate text-sm">
-                        Contoh Link 2
-                      </h3>
-                      <p className="mt-0.5 font-mono text-xs text-slate-500 truncate">
-                        svlink.id/{formData.customSlug || 'link'}
-                      </p>
-                    </div>
-                    <ExternalLink
-                      className="h-4 w-4 flex-shrink-0"
-                      style={{ color: formData.themeColor }}
-                    />
-                  </div>
-                </div>
-
-                <div
-                  className="rounded-lg border bg-white p-3 sm:p-4 shadow-sm"
-                  style={{ borderColor: `${formData.themeColor}30` }}
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-slate-900 truncate text-sm">
-                        Contoh Link 3
-                      </h3>
-                      <p className="mt-0.5 font-mono text-xs text-slate-500 truncate">
-                        svlink.id/{formData.customSlug || 'link'}
-                      </p>
-                    </div>
-                    <ExternalLink
-                      className="h-4 w-4 flex-shrink-0"
-                      style={{ color: formData.themeColor }}
-                    />
-                  </div>
-                </div>
+                ))}
               </div>
 
               {/* Theme color indicator */}

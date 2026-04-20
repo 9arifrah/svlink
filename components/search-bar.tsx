@@ -30,7 +30,7 @@ export function SearchBar({ links, themeColor = '#3b82f6' }: { links: Link[], th
           placeholder="Cari link disini..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="h-14 rounded-xl border-slate-200/60 bg-white/80 dark:bg-slate-800/80 dark:border-slate-700/60 backdrop-blur-sm pl-12 pr-4 shadow-soft-md focus:border-blue-300 focus:ring-blue-300 dark:focus:border-blue-500 dark:focus:ring-blue-500 transition-all duration-300"
+          className="h-14 rounded-xl border-slate-200/60 bg-white/80 backdrop-blur-sm pl-12 pr-4 shadow-soft-md focus:border-blue-300 focus:ring-blue-300 transition-all duration-300"
           aria-label={ariaLabels.search}
           aria-autocomplete="list"
           aria-controls={searchQuery ? 'search-results' : undefined}
@@ -41,7 +41,7 @@ export function SearchBar({ links, themeColor = '#3b82f6' }: { links: Link[], th
       {searchQuery && (
         <div
           id="search-results"
-          className="absolute left-0 right-0 top-full z-10 mt-2 max-h-96 space-y-2 overflow-y-auto rounded-xl border border-slate-200/60 bg-white/95 dark:bg-slate-900/95 dark:border-slate-700/60 backdrop-blur-sm p-4 shadow-xl animate-scale-in"
+          className="absolute left-0 right-0 top-full z-10 mt-2 max-h-96 space-y-2 overflow-y-auto rounded-xl border border-slate-200/60 bg-white/95 backdrop-blur-sm p-4 shadow-xl animate-scale-in"
           role="listbox"
           aria-label="Hasil pencarian"
         >

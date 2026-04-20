@@ -37,7 +37,7 @@ export function BreadcrumbNav() {
     <nav className="flex items-center space-x-1 text-sm mb-4 animate-fade-in">
       <Link
         href={segments[0] === 'admin' ? '/admin/dashboard' : '/dashboard'}
-        className="flex items-center text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+        className="flex items-center text-slate-600 hover:text-slate-900 transition-colors"
       >
         <Home className="h-4 w-4" />
       </Link>
@@ -46,11 +46,11 @@ export function BreadcrumbNav() {
         <Fragment key={crumb.href}>
           <ChevronRight className="h-4 w-4 text-slate-400" />
           {crumb.isLast ? (
-            <span className="font-medium text-slate-900 dark:text-slate-100">{crumb.name}</span>
+            <span className="font-medium text-slate-900">{crumb.name}</span>
           ) : (
             <Link
               href={crumb.href}
-              className="text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+              className="text-slate-600 hover:text-slate-900 transition-colors"
             >
               {crumb.name}
             </Link>

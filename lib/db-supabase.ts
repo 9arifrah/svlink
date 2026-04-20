@@ -255,6 +255,15 @@ export const supabaseClient: DatabaseClient = {
     if (error) throw error
   },
 
+  async getPageCountForLink(linkId: string): Promise<number> {
+    const { count, error } = await supabase
+      .from('public_page_links')
+      .select('*', { count: 'exact', head: true })
+      .eq('link_id', linkId)
+    if (error) throw error
+    return count || 0
+  },
+
   // Categories
   async getCategories(userId?: string) {
     let query = supabase
@@ -646,6 +655,157 @@ export const supabaseClient: DatabaseClient = {
       .delete()
       .eq('id', id)
     if (error) throw error
+  },
+
+  // Public Pages
+  async getPublicPages(userId: string) {
+    const { data, error } = await supabase
+      .from('public_pages')
+      .select('*')
+      .eq('user_id', userId)
+      .order('sort_order', { ascending: true })
+      .order('created_at', { ascending: false })
+    if (error) throw error
+    return data || []
+  },
+
+  async getPublicPageById(id: string) {
+    const { data, error } = await supabase
+      .from('public_pages')
+      .select('*')
+      .eq('id', id)
+      .single()
+    return error ? null : data
+  },
+
+  async getPublicPageBySlug(slug: string) {
+    const { data, error } = await supabase
+      .from('public_pages')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_active', true)
+      .single()
+    return error ? null : data
+  },
+
+  async isSlugExists(slug: string, excludePageId?: string): Promise<boolean> {
+    let query = supabase
+      .from('public_pages')
+      .select('id', { count: 'exact', head: true })
+      .eq('slug', slug)
+
+    if (excludePageId) {
+      query = query.neq('id', excludePageId)
+    }
+
+    const { count, error } = await query
+    if (error) throw error
+    return (count || 0) > 0
+  },
+
+  async createPublicPage(page: any) {
+    const { data, error } = await supabase
+      .from('public_pages')
+      .insert({
+        id: page.id,
+        user_id: page.user_id,
+        slug: page.slug,
+        title: page.title,
+        description: page.description || null,
+        logo_url: page.logo_url || null,
+        theme_color: page.theme_color || '#3b82f6',
+        layout_style: page.layout_style || 'list',
+        show_categories: page.show_categories !== undefined ? page.show_categories : true,
+        is_active: page.is_active !== undefined ? page.is_active : true,
+        sort_order: page.sort_order || 0
+      })
+      .select()
+      .single()
+    if (error) throw error
+    return data
+  },
+
+  async updatePublicPage(id: string, data: any, userId: string) {
+    const updateData: any = {}
+    if (data.slug !== undefined) updateData.slug = data.slug
+    if (data.title !== undefined) updateData.title = data.title
+    if (data.description !== undefined) updateData.description = data.description
+    if (data.logo_url !== undefined) updateData.logo_url = data.logo_url
+    if (data.theme_color !== undefined) updateData.theme_color = data.theme_color
+    if (data.layout_style !== undefined) updateData.layout_style = data.layout_style
+    if (data.show_categories !== undefined) updateData.show_categories = data.show_categories
+    if (data.is_active !== undefined) updateData.is_active = data.is_active
+    if (data.sort_order !== undefined) updateData.sort_order = data.sort_order
+
+    const { data: result, error } = await supabase
+      .from('public_pages')
+      .update(updateData)
+      .eq('id', id)
+      .eq('user_id', userId)
+      .select()
+      .single()
+    if (error) throw error
+    return result
+  },
+
+  async deletePublicPage(id: string, userId: string) {
+    const { error } = await supabase
+      .from('public_pages')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', userId)
+    if (error) throw error
+  },
+
+  async getPublicPageLinks(pageId: string) {
+    const { data, error } = await supabase
+      .from('public_page_links')
+      .select(`
+        sort_order,
+        links (*, categories (id, name, icon))
+      `)
+      .eq('page_id', pageId)
+      .order('sort_order', { ascending: true })
+    if (error) throw error
+    return (data || []).map((item: any) => ({
+      ...item.links,
+      category: item.links?.categories || null,
+      page_sort_order: item.sort_order
+    }))
+  },
+
+  async setPublicPageLinks(pageId: string, linkIds: string[]) {
+    // Remove existing links
+    await supabase.from('public_page_links').delete().eq('page_id', pageId)
+
+    // Insert new links
+    if (linkIds.length > 0) {
+      const inserts = linkIds.map((linkId, i) => ({
+        page_id: pageId,
+        link_id: linkId,
+        sort_order: i
+      }))
+      const { error } = await supabase.from('public_page_links').insert(inserts)
+      if (error) throw error
+    }
+  },
+
+  async incrementPageClickCount(pageId: string) {
+    const { error } = await supabase.rpc('increment_public_page_clicks', { page_id: pageId })
+    if (error) {
+      // Fallback: fetch current count and update
+      const { data } = await supabase
+        .from('public_pages')
+        .select('click_count')
+        .eq('id', pageId)
+        .single()
+      if (data) {
+        await supabase
+          .from('public_pages')
+          .update({ click_count: (data.click_count || 0) + 1 })
+          .eq('id', pageId)
+      }
+    }
   },
 
   // Stats

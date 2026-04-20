@@ -22,6 +22,7 @@ export function LinksTable({ links, categories }: LinksTableProps) {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [editingLink, setEditingLink] = useState<Link | null>(null)
   const [deletingLink, setDeletingLink] = useState<Link | null>(null)
+  const [deletePageCount, setDeletePageCount] = useState<number | undefined>(undefined)
 
   const filteredLinks = searchQuery
     ? links.filter((link) =>
@@ -29,6 +30,22 @@ export function LinksTable({ links, categories }: LinksTableProps) {
       link.url.toLowerCase().includes(searchQuery.toLowerCase())
     )
     : links
+
+  const handleDeleteClick = async (link: Link) => {
+    try {
+      const response = await fetch(`/api/admin/links?id=${link.id}`)
+      if (response.ok) {
+        const data = await response.json()
+        setDeletePageCount(data.pageCount)
+      } else {
+        setDeletePageCount(undefined)
+      }
+    } catch (error) {
+      console.error('[v0] Error fetching page count:', error)
+      setDeletePageCount(undefined)
+    }
+    setDeletingLink(link)
+  }
 
   const handleDelete = async (linkId: string) => {
     try {
@@ -128,7 +145,7 @@ export function LinksTable({ links, categories }: LinksTableProps) {
                       <Button
                         size="icon"
                         variant="outline"
-                        onClick={() => setDeletingLink(link)}
+                        onClick={() => handleDeleteClick(link)}
                         className="h-8 w-8 sm:h-9 sm:w-9 bg-slate-700/50 border-slate-600/50 text-red-400 hover:bg-red-900/30 hover:text-red-300 hover:border-red-700/50"
                       >
                         <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -166,6 +183,7 @@ export function LinksTable({ links, categories }: LinksTableProps) {
         onOpenChange={(open) => !open && setDeletingLink(null)}
         onConfirm={() => deletingLink && handleDelete(deletingLink.id)}
         title={deletingLink?.title || ''}
+        pageCount={deletePageCount}
       />
     </Card>
   )

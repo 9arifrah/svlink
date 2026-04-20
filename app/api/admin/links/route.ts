@@ -10,6 +10,16 @@ export async function GET(request: NextRequest) {
   }
 
   try {
+    const { searchParams } = new URL(request.url)
+    const id = searchParams.get('id')
+
+    // If id is provided, return page count for that link
+    if (id) {
+      const pageCount = await db.getPageCountForLink(id)
+      const link = await db.getLinkById(id)
+      return NextResponse.json({ pageCount, linkTitle: link?.title || '' })
+    }
+
     const links = await db.adminGetAllLinks()
     return NextResponse.json({ success: true, data: links })
   } catch (error) {
