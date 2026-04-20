@@ -146,7 +146,7 @@ function initializeSchema() {
 
   // Data migration: create default public_page for existing users who have custom_slug
   const usersWithSlug = db.prepare(
-    'SELECT id, custom_slug, display_name FROM users WHERE custom_slug IS NOT NULL AND custom_slug != ""'
+    "SELECT id, custom_slug, display_name FROM users WHERE custom_slug IS NOT NULL AND custom_slug != ''"
   ).all() as any[]
 
   for (const user of usersWithSlug) {
