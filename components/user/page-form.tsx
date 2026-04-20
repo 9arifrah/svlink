@@ -104,7 +104,7 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
     try {
       const res = await fetch(`/api/pages/check-slug?slug=${slug}${pageId ? `&exclude=${pageId}` : ''}`)
       const data = await res.json()
-      setSlugValid(!data.exists)
+      setSlugValid(data.available)
     } catch {
       setSlugValid(null)
     } finally {
