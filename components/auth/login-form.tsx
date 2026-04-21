@@ -69,14 +69,14 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="border-slate-200/60 shadow-soft-lg bg-white/80 backdrop-blur-sm">
-      <CardHeader>
-        <CardTitle className="text-slate-900">Login</CardTitle>
+    <Card className="w-full max-w-md mx-4 sm:mx-0 border-slate-200/60 shadow-soft-lg bg-white/80 backdrop-blur-sm">
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="text-lg sm:text-xl text-slate-900">Login</CardTitle>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-slate-700">Email</Label>
+      <CardContent className="p-4 pt-0 sm:p-6">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="email" className="text-xs sm:text-sm text-slate-700">Email</Label>
             <div className="relative group">
               <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
               <Input
@@ -91,8 +91,8 @@ export function LoginForm() {
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-slate-700">Password</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="password" className="text-xs sm:text-sm text-slate-700">Password</Label>
             <div className="relative group">
               <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors z-10" />
               <Input
@@ -124,21 +124,21 @@ export function LoginForm() {
               />
               <Label
                 htmlFor="remember"
-                className="text-sm font-normal text-slate-600 cursor-pointer"
+                className="text-xs sm:text-sm font-normal text-slate-600 cursor-pointer"
               >
                 Ingat saya
               </Label>
             </div>
             <Link
               href="/forgot-password"
-              className="text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+              className="text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
             >
               Lupa password?
             </Link>
           </div>
 
           {error && (
-            <div ref={errorRef} className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm animate-scale-in">
+            <div ref={errorRef} className="flex items-start gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm animate-scale-in">
               <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <span>{error}</span>
             </div>
@@ -147,7 +147,7 @@ export function LoginForm() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50"
+            className="w-full mt-4 sm:mt-6 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50"
           >
             {loading ? 'Memproses...' : 'Masuk'}
           </Button>
