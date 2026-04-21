@@ -55,18 +55,18 @@ export function ProfileForm({ user }: ProfileFormProps) {
   }
 
   return (
-    <form onSubmit={handleSave} className="space-y-4">
+    <form onSubmit={handleSave} className="space-y-4 sm:space-y-6">
       {message && (
         <div className={cn(
-          'flex items-center gap-2 p-3 rounded-lg text-sm',
+          'flex items-center gap-2 p-3 sm:p-4 rounded-lg text-sm',
           messageType === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
         )}>
-          {messageType === 'success' ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+          {messageType === 'success' ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />}
           {message}
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-2 sm:space-y-3">
         <Label htmlFor="displayName">Nama Tampilan</Label>
         <div className="relative">
           <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -80,7 +80,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 sm:space-y-3">
         <Label htmlFor="email">Email</Label>
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -91,13 +91,13 @@ export function ProfileForm({ user }: ProfileFormProps) {
             className="pl-10 bg-slate-50 cursor-not-allowed"
           />
         </div>
-        <p className="text-xs text-slate-500">Email tidak dapat diubah</p>
+        <p className="text-[10px] sm:text-xs text-slate-500">Email tidak dapat diubah</p>
       </div>
 
       <Button
         type="submit"
         disabled={loading}
-        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+        className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
       >
         {loading ? 'Menyimpan...' : 'Simpan'}
       </Button>
@@ -162,18 +162,18 @@ export function PasswordForm() {
   }
 
   return (
-    <form onSubmit={handleChangePassword} className="space-y-4">
+    <form onSubmit={handleChangePassword} className="space-y-4 sm:space-y-6">
       {message && (
         <div className={cn(
-          'flex items-center gap-2 p-3 rounded-lg text-sm',
+          'flex items-center gap-2 p-3 sm:p-4 rounded-lg text-sm',
           messageType === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
         )}>
-          {messageType === 'success' ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+          {messageType === 'success' ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />}
           {message}
         </div>
       )}
 
-      <div className="space-y-2">
+      <div className="space-y-2 sm:space-y-3">
         <Label htmlFor="currentPassword">Password Lama</Label>
         <div className="relative">
           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -188,7 +188,7 @@ export function PasswordForm() {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 sm:space-y-3">
         <Label htmlFor="newPassword">Password Baru</Label>
         <div className="relative">
           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -204,7 +204,7 @@ export function PasswordForm() {
         </div>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 sm:space-y-3">
         <Label htmlFor="confirmPassword">Konfirmasi Password Baru</Label>
         <div className="relative">
           <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -222,7 +222,7 @@ export function PasswordForm() {
       <Button
         type="submit"
         disabled={loading}
-        className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+        className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
       >
         {loading ? 'Mengubah...' : 'Ubah Password'}
       </Button>
@@ -271,36 +271,36 @@ export function DeleteAccountForm() {
   }
 
   return (
-    <form onSubmit={handleDelete} className="space-y-4">
+    <form onSubmit={handleDelete} className="space-y-4 sm:space-y-6">
       {message && (
         <div className={cn(
-          'flex items-center gap-2 p-3 rounded-lg text-sm',
+          'flex items-center gap-2 p-3 sm:p-4 rounded-lg text-sm',
           messageType === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'
         )}>
-          {messageType === 'success' ? <Check className="w-4 h-4" /> : <AlertCircle className="w-4 h-4" />}
+          {messageType === 'success' ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5" />}
           {message}
         </div>
       )}
 
-      <div className="p-4 bg-red-50 border border-red-200 rounded-lg space-y-3">
-        <div className="flex items-center gap-2 text-red-700 font-medium">
+      <div className="p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg space-y-3">
+        <div className="flex items-center gap-2 sm:gap-3 text-red-700 font-medium">
           <AlertTriangle className="w-5 h-5" />
           Zona Berbahaya
         </div>
-        <p className="text-sm text-red-600">
+        <p className="text-xs sm:text-sm text-red-600">
           Menghapus akun akan menghapus semua data:
         </p>
-        <ul className="text-sm text-red-600 list-disc list-inside space-y-1">
+        <ul className="text-xs sm:text-sm text-red-600 list-disc list-inside space-y-1">
           <li>Semua link dan kategori</li>
           <li>Semua halaman publik</li>
           <li>Semua data statistik</li>
         </ul>
-        <p className="text-sm text-red-600 font-medium">
+        <p className="text-xs sm:text-sm text-red-600 font-medium">
           Akun tidak bisa dikembalikan!
         </p>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2 sm:space-y-3">
         <Label htmlFor="confirmDelete">Ketik "HAPUS" untuk konfirmasi:</Label>
         <Input
           id="confirmDelete"
@@ -315,7 +315,7 @@ export function DeleteAccountForm() {
         type="submit"
         disabled={loading || confirmText !== 'HAPUS'}
         variant="destructive"
-        className="bg-red-600 hover:bg-red-700"
+        className="w-full sm:w-auto bg-red-600 hover:bg-red-700"
       >
         {loading ? 'Menghapus...' : 'Hapus Akun Permanen'}
       </Button>
