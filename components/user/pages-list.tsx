@@ -56,20 +56,20 @@ export function PagesList({ pages }: PagesListProps) {
 
   if (pages.length === 0) {
     return (
-      <Card className="border-slate-200/60">
-        <CardContent className="flex flex-col items-center justify-center py-16">
-          <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
-            <FileText className="w-8 h-8 text-slate-400" />
+      <Card className="border-slate-200/60 overflow-hidden">
+        <CardContent className="flex flex-col items-center justify-center py-8 sm:py-12">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-100 flex items-center justify-center mb-3 sm:mb-4">
+            <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
           </div>
-          <h3 className="font-semibold text-slate-900 mb-2">Belum ada Halaman Publik</h3>
-          <p className="text-slate-600 text-center mb-6 max-w-sm">
+          <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Belum ada Halaman Publik</h3>
+          <p className="text-xs sm:text-sm text-slate-600 text-center mb-4 sm:mb-6 max-w-sm">
             Buat halaman publik pertama Anda dan bagikan link-link penting ke dunia!
           </p>
           <a
             href="/dashboard/pages/new"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm font-medium rounded-lg shadow-lg shadow-blue-500/30 hover:shadow-xl hover:-translate-y-0.5 transition-all"
+            className="inline-flex items-center gap-2 px-3 py-2 sm:px-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs sm:text-sm font-medium rounded-lg shadow-lg shadow-blue-500/30 hover:shadow-xl hover:-translate-y-0.5 transition-all"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
             Buat Page Pertama
           </a>
         </CardContent>
@@ -79,10 +79,10 @@ export function PagesList({ pages }: PagesListProps) {
 
   return (
     <>
-      <div className="grid gap-4">
+      <div className="grid gap-3 sm:gap-4">
         {pages.map((page) => (
-          <Card key={page.id} className="border-slate-200/60 hover:border-slate-300 transition-colors">
-            <CardContent className="p-4">
+          <Card key={page.id} className="border-slate-200/60 hover:border-slate-300 transition-colors overflow-hidden">
+            <CardContent className="p-3 sm:p-6">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex items-start gap-4 flex-1 min-w-0">
                   <div 
@@ -93,10 +93,10 @@ export function PagesList({ pages }: PagesListProps) {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-slate-900 truncate">{page.title}</h3>
+                      <h3 className="text-sm sm:text-base font-semibold text-slate-900 truncate">{page.title}</h3>
                       <span 
                         className={cn(
-                          'px-2 py-0.5 text-xs font-medium rounded-full',
+                          'px-2 py-0.5 text-[10px] sm:text-xs font-medium rounded-full',
                           page.is_active 
                             ? 'bg-green-100 text-green-700' 
                             : 'bg-slate-100 text-slate-600'
@@ -108,15 +108,15 @@ export function PagesList({ pages }: PagesListProps) {
                     <p className="text-sm text-slate-600 mb-2 truncate">
                       {page.description || 'Tidak ada deskripsi'}
                     </p>
-                    <div className="flex items-center gap-4 text-xs text-slate-500">
-                      <span className="font-mono">/{page.slug}</span>
+                    <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-slate-500">
+                      <span className="font-mono text-[10px] sm:text-xs truncate">/{page.slug}</span>
                       <span>{page.link_count || 0} link{page.link_count === 1 ? '' : 's'}</span>
                       <span>{page.click_count || 0} klik</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-1 shrink-0">
+                <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
                   <a
                     href={`/${page.slug}`}
                     target="_blank"
