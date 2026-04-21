@@ -129,10 +129,10 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <User className="h-5 w-5 text-blue-600" />
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <User className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600" />
             {user ? 'Edit User' : 'Tambah User Baru'}
           </DialogTitle>
           <DialogDescription>
@@ -140,11 +140,11 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 py-4">
           {/* Profile Section */}
-          <div className="space-y-4">
+          <div className="space-y-4 sm:space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-xs sm:text-sm">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -152,30 +152,33 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
+                className="text-sm"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="display_name">Nama Tampilan</Label>
+              <Label htmlFor="display_name" className="text-xs sm:text-sm">Nama Tampilan</Label>
               <Input
                 id="display_name"
                 type="text"
                 placeholder="Contoh: John Doe"
                 value={formData.display_name}
                 onChange={(e) => setFormData({ ...formData, display_name: e.target.value })}
+                className="text-sm"
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="custom_slug">Custom Slug (opsional)</Label>
+              <Label htmlFor="custom_slug" className="text-xs sm:text-sm">Custom Slug (opsional)</Label>
               <Input
                 id="custom_slug"
                 type="text"
                 placeholder="Contoh: john-doe"
                 value={formData.custom_slug}
                 onChange={(e) => setFormData({ ...formData, custom_slug: e.target.value })}
+                className="text-sm"
               />
-              <p className="text-xs text-slate-500">
+              <p className="text-[10px] sm:text-xs text-slate-500">
                 Digunakan untuk URL publik (misal: /u/john-doe)
               </p>
             </div>
@@ -199,7 +202,7 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
                   Berikan akses admin
                 </Label>
               </div>
-              <p className="text-xs text-slate-500 ml-6">
+              <p className="text-[10px] sm:text-xs text-slate-500 ml-6">
                 Pengguna dengan akses admin dapat mengelola semua pengguna dan link.
               </p>
             </div>
@@ -209,10 +212,10 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
 
           {/* Password Section */}
           <div className="flex items-start gap-2">
-            <KeyRound className="h-4 w-4 text-slate-500 mt-0.5" />
-            <div className="space-y-4 flex-1">
+            <KeyRound className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 mt-0.5" />
+            <div className="space-y-4 sm:space-y-6 flex-1">
               <div className="space-y-2">
-                <Label htmlFor="password">
+                <Label htmlFor="password" className="text-xs sm:text-sm">
                   {user ? 'Password Baru (opsional)' : 'Password'}
                 </Label>
                 <Input
@@ -222,11 +225,12 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   required={!user}
+                  className="text-sm"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">
+                <Label htmlFor="confirmPassword" className="text-xs sm:text-sm">
                   {user ? 'Konfirmasi Password Baru' : 'Konfirmasi Password'}
                 </Label>
                 <Input
@@ -236,22 +240,24 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                   required={!user || formData.password.length > 0}
+                  className="text-sm"
                 />
               </div>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={loading}
+              className="w-full sm:w-auto"
             >
               Batal
             </Button>
-            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">
+            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
               {loading ? 'Menyimpan...' : user ? 'Update User' : 'Buat User'}
             </Button>
           </div>
