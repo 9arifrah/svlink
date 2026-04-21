@@ -195,8 +195,8 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
 
   const tabs = [
     { id: 'info', label: 'Info', icon: '📝' },
-    { id: 'style', label: 'Gaya', icon: '🎨' },
     { id: 'links', label: 'Link', icon: '🔗' },
+    { id: 'style', label: 'Gaya', icon: '🎨' },
     { id: 'preview', label: 'Preview', icon: '👁️' },
   ] as const
 
@@ -348,6 +348,99 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
           </div>
         )}
 
+        {/* Links Tab */}
+        {activeTab === 'links' && (
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <Label>Link Terpilih ({selectedLinks.length})</Label>
+              {selectedLinks.length === 0 ? (
+                <Card className="border-dashed border-slate-300">
+                  <CardContent className="py-8 text-center text-slate-500">
+                    <p className="mb-2">Belum ada link dipilih</p>
+                    <p className="text-sm">Pilih dari daftar link di bawah</p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="space-y-2">
+                  {selectedLinks.map((link, index) => (
+                    <div 
+                      key={link.id}
+                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border"
+                    >
+                      <GripVertical className="w-4 h-4 text-slate-400 cursor-grab" />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-slate-900 truncate">{link.title}</p>
+                        <p className="text-xs text-slate-500 truncate">{link.url}</p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => moveLink(index, 'up')}
+                          disabled={index === 0}
+                          className="p-1.5 text-slate-400 hover:text-slate-600 disabled:opacity-30"
+                        >
+                          <ArrowUp className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveLink(index, 'down')}
+                          disabled={index === selectedLinks.length - 1}
+                          className="p-1.5 text-slate-400 hover:text-slate-600 disabled:opacity-30"
+                        >
+                          <ArrowDown className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeLink(link.id)}
+                          className="p-1.5 text-slate-400 hover:text-red-600"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="border-t pt-6 space-y-3">
+              <Label>Tambah Link</Label>
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Input
+                  value={linkSearch}
+                  onChange={e => setLinkSearch(e.target.value)}
+                  placeholder="Cari link..."
+                  className="pl-10 border-slate-200"
+                />
+              </div>
+              
+              {filteredAvailableLinks.length > 0 ? (
+                <div className="space-y-2 max-h-60 overflow-y-auto">
+                  {filteredAvailableLinks.slice(0, 10).map(link => (
+                    <div
+                      key={link.id}
+                      className="flex items-center justify-between p-3 bg-white rounded-lg border hover:border-blue-300 cursor-pointer"
+                      onClick={() => addLink(link)}
+                    >
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-slate-900 truncate">{link.title}</p>
+                        <p className="text-xs text-slate-500 truncate">{link.url}</p>
+                      </div>
+                      <Plus className="w-5 h-5 text-slate-400" />
+                    </div>
+                  ))}
+                </div>
+              ) : linkSearch ? (
+                <p className="text-sm text-slate-500 text-center py-4">
+                  Tidak ada link yang cocok
+                </p>
+              ) : null}
+            </div>
+          </div>
+        )}
+
+
         {/* Style Tab */}
         {activeTab === 'style' && (
           <div className="space-y-6">
@@ -478,99 +571,6 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
             </div>
           </div>
         )}
-
-        {/* Links Tab */}
-        {activeTab === 'links' && (
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Label>Link Terpilih ({selectedLinks.length})</Label>
-              {selectedLinks.length === 0 ? (
-                <Card className="border-dashed border-slate-300">
-                  <CardContent className="py-8 text-center text-slate-500">
-                    <p className="mb-2">Belum ada link dipilih</p>
-                    <p className="text-sm">Pilih dari daftar link di bawah</p>
-                  </CardContent>
-                </Card>
-              ) : (
-                <div className="space-y-2">
-                  {selectedLinks.map((link, index) => (
-                    <div 
-                      key={link.id}
-                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border"
-                    >
-                      <GripVertical className="w-4 h-4 text-slate-400 cursor-grab" />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-slate-900 truncate">{link.title}</p>
-                        <p className="text-xs text-slate-500 truncate">{link.url}</p>
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <button
-                          type="button"
-                          onClick={() => moveLink(index, 'up')}
-                          disabled={index === 0}
-                          className="p-1.5 text-slate-400 hover:text-slate-600 disabled:opacity-30"
-                        >
-                          <ArrowUp className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => moveLink(index, 'down')}
-                          disabled={index === selectedLinks.length - 1}
-                          className="p-1.5 text-slate-400 hover:text-slate-600 disabled:opacity-30"
-                        >
-                          <ArrowDown className="w-4 h-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => removeLink(link.id)}
-                          className="p-1.5 text-slate-400 hover:text-red-600"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="border-t pt-6 space-y-3">
-              <Label>Tambah Link</Label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input
-                  value={linkSearch}
-                  onChange={e => setLinkSearch(e.target.value)}
-                  placeholder="Cari link..."
-                  className="pl-10 border-slate-200"
-                />
-              </div>
-              
-              {filteredAvailableLinks.length > 0 ? (
-                <div className="space-y-2 max-h-60 overflow-y-auto">
-                  {filteredAvailableLinks.slice(0, 10).map(link => (
-                    <div
-                      key={link.id}
-                      className="flex items-center justify-between p-3 bg-white rounded-lg border hover:border-blue-300 cursor-pointer"
-                      onClick={() => addLink(link)}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="font-medium text-slate-900 truncate">{link.title}</p>
-                        <p className="text-xs text-slate-500 truncate">{link.url}</p>
-                      </div>
-                      <Plus className="w-5 h-5 text-slate-400" />
-                    </div>
-                  ))}
-                </div>
-              ) : linkSearch ? (
-                <p className="text-sm text-slate-500 text-center py-4">
-                  Tidak ada link yang cocok
-                </p>
-              ) : null}
-            </div>
-          </div>
-        )}
-
         {/* Preview Tab */}
         {activeTab === 'preview' && (
           <div className="space-y-4">
