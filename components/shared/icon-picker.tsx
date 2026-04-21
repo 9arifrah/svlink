@@ -63,16 +63,16 @@ export function IconPicker({ value, onChange, className }: IconPickerProps) {
             <span className="text-slate-500 text-sm ml-2">Pilih icon</span>
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-96 p-0 max-h-[420px] overflow-hidden flex flex-col" align="start" onWheel={(e) => e.stopPropagation()}>
+        <PopoverContent className="w-[90vw] sm:w-96 p-0 max-h-[420px] overflow-hidden flex flex-col" align="start" onWheel={(e) => e.stopPropagation()}>
           {/* Category Tabs */}
-          <div className="flex flex-wrap gap-1 p-3 border-b bg-slate-50/50 max-h-24 overflow-y-auto scrollbar-thin" onWheel={(e) => e.stopPropagation()}>
+          <div className="flex flex-wrap gap-1 p-2 sm:p-3 border-b bg-slate-50/50 max-h-24 overflow-y-auto scrollbar-thin" onWheel={(e) => e.stopPropagation()}>
             {Object.keys(ICON_CATEGORIES).map((category) => (
               <button
                 key={category}
                 type="button"
                 onClick={() => setActiveCategory(category)}
                 className={cn(
-                  'px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-colors',
+                  'px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap transition-colors',
                   activeCategory === category
                     ? 'bg-blue-600 text-white'
                     : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
@@ -85,17 +85,17 @@ export function IconPicker({ value, onChange, className }: IconPickerProps) {
 
           {/* Icon Grid */}
           <div
-            className="p-3 overflow-y-auto flex-1 scrollbar-thin"
+            className="p-2 sm:p-3 overflow-y-auto flex-1 scrollbar-thin"
             onWheel={(e) => e.stopPropagation()}
           >
-            <div className="grid grid-cols-6 gap-1.5">
+            <div className="grid grid-cols-5 sm:grid-cols-6 md:grid-cols-8 gap-2 sm:gap-3">
               {ICON_CATEGORIES[activeCategory]?.map((icon) => (
                 <button
                   key={icon}
                   type="button"
                   onClick={() => handleSelectIcon(icon)}
                   className={cn(
-                    'p-2 text-xl rounded-lg border-2 transition-all hover:scale-110',
+                    'p-2 sm:p-3 rounded-lg border transition-all hover:scale-110 text-xl sm:text-2xl',
                     value === icon
                       ? 'border-blue-600 bg-blue-50 shadow-sm'
                       : 'border-transparent hover:border-slate-300 hover:bg-slate-50'
@@ -108,12 +108,12 @@ export function IconPicker({ value, onChange, className }: IconPickerProps) {
           </div>
 
           {/* Custom Icon Input */}
-          <div className="border-t p-3 bg-slate-50/50">
+          <div className="border-t p-2 sm:p-3 bg-slate-50/50">
             <form onSubmit={handleCustomIcon} className="space-y-2">
-              <label className="block text-xs font-medium text-slate-600">
+              <label className="block text-xs sm:text-sm font-medium text-slate-600">
                 Icon Custom
               </label>
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <Input
                   type="text"
                   value={customIcon}
@@ -126,7 +126,7 @@ export function IconPicker({ value, onChange, className }: IconPickerProps) {
                   type="submit"
                   disabled={!customIcon}
                   size="sm"
-                  className="bg-blue-600 hover:bg-blue-700 h-8"
+                  className="bg-blue-600 hover:bg-blue-700 h-8 w-full sm:w-auto"
                 >
                   OK
                 </Button>
