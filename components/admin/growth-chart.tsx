@@ -45,12 +45,12 @@ export function GrowthChart({ links, users }: GrowthChartProps) {
     return (
         <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
             <CardHeader>
-                <CardTitle className="text-sm font-medium text-slate-300">
+                <CardTitle className="text-base sm:text-lg font-semibold text-slate-300 mb-2 sm:mb-4">
                     Tren Pertumbuhan (7 Hari Terakhir)
                 </CardTitle>
             </CardHeader>
             <CardContent className="pl-0">
-                <div className="h-[300px] w-full min-w-0">
+                <div className="h-[200px] sm:h-[250px] lg:h-[300px] w-full min-w-0 overflow-hidden">
                     <ResponsiveContainer width="100%" height="100%">
                         <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                             <defs>
