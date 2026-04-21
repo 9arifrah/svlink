@@ -190,7 +190,7 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
     : `${window.location.origin}/[belum diatur]`
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Profile Settings */}
       <Card>
         <CardHeader>
@@ -199,10 +199,10 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
             Profil Saya
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="displayName">Nama Tampilan</Label>
+        <CardContent className="p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="displayName" className="text-xs sm:text-sm">Nama Tampilan</Label>
               <Input
                 id="displayName"
                 value={formData.displayName}
@@ -211,8 +211,8 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="customSlug">URL Kustom</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="customSlug" className="text-xs sm:text-sm">URL Kustom</Label>
               <Input
                 id="customSlug"
                 value={formData.customSlug}
@@ -240,10 +240,10 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
         <CardHeader>
           <CardTitle>Halaman Publik</CardTitle>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="profileDescription">Deskripsi Profil</Label>
+        <CardContent className="p-4 sm:p-6">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="profileDescription" className="text-xs sm:text-sm">Deskripsi Profil</Label>
               <Textarea
                 id="profileDescription"
                 value={formData.profileDescription}
@@ -253,20 +253,20 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="pageTitle">Judul Halaman</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="pageTitle" className="text-xs sm:text-sm">Judul Halaman</Label>
               <Input
                 id="pageTitle"
                 value={formData.pageTitle}
                 onChange={(e) => setFormData({ ...formData, pageTitle: e.target.value })}
                 placeholder="Nama Link Saya"
               />
-              <p className="text-xs text-slate-500">Judul yang akan ditampilkan di halaman publik Anda</p>
+              <p className="text-[10px] sm:text-xs text-slate-500">Judul yang akan ditampilkan di halaman publik Anda</p>
             </div>
 
-            <div className="space-y-2">
-              <Label>Logo</Label>
-              <div className="flex items-start gap-4">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label className="text-xs sm:text-sm">Logo</Label>
+              <div className="flex flex-col sm:flex-row items-start gap-4">
                 <div className="h-20 w-20 rounded-lg border border-slate-200 bg-slate-50 flex items-center justify-center overflow-hidden shrink-0">
                   {logoPreview ? (
                     <img
@@ -286,13 +286,14 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
                     onChange={handleLogoSelect}
                     className="hidden"
                   />
-                  <div className="flex gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2">
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={() => fileInputRef.current?.click()}
                       disabled={uploadingLogo}
+                      className="w-full sm:w-auto"
                     >
                       <Upload className="mr-2 h-4 w-4" />
                       Pilih Gambar
@@ -303,14 +304,14 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
                         variant="outline"
                         size="sm"
                         onClick={handleDeleteLogo}
-                        className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                        className="text-red-600 hover:bg-red-50 hover:text-red-700 w-full sm:w-auto"
                       >
                         <X className="mr-2 h-4 w-4" />
                         Hapus Logo
                       </Button>
                     )}
                   </div>
-                  <p className="text-xs text-slate-500">PNG, JPG, GIF, WebP. Max 500KB. Rekomendasi: 200x200px</p>
+                  <p className="text-[10px] sm:text-xs text-slate-500">PNG, JPG, GIF, WebP. Max 500KB. Rekomendasi: 200x200px</p>
                 </div>
               </div>
               {logoError && (
@@ -318,8 +319,8 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
               )}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="themeColor">Warna Tema</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="themeColor" className="text-xs sm:text-sm">Warna Tema</Label>
               <div className="flex gap-3">
                 <Input
                   id="themeColor"
@@ -424,11 +425,11 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
               </div>
             )}
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <Button 
                 type="submit" 
                 disabled={loading || uploadingLogo}
-                className="bg-blue-600 hover:bg-blue-700"
+                className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
               >
                 {(loading || uploadingLogo) ? (
                   <>
@@ -455,7 +456,7 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
             Preview Halaman Publik
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-6 overflow-hidden">
             {/* Mini public page preview */}
             <div className="mx-auto max-w-md">
@@ -551,6 +552,7 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
                 type="button"
                 variant="outline"
                 asChild
+                className="w-full sm:w-auto"
               >
                 <a
                   href={`/${formData.customSlug}`}
