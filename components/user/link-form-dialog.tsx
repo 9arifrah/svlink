@@ -189,9 +189,9 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
             <Link2 className="h-5 w-5 text-blue-600" />
             {link ? 'Edit Link' : 'Tambah Link Baru'}
           </DialogTitle>
@@ -200,22 +200,23 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 py-4">
           {/* Basic Info Section */}
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Judul Link</Label>
+          <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="title" className="text-xs sm:text-sm">Judul Link</Label>
               <Input
                 id="title"
                 placeholder="Contoh: Grup WhatsApp Peserta"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 required
+                className="text-sm"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="url">URL Tujuan</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="url" className="text-xs sm:text-sm">URL Tujuan</Label>
               <Input
                 id="url"
                 type="url"
@@ -223,6 +224,7 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
                 value={formData.url}
                 onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                 required
+                className="text-sm"
               />
             </div>
           </div>
@@ -230,9 +232,9 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
           <div className="border-t border-slate-100" />
 
           {/* Short Code Section */}
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="short_code">Short Code (Opsional)</Label>
+              <Label htmlFor="short_code" className="text-xs sm:text-sm">Short Code (Opsional)</Label>
               <Button
                 type="button"
                 variant="outline"
@@ -249,27 +251,28 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
               placeholder="Biarkan kosong untuk auto-generate"
               value={formData.short_code}
               onChange={(e) => handleShortCodeChange(e.target.value)}
+              className="text-sm"
             />
             {formData.short_code && (
-              <p className="text-xs text-slate-500">
+              <p className="text-[10px] sm:text-xs text-slate-500">
                 Short link: <span className="font-mono">{typeof window !== 'undefined' ? window.location.origin : ''}/{formData.short_code}</span>
               </p>
             )}
             {shortCodeError && (
-              <p className="text-xs text-red-500">{shortCodeError}</p>
+              <p className="text-[10px] sm:text-xs text-red-500">{shortCodeError}</p>
             )}
           </div>
 
           <div className="border-t border-slate-100" />
 
           {/* Category Section */}
-          <div className="space-y-2">
-            <Label htmlFor="category">Pilih Kategori</Label>
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="category" className="text-xs sm:text-sm">Pilih Kategori</Label>
             <Select
               value={formData.category_id}
               onValueChange={(value) => setFormData({ ...formData, category_id: value })}
             >
-              <SelectTrigger id="category">
+              <SelectTrigger id="category" className="text-sm">
                 <SelectValue placeholder="Pilih kategori" />
               </SelectTrigger>
               <SelectContent>
@@ -296,16 +299,17 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
           </div>
 
           {/* Footer */}
-          <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={loading}
+              className="w-full sm:w-auto"
             >
               Batal
             </Button>
-            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">
+            <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto">
               {loading ? 'Menyimpan...' : 'Simpan Link'}
             </Button>
           </div>
