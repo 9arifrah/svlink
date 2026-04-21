@@ -40,26 +40,26 @@ export function RecentLinks({ links }: RecentLinksProps) {
             Belum ada link. Buat link pertama Anda!
           </p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {links.map((link) => (
               <div
                 key={link.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 sm:p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
               >
                 <div className="min-w-0 flex-1">
-                  <p className="font-semibold text-slate-900 truncate">
+                  <p className="font-semibold text-slate-900 truncate text-sm sm:text-base">
                     {link.title || 'Tanpa Judul'}
                   </p>
-                  <p className="text-sm text-slate-500 truncate">
+                  <p className="text-xs sm:text-sm text-slate-500 truncate">
                     {link.url}
                   </p>
                 </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="flex items-center gap-1 text-sm text-slate-600">
-                    <MousePointerClick className="h-4 w-4" />
+                <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                  <div className="flex items-center gap-1 text-xs sm:text-sm text-slate-600">
+                    <MousePointerClick className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     <span>{link.click_count}</span>
                   </div>
-                  <Badge variant={link.is_public ? 'success' : 'warning'}>
+                  <Badge variant={link.is_public ? 'success' : 'warning'} className="text-[10px] sm:text-xs px-2 sm:px-2.5">
                     {link.is_public ? 'Publik' : 'Private'}
                   </Badge>
                 </div>

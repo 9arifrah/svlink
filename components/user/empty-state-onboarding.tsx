@@ -21,16 +21,16 @@ export function EmptyStateOnboarding({ linkCount }: EmptyStateOnboardingProps) {
     <Card className="border-brand-200 bg-brand-50/50">
       <CardContent className="pt-4 sm:pt-6">
         <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-1">Selamat Datang di svlink! 👋</h3>
-        <p className="text-sm text-slate-600 mb-4 sm:mb-6">Mulai dalam 3 langkah mudah:</p>
-        <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
+        <p className="text-xs sm:text-sm text-slate-600 mb-3 sm:mb-6">Mulai dalam 3 langkah mudah:</p>
+        <div className="space-y-2.5 sm:space-y-4 mb-3 sm:mb-6">
           {steps.map((step, i) => (
-            <div key={i} className="flex items-start gap-3">
-              <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm ${step.color}`}>
-                <step.icon className="h-4 w-4" />
+            <div key={i} className="flex items-start gap-2.5 sm:gap-3">
+              <div className={`flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-lg bg-white shadow-sm ${step.color}`}>
+                <step.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </div>
               <div>
-                <p className="font-medium text-slate-900">{step.title}</p>
-                <p className="text-sm text-slate-500">{step.desc}</p>
+                <p className="font-medium text-slate-900 text-sm sm:text-base">{step.title}</p>
+                <p className="text-xs sm:text-sm text-slate-500">{step.desc}</p>
               </div>
             </div>
           ))}

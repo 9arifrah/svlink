@@ -31,22 +31,22 @@ export function TopLinks({ links }: TopLinksProps) {
         {top5.length === 0 ? (
           <p className="text-sm text-slate-500">Belum ada link</p>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {top5.map((link, i) => (
-              <div key={link.id} className="flex items-center gap-3">
-                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${rankColors[i]}`}>
+              <div key={link.id} className="flex items-center gap-2 sm:gap-3">
+                <span className={`flex h-5 w-5 sm:h-6 sm:w-6 shrink-0 items-center justify-center rounded-full text-[10px] sm:text-xs font-bold ${rankColors[i]}`}>
                   {i + 1}
                 </span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{link.title || 'Tanpa Judul'}</p>
-                  <div className="mt-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                  <p className="text-xs sm:text-sm font-medium truncate">{link.title || 'Tanpa Judul'}</p>
+                  <div className="mt-0.5 sm:mt-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-brand-500 rounded-full transition-all"
                       style={{ width: `${(link.click_count / maxClicks) * 100}%` }}
                     />
                   </div>
                 </div>
-                <span className="text-sm text-slate-500 tabular-nums whitespace-nowrap">
+                <span className="text-[10px] sm:text-sm text-slate-500 tabular-nums whitespace-nowrap">
                   {link.click_count} klik
                 </span>
               </div>

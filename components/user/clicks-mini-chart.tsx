@@ -19,7 +19,7 @@ export function ClicksMiniChart({ data }: ClicksMiniChartProps) {
         <CardTitle className="text-base">Klik 7 Hari Terakhir</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[160px] sm:h-[200px]">
+        <div className="h-[160px] sm:h-[200px] overflow-hidden">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
               <defs>

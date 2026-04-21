@@ -30,17 +30,17 @@ export function QuickActions() {
           <CardTitle>Aksi Cepat</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <Button
               variant="outline"
               onClick={handleOpenDialog}
-              className="w-full sm:w-[200px]"
+              className="w-full sm:w-[200px] text-sm"
             >
               <Plus className="mr-2 h-4 w-4" />
               Quick Create
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground mt-3 flex items-center gap-2">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-2 sm:mt-3 flex flex-wrap items-center gap-1.5 sm:gap-2">
             <Link2 className="h-3.5 w-3.5" />
             Short link
             <span className="text-slate-300">|</span>
