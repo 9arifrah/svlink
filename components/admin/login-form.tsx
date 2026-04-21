@@ -48,18 +48,18 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="border-slate-700 bg-slate-800/50 backdrop-blur">
-      <CardHeader>
-        <CardTitle className="text-white">Masuk Admin</CardTitle>
+    <Card className="w-full max-w-md mx-4 sm:mx-0 border-slate-700 bg-slate-800/50 backdrop-blur">
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="text-lg sm:text-xl text-white">Masuk Admin</CardTitle>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-slate-200">
+      <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+        <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="email" className="text-xs sm:text-sm text-slate-200">
               Email
             </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+              <Mail className="absolute left-3 top-1/2 h-4 w-4 sm:h-5 sm:w-5 -translate-y-1/2 text-slate-400" />
               <Input
                 id="email"
                 type="email"
@@ -67,17 +67,17 @@ export function LoginForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="border-slate-600 bg-slate-900/50 pl-10 text-white placeholder:text-slate-500"
+                className="border-slate-600 bg-slate-900/50 pl-10 text-sm text-white placeholder:text-slate-500"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-slate-200">
+          <div className="space-y-1.5 sm:space-y-2">
+            <Label htmlFor="password" className="text-xs sm:text-sm text-slate-200">
               Password
             </Label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+              <Lock className="absolute left-3 top-1/2 h-4 w-4 sm:h-5 sm:w-5 -translate-y-1/2 text-slate-400" />
               <Input
                 id="password"
                 type="password"
@@ -85,13 +85,13 @@ export function LoginForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="border-slate-600 bg-slate-900/50 pl-10 text-white placeholder:text-slate-500"
+                className="border-slate-600 bg-slate-900/50 pl-10 text-sm text-white placeholder:text-slate-500"
               />
             </div>
           </div>
 
           {error && (
-            <div className="rounded-lg bg-red-500/10 border border-red-500/50 p-3 text-sm text-red-400">
+            <div className="rounded-lg bg-red-500/10 border border-red-500/50 p-3 text-xs sm:text-sm text-red-400">
               {error}
             </div>
           )}
@@ -99,7 +99,8 @@ export function LoginForm() {
           <Button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            size="lg"
+            className="w-full bg-blue-600 hover:bg-blue-700 mt-4 sm:mt-6"
           >
             {loading ? 'Memproses...' : 'Masuk Admin'}
           </Button>
