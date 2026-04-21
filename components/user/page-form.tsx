@@ -201,23 +201,23 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
   ] as const
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
       {/* Tabs */}
-      <div className="border-b border-slate-200">
-        <nav className="flex gap-1">
+      <div className="border-b border-slate-200 overflow-x-auto">
+        <nav className="flex gap-0.5 sm:gap-1">
           {tabs.map(tab => (
             <button
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id)}
               className={cn(
-                'px-4 py-3 text-sm font-medium border-b-2 transition-colors',
+                'px-3 py-2 sm:px-4 sm:py-3 text-xs sm:text-sm font-medium border-b-2 transition-colors whitespace-nowrap',
                 activeTab === tab.id
                   ? 'border-blue-600 text-blue-600'
                   : 'border-transparent text-slate-600 hover:text-slate-900 hover:border-slate-300'
               )}
             >
-              <span className="mr-2">{tab.icon}</span>
+              <span className="mr-1 sm:mr-2">{tab.icon}</span>
               {tab.label}
             </button>
           ))}
@@ -225,27 +225,27 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
       </div>
 
       {/* Tab Content */}
-      <div className="min-h-[400px]">
+      <div className="min-h-[300px] sm:min-h-[400px]">
         {/* Info Tab */}
         {activeTab === 'info' && (
-          <div className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="title">Judul Halaman</Label>
+          <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="title" className="text-xs sm:text-sm">Judul Halaman</Label>
               <Input
                 id="title"
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="Page Pribadi"
                 required
-                className="border-slate-200 focus:border-blue-400"
+                className="border-slate-200 focus:border-blue-400 text-sm"
               />
-              <p className="text-xs text-slate-500">Tampilan judul di halaman publik</p>
+              <p className="text-[10px] sm:text-xs text-slate-500">Tampilan judul di halaman publik</p>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="slug">URL Kustom (Slug)</Label>
-              <div className="flex items-center gap-2">
-                <span className="text-slate-500 text-sm whitespace-nowrap">svlink.id/</span>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="slug" className="text-xs sm:text-sm">URL Kustom (Slug)</Label>
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                <span className="text-[10px] sm:text-sm text-slate-500 whitespace-nowrap">svlink.id/</span>
                 <div className="relative flex-1">
                   <Input
                     id="slug"
@@ -262,27 +262,27 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
                   />
                   {slugChecking && (
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                      <div className="w-4 h-4 border-2 border-slate-300 border-t-blue-500 rounded-full animate-spin" />
+                      <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-slate-300 border-t-blue-500 rounded-full animate-spin" />
                     </div>
                   )}
                   {!slugChecking && slugValid !== null && (
                     <div className="absolute right-3 top-1/2 -translate-y-1/2">
                       {slugValid ? (
-                        <Check className="w-4 h-4 text-green-500" />
+                        <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500" />
                       ) : (
-                        <X className="w-4 h-4 text-red-500" />
+                        <X className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500" />
                       )}
                     </div>
                   )}
                 </div>
               </div>
               {slugValid === false && (
-                <p className="text-xs text-red-500">Slug sudah digunakan atau tidak valid</p>
+                <p className="text-[10px] sm:text-xs text-red-500">Slug sudah digunakan atau tidak valid</p>
               )}
               {slugValid === true && (
-                <p className="text-xs text-green-600">✓ Slug tersedia</p>
+                <p className="text-[10px] sm:text-xs text-green-600">✓ Slug tersedia</p>
               )}
-              <p className="text-xs text-slate-500">Huruf kecil, angka, dan strip. Min 3 karakter.</p>
+              <p className="text-[10px] sm:text-xs text-slate-500">Huruf kecil, angka, dan strip. Min 3 karakter.</p>
             </div>
 
             <div className="space-y-2">
@@ -298,10 +298,10 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
             </div>
 
             <div className="space-y-3">
-              <Label>Status</Label>
-              <div className="flex gap-4">
+              <Label className="text-xs sm:text-sm">Status</Label>
+              <div className="flex gap-2 sm:gap-4">
                 <label className={cn(
-                  'flex items-center gap-2 px-4 py-3 rounded-lg border cursor-pointer transition-colors flex-1',
+                  'flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-lg border cursor-pointer transition-colors flex-1',
                   isActive 
                     ? 'border-green-500 bg-green-50 text-green-700' 
                     : 'border-slate-200 text-slate-600'
@@ -313,15 +313,15 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
                     className="sr-only"
                   />
                   <span className={cn(
-                    'w-4 h-4 rounded-full border-2 flex items-center justify-center',
+                    'w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 flex items-center justify-center',
                     isActive ? 'border-green-500' : 'border-slate-300'
                   )}>
                     {isActive && <span className="w-2 h-2 rounded-full bg-green-500" />}
                   </span>
-                  Aktif
+                  <span className="text-xs sm:text-sm">Aktif</span>
                 </label>
                 <label className={cn(
-                  'flex items-center gap-2 px-4 py-3 rounded-lg border cursor-pointer transition-colors flex-1',
+                  'flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-lg border cursor-pointer transition-colors flex-1',
                   !isActive 
                     ? 'border-slate-400 bg-slate-50 text-slate-700' 
                     : 'border-slate-200 text-slate-400'
@@ -333,15 +333,15 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
                     className="sr-only"
                   />
                   <span className={cn(
-                    'w-4 h-4 rounded-full border-2 flex items-center justify-center',
+                    'w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 flex items-center justify-center',
                     !isActive ? 'border-slate-400' : 'border-slate-300'
                   )}>
                     {!isActive && <span className="w-2 h-2 rounded-full bg-slate-400" />}
                   </span>
-                  Nonaktif
+                  <span className="text-xs sm:text-sm">Nonaktif</span>
                 </label>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-[10px] sm:text-xs text-slate-500">
                 {isActive ? 'Halaman bisa diakses publik' : 'Halaman disembunyikan sementara'}
               </p>
             </div>
@@ -350,14 +350,14 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
 
         {/* Links Tab */}
         {activeTab === 'links' && (
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Label>Link Terpilih ({selectedLinks.length})</Label>
+          <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-2 sm:space-y-3">
+              <Label className="text-xs sm:text-sm">Link Terpilih ({selectedLinks.length})</Label>
               {selectedLinks.length === 0 ? (
                 <Card className="border-dashed border-slate-300">
-                  <CardContent className="py-8 text-center text-slate-500">
-                    <p className="mb-2">Belum ada link dipilih</p>
-                    <p className="text-sm">Pilih dari daftar link di bawah</p>
+                  <CardContent className="py-6 sm:py-8 text-center text-slate-500">
+                    <p className="mb-2 text-sm sm:text-base">Belum ada link dipilih</p>
+                    <p className="text-xs sm:text-sm">Pilih dari daftar link di bawah</p>
                   </CardContent>
                 </Card>
               ) : (
@@ -365,36 +365,36 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
                   {selectedLinks.map((link, index) => (
                     <div 
                       key={link.id}
-                      className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg border"
+                      className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-slate-50 rounded-lg border"
                     >
-                      <GripVertical className="w-4 h-4 text-slate-400 cursor-grab" />
+                      <GripVertical className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 cursor-grab flex-shrink-0" />
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-slate-900 truncate">{link.title}</p>
-                        <p className="text-xs text-slate-500 truncate">{link.url}</p>
+                        <p className="font-medium text-slate-900 truncate text-sm">{link.title}</p>
+                        <p className="text-[10px] sm:text-xs text-slate-500 truncate">{link.url}</p>
                       </div>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-0.5 sm:gap-1">
                         <button
                           type="button"
                           onClick={() => moveLink(index, 'up')}
                           disabled={index === 0}
-                          className="p-1.5 text-slate-400 hover:text-slate-600 disabled:opacity-30"
+                          className="p-1 sm:p-1.5 text-slate-400 hover:text-slate-600 disabled:opacity-30"
                         >
-                          <ArrowUp className="w-4 h-4" />
+                          <ArrowUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </button>
                         <button
                           type="button"
                           onClick={() => moveLink(index, 'down')}
                           disabled={index === selectedLinks.length - 1}
-                          className="p-1.5 text-slate-400 hover:text-slate-600 disabled:opacity-30"
+                          className="p-1 sm:p-1.5 text-slate-400 hover:text-slate-600 disabled:opacity-30"
                         >
-                          <ArrowDown className="w-4 h-4" />
+                          <ArrowDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </button>
                         <button
                           type="button"
                           onClick={() => removeLink(link.id)}
-                          className="p-1.5 text-slate-400 hover:text-red-600"
+                          className="p-1 sm:p-1.5 text-slate-400 hover:text-red-600"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                         </button>
                       </div>
                     </div>
@@ -403,15 +403,15 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
               )}
             </div>
 
-            <div className="border-t pt-6 space-y-3">
-              <Label>Tambah Link</Label>
+            <div className="border-t pt-4 sm:pt-6 space-y-2 sm:space-y-3">
+              <Label className="text-xs sm:text-sm">Tambah Link</Label>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400" />
                 <Input
                   value={linkSearch}
                   onChange={e => setLinkSearch(e.target.value)}
                   placeholder="Cari link..."
-                  className="pl-10 border-slate-200"
+                  className="pl-10 border-slate-200 text-sm"
                 />
               </div>
               
@@ -420,19 +420,19 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
                   {filteredAvailableLinks.slice(0, 10).map(link => (
                     <div
                       key={link.id}
-                      className="flex items-center justify-between p-3 bg-white rounded-lg border hover:border-blue-300 cursor-pointer"
+                      className="flex items-center justify-between p-2 sm:p-3 bg-white rounded-lg border hover:border-blue-300 cursor-pointer"
                       onClick={() => addLink(link)}
                     >
                       <div className="min-w-0 flex-1">
-                        <p className="font-medium text-slate-900 truncate">{link.title}</p>
-                        <p className="text-xs text-slate-500 truncate">{link.url}</p>
+                        <p className="font-medium text-slate-900 truncate text-sm">{link.title}</p>
+                        <p className="text-[10px] sm:text-xs text-slate-500 truncate">{link.url}</p>
                       </div>
-                      <Plus className="w-5 h-5 text-slate-400" />
+                      <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                     </div>
                   ))}
                 </div>
               ) : linkSearch ? (
-                <p className="text-sm text-slate-500 text-center py-4">
+                <p className="text-xs sm:text-sm text-slate-500 text-center py-3 sm:py-4">
                   Tidak ada link yang cocok
                 </p>
               ) : null}
@@ -443,65 +443,65 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
 
         {/* Style Tab */}
         {activeTab === 'style' && (
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <Label>Logo Halaman</Label>
-              <div className="flex items-center gap-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-2 sm:space-y-3">
+              <Label className="text-xs sm:text-sm">Logo Halaman</Label>
+              <div className="flex items-center gap-3 sm:gap-4">
                 {logoUrl ? (
                   <div className="relative">
                     <img 
                       src={logoUrl} 
                       alt="Logo" 
-                      className="w-16 h-16 rounded-xl object-cover border"
+                      className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl object-cover border"
                     />
                     <button
                       type="button"
                       onClick={() => setLogoUrl('')}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
+                      className="absolute -top-1.5 -right-1.5 sm:-top-2 sm:-right-2 w-5 h-5 sm:w-6 sm:h-6 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 ) : (
-                  <div className="w-16 h-16 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400">
-                    <ImagePlus className="w-6 h-6" />
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl border-2 border-dashed border-slate-300 flex items-center justify-center text-slate-400">
+                    <ImagePlus className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                 )}
                 <Input
                   value={logoUrl}
                   onChange={e => setLogoUrl(e.target.value)}
                   placeholder="Masukkan URL logo..."
-                  className="flex-1 border-slate-200"
+                  className="flex-1 border-slate-200 text-sm"
                 />
               </div>
-              <p className="text-xs text-slate-500">PNG, JPG, GIF, WebP. Max 500KB. Rekomendasi: 200x200px</p>
+              <p className="text-[10px] sm:text-xs text-slate-500">PNG, JPG, GIF, WebP. Max 500KB. Rekomendasi: 200x200px</p>
             </div>
 
-            <div className="space-y-3">
-              <Label>Warna Tema</Label>
-              <div className="flex items-center gap-3">
+            <div className="space-y-2 sm:space-y-3">
+              <Label className="text-xs sm:text-sm">Warna Tema</Label>
+              <div className="flex items-center gap-2 sm:gap-3">
                 <button
                   type="button"
                   onClick={() => setThemeColor(themeColor)}
-                  className="w-10 h-10 rounded-xl border-2 border-current flex items-center justify-center"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl border-2 border-current flex items-center justify-center"
                   style={{ color: themeColor }}
                 >
-                  <div className="w-6 h-6 rounded-lg" style={{ backgroundColor: themeColor }} />
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-lg" style={{ backgroundColor: themeColor }} />
                 </button>
                 <Input
                   value={themeColor}
                   onChange={e => setThemeColor(e.target.value)}
-                  className="w-32 font-mono border-slate-200"
+                  className="w-24 sm:w-32 font-mono text-xs sm:text-sm border-slate-200"
                 />
               </div>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2">
                 {THEME_COLORS.map(color => (
                   <button
                     key={color.value}
                     type="button"
                     onClick={() => setThemeColor(color.value)}
                     className={cn(
-                      'w-8 h-8 rounded-lg transition-transform hover:scale-110',
+                      'w-6 h-6 sm:w-8 sm:h-8 rounded-lg transition-transform hover:scale-110',
                       themeColor === color.value && 'ring-2 ring-offset-2 ring-slate-400'
                     )}
                     style={{ backgroundColor: color.value }}
@@ -511,33 +511,33 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
               </div>
             </div>
 
-            <div className="space-y-3">
-              <Label>Gaya Layout</Label>
-              <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-2 sm:space-y-3">
+              <Label className="text-xs sm:text-sm">Gaya Layout</Label>
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 {LAYOUT_STYLES.map(style => (
                   <button
                     key={style.value}
                     type="button"
                     onClick={() => setLayoutStyle(style.value)}
                     className={cn(
-                      'p-4 rounded-xl border-2 text-center transition-colors',
+                      'p-3 sm:p-4 rounded-xl border-2 text-center transition-colors',
                       layoutStyle === style.value
                         ? 'border-blue-500 bg-blue-50'
                         : 'border-slate-200 hover:border-slate-300'
                     )}
                   >
-                    <div className="text-2xl mb-1">{style.icon}</div>
-                    <div className="text-sm font-medium">{style.name}</div>
+                    <div className="text-xl sm:text-2xl mb-0.5 sm:mb-1">{style.icon}</div>
+                    <div className="text-xs sm:text-sm font-medium">{style.name}</div>
                   </button>
                 ))}
               </div>
             </div>
 
-            <div className="space-y-3">
-              <Label>Tampilkan Kategori</Label>
-              <div className="flex gap-4">
+            <div className="space-y-2 sm:space-y-3">
+              <Label className="text-xs sm:text-sm">Tampilkan Kategori</Label>
+              <div className="flex gap-2 sm:gap-4">
                 <label className={cn(
-                  'flex items-center gap-2 px-4 py-3 rounded-lg border cursor-pointer transition-colors flex-1',
+                  'flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-lg border cursor-pointer transition-colors flex-1',
                   showCategories 
                     ? 'border-blue-500 bg-blue-50 text-blue-700' 
                     : 'border-slate-200 text-slate-600'
@@ -548,10 +548,10 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
                     onChange={() => setShowCategories(true)}
                     className="sr-only"
                   />
-                  Ya
+                  <span className="text-xs sm:text-sm">Ya</span>
                 </label>
                 <label className={cn(
-                  'flex items-center gap-2 px-4 py-3 rounded-lg border cursor-pointer transition-colors flex-1',
+                  'flex items-center gap-1.5 sm:gap-2 px-3 py-2 sm:px-4 sm:py-3 rounded-lg border cursor-pointer transition-colors flex-1',
                   !showCategories 
                     ? 'border-blue-500 bg-blue-50 text-blue-700' 
                     : 'border-slate-200 text-slate-600'
@@ -562,10 +562,10 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
                     onChange={() => setShowCategories(false)}
                     className="sr-only"
                   />
-                  Tidak
+                  <span className="text-xs sm:text-sm">Tidak</span>
                 </label>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-[10px] sm:text-xs text-slate-500">
                 {showCategories ? 'Link dikelompokkan per kategori' : 'Semua link dalam 1 list'}
               </p>
             </div>
@@ -573,35 +573,36 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
         )}
         {/* Preview Tab */}
         {activeTab === 'preview' && (
-          <div className="space-y-4">
-            <Label>Preview Halaman Publik</Label>
+          <div className="space-y-3 sm:space-y-4">
+            <Label className="text-xs sm:text-sm">Preview Halaman Publik</Label>
+            <div className="overflow-hidden rounded-xl border">
             <Card className="overflow-hidden">
               <div 
-                className="p-6"
+                className="p-4 sm:p-6"
                 style={{ backgroundColor: themeColor + '10' }}
               >
                 {logoUrl && (
-                  <div className="mb-4">
+                  <div className="mb-3 sm:mb-4">
                     <img 
                       src={logoUrl} 
                       alt="Logo" 
-                      className="w-16 h-16 rounded-xl object-cover mx-auto"
+                      className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl object-cover mx-auto"
                     />
                   </div>
                 )}
                 <h2 
-                  className="text-2xl font-bold text-center mb-2"
+                  className="text-lg sm:text-xl lg:text-2xl font-bold text-center mb-1.5 sm:mb-2"
                   style={{ color: themeColor }}
                 >
                   {title || 'Judul Halaman'}
                 </h2>
                 {description && (
-                  <p className="text-slate-600 text-center mb-6">{description}</p>
+                  <p className="text-slate-600 text-center mb-4 sm:mb-6 text-xs sm:text-sm">{description}</p>
                 )}
                 
                 <div className={cn(
-                  'space-y-3',
-                  layoutStyle === 'grid' && 'grid grid-cols-2 gap-3',
+                  'space-y-2 sm:space-y-3',
+                  layoutStyle === 'grid' && 'grid grid-cols-2 gap-2 sm:gap-3',
                   layoutStyle === 'compact' && ''
                 )}>
                   {selectedLinks.length > 0 ? (
@@ -612,28 +613,29 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
                         target="_blank"
                         rel="noopener noreferrer"
                         className={cn(
-                          'flex items-center gap-3 p-4 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all',
-                          layoutStyle === 'compact' && 'p-3'
+                          'flex items-center gap-2 sm:gap-3 p-3 sm:p-4 bg-white rounded-xl border border-slate-200 hover:border-blue-300 hover:shadow-md transition-all',
+                          layoutStyle === 'compact' && 'p-2 sm:p-3'
                         )}
                       >
                         <div className="flex-1 min-w-0">
-                          <p className="font-medium text-slate-900 truncate">{link.title}</p>
-                          <p className="text-xs text-slate-500 truncate">{link.url}</p>
+                          <p className="font-medium text-slate-900 truncate text-sm">{link.title}</p>
+                          <p className="text-[10px] sm:text-xs text-slate-500 truncate">{link.url}</p>
                         </div>
-                        <span style={{ color: themeColor }}>→</span>
+                        <span style={{ color: themeColor }} className="text-sm sm:text-base">→</span>
                       </a>
                     ))
                   ) : (
-                    <p className="text-center text-slate-500 py-8">
+                    <p className="text-center text-slate-500 py-6 sm:py-8 text-xs sm:text-sm">
                       Pilih link untuk preview
                     </p>
                   )}
                 </div>
               </div>
             </Card>
+            </div>
             
             {slug && (
-              <div className="flex items-center justify-center gap-2 text-sm">
+              <div className="flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
                 <span className="text-slate-500">svlink.id/</span>
                 <span className="font-mono">{slug}</span>
               </div>
@@ -644,32 +646,33 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
 
       {/* Error/Success Messages */}
       {error && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
-          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+        <div className="flex items-center gap-2 p-2.5 sm:p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs sm:text-sm">
+          <AlertCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
           {error}
         </div>
       )}
       
       {success && (
-        <div className="flex items-center gap-2 p-3 rounded-lg bg-green-50 border border-green-200 text-green-700 text-sm">
-          <Check className="h-4 w-4 flex-shrink-0" />
+        <div className="flex items-center gap-2 p-2.5 sm:p-3 rounded-lg bg-green-50 border border-green-200 text-green-700 text-xs sm:text-sm">
+          <Check className="h-3.5 w-3.5 sm:h-4 sm:w-4 flex-shrink-0" />
           Berhasil! Mengalihkan...
         </div>
       )}
 
       {/* Submit Button */}
-      <div className="flex justify-end gap-3 pt-4 border-t">
+      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-4 sm:pt-6 border-t">
         <Button
           type="button"
           variant="outline"
           onClick={() => router.back()}
+          className="w-full sm:w-auto"
         >
           Batal
         </Button>
         <Button
           type="submit"
           disabled={loading || (slugValid === false)}
-          className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+          className="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
         >
           {loading ? 'Menyimpan...' : mode === 'create' ? 'Buat Halaman' : 'Simpan Perubahan'}
         </Button>
