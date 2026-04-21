@@ -57,40 +57,40 @@ export function CategoriesTable({ categories, userId }: CategoriesTableProps) {
           {categories.map((category, index) => (
             <div
               key={category.id}
-              className="group flex items-center justify-between rounded-xl border border-slate-200/60 bg-white p-4 shadow-soft-sm transition-all duration-300 hover:shadow-soft-md hover:-translate-y-0.5 hover:border-brand-200/60"
+              className="group flex items-center justify-between rounded-xl border border-slate-200/60 bg-white p-3 sm:p-4 shadow-soft-sm transition-all duration-300 hover:shadow-soft-md hover:-translate-y-0.5 hover:border-brand-200/60"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-50 to-accent-50 text-2xl transition-transform duration-300 group-hover:scale-110">
+              <div className="flex items-center gap-3 sm:gap-4">
+                <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-gradient-to-br from-brand-50 to-accent-50 text-xl sm:text-2xl transition-transform duration-300 group-hover:scale-110">
                   {category.icon}
                 </div>
                 <div>
-                  <div className="font-semibold text-slate-900 group-hover:text-brand-600 transition-colors">{category.name}</div>
-                  <div className="text-sm text-slate-500 flex items-center gap-2 mt-0.5">
-                    <Badge variant="outline" className="border-slate-200 text-xs">
+                  <div className="text-sm sm:text-base font-semibold text-slate-900 group-hover:text-brand-600 transition-colors">{category.name}</div>
+                  <div className="text-xs sm:text-sm text-slate-500 flex items-center gap-2 mt-0.5">
+                    <Badge variant="outline" className="border-slate-200 text-[10px] sm:text-xs">
                       {category.links?.length || 0} link
                     </Badge>
                     <span className="text-slate-400">•</span>
-                    <span className="text-xs text-slate-400">Urutan {category.sort_order}</span>
+                    <span className="text-[10px] sm:text-xs text-slate-400">Urutan {category.sort_order}</span>
                   </div>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-1 sm:gap-2">
                 <Button
                   size="icon"
                   variant="outline"
                   onClick={() => setEditingCategory(category)}
-                  className="h-9 w-9 hover:bg-brand-50 hover:border-brand-200 hover:text-brand-600 transition-all"
+                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 hover:bg-brand-50 hover:border-brand-200 hover:text-brand-600 transition-all"
                 >
-                  <Pencil className="h-4 w-4" />
+                  <Pencil className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Button>
                 <Button
                   size="icon"
                   variant="outline"
                   onClick={() => setDeletingCategory(category)}
-                  className="h-9 w-9 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-all"
+                  className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-all"
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </Button>
               </div>
             </div>
