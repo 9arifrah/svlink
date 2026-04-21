@@ -38,19 +38,31 @@ DB_TYPE=sqlite  # or 'supabase' for production
 - Cookie-based sessions: `user_session` and `admin_session` cookies
 - Passwords hashed with bcryptjs (10 salt rounds)
 - 7-day expiry, httpOnly cookies
-- Admin auth via separate `admin_users` table
+- JWT library: `jose` (SignJWT, jwtVerify) — NOT jsonwebtoken
+- Admin auth via `admin_users` junction table (not a column in users)
 
 **Key files:**
-- `lib/auth.ts` - JWT session management
+- `lib/auth.ts` - JWT session management (getUserSession, setUserSession, getAdminSession, setAdminSession)
+- `lib/admin-auth.ts` - Admin verification helpers (getVerifiedAdminSession, verifyAdminAccess)
 - `app/api/auth/login/route.ts` - User login
-- `app/api/admin/login/route.ts` - Admin login
+- `app/api/admin/login/route.ts` - Admin login (uses getVerifiedAdminSession)
+
+**Session payload:**
+```typescript
+interface SessionPayload {
+  userId: string;
+  isAdmin: boolean;
+  iat: number;
+  exp: number;
+}
+```
 
 ### Critical Routing Quirk: `/[slug]` Dual Purpose
 
 Route `app/[slug]/page.tsx` handles **TWO** cases in priority order:
 
 1. **Short Code (Priority 1):** Check if slug is a short code → redirect to URL
-2. **User Profile (Priority 2):** Check if slug is a custom_slug → render public profile
+2. **Public Page (Priority 2):** Check if slug is a public_page slug → render public page
 
 ```typescript
 const link = await db.getLinkByShortCode(slug)
@@ -59,13 +71,16 @@ if (link) {
   redirect(link.url, 302)
 }
 
-const user = await db.getUserBySlug(slug)
-if (user) {
-  // Render public profile page
+const page = await db.getPublicPageBySlug(slug)
+if (page) {
+  // Render public page with theme, layout, links
+  // Page has: title, description, logo_url, theme_color, layout_style
 }
 ```
 
-**Important:** Public profiles have **NO `/u/` prefix** - directly `/{custom_slug}`
+**Important:** Public pages are rendered at `/{slug}` — no prefix. Each user can have N public pages with unique slugs (multi-page feature).
+
+**NOTE:** User profile by `custom_slug` was removed. The multi-page feature replaced single-profile with multiple public pages per user.
 
 ## Component Patterns
 
@@ -79,16 +94,18 @@ if (user) {
 **Component organization:**
 ```
 components/
-├── ui/                   # 50+ shadcn/ui primitives
-├── auth/                 # Login/register forms
-├── user/                 # User dashboard components
-│   ├── quick-actions.tsx          # Quick create buttons on dashboard
-│   ├── quick-create-dialog.tsx    # Input dialog for quick create
-│   ├── quick-create-result-modal.tsx  # Result preview after creation
+├── ui/                   # 57 shadcn/ui primitives
+├── auth/                 # Login/register forms (responsive)
+├── user/                 # User dashboard components (all responsive)
+│   ├── page-form.tsx            # Multi-page CRUD form (679 lines)
+│   ├── pages-list.tsx           # Public pages list
+│   ├── public-page-header.tsx   # Public page header
+│   ├── dashboard-layout.tsx     # Layout with responsive padding
+│   ├── mobile-bottom-nav.tsx    # 5 items: Home|Link|Pages|Kategori|Settings
 │   ├── links-table.tsx
 │   └── ...
-├── admin/                # Admin dashboard (12 components)
-└── shared/               # Icon picker, QR modal
+├── admin/                # Admin dashboard (13 components, responsive)
+└── shared/               # Icon picker (responsive), QR modal
 ```
 
 **Quick Create Feature:**
@@ -100,9 +117,17 @@ components/
 
 ### Responsive Design Patterns
 
+**All 17 non-UI components have been audited and made responsive** (commit range `d44c57e..24c79e9`).
+
 **Reference implementations:**
 - `components/user/dashboard-sidebar.tsx` - Full-height sticky sidebar
 - `components/user/quick-create-result-modal.tsx` - Responsive modal with overflow handling
+- `components/user/page-form.tsx` - Largest component (679 lines), fully responsive across 4 tabs
+- `components/ui/card.tsx` - Card primitives with responsive padding (`p-4 sm:p-6`)
+
+**Responsive audit report:** `docs/responsive-audit-report.md`
+**Responsive fix plan:** `docs/plans/responsive-fix.md`
+**Git checkpoint:** `v1.0.0-responsive-audit` (rollback point)
 
 **Modal/Dialog Components:**
 ```tsx
@@ -147,18 +172,23 @@ className="h-screen sticky top-0 flex flex-col"
 
 ## Database Schema
 
-| Table | Purpose |
+| Table | Columns |
 |-------|---------|
-| `users` | id, email, password_hash, custom_slug, display_name |
-| `user_settings` | theme_color, logo_url, page_title, show_categories |
-| `links` | title, url, short_code, qr_code, click_count, is_public |
-| `categories` | name, icon, sort_order, user_id (null = global) |
-| `admin_users` | user_id (FK to users) |
+| `users` | id, email, password_hash, custom_slug, display_name, created_at |
+| `user_settings` | id, user_id (UNIQUE), theme_color, logo_url, page_title, show_categories, profile_description, layout_style, created_at, updated_at |
+| `links` | id, user_id, title, url, description, short_code (UNIQUE, nullable), qr_code, click_count, is_public, is_active, category_id, created_at, updated_at |
+| `categories` | id, user_id, name, icon, sort_order, created_at |
+| `public_pages` | id, user_id, slug (UNIQUE), title, description, logo_url, theme_color, layout_style, show_categories, is_active, click_count, sort_order, created_at, updated_at |
+| `public_page_links` | id, page_id, link_id, sort_order, created_at — UNIQUE(page_id, link_id) |
+| `admin_users` | user_id (UNIQUE FK to users ON DELETE CASCADE), created_at |
 
 **Key constraints:**
 - `links.short_code` is UNIQUE and nullable
-- `users.custom_slug` is UNIQUE and nullable
-- Categories with null `user_id` are global (admin-managed)
+- `users.custom_slug` is UNIQUE and nullable (deprecated — replaced by multi-page feature)
+- `public_pages.slug` is UNIQUE and globally checked against reserved words
+- `public_page_links` uses junction table pattern: 1 page → N links, 1 link → N pages
+- Categories are user-scoped (no global categories)
+- `admin_users` is a junction table — admin users exist in `users` table too
 
 ## URL Shortener Implementation
 
@@ -170,6 +200,37 @@ className="h-screen sticky top-0 flex flex-col"
 **API endpoints:**
 - `POST /api/links/generate-short-code`
 - `GET /api/links/check-short-code?code=xxx&exclude=yyy`
+
+## Multi-Page Feature
+
+Each user can create N public pages, each with unique slug, theme, layout, and link selection.
+
+**Architecture:**
+- 1 user → N `public_pages` (each with unique slug)
+- 1 page → N links (via `public_page_links` junction table)
+- 1 link → N pages (links can appear on multiple pages)
+
+**Page properties:**
+- `slug`: unique, min 3 chars, `[a-z0-9-]`, checked against reserved words
+- `title`: required, max 200 chars
+- `description`: optional
+- `logo_url`: optional, image URL
+- `theme_color`: optional, hex color (default: #3b82f6)
+- `layout_style`: `"list"` | `"grid"` | `"compact"`
+- `show_categories`: boolean (default: false)
+- `is_active`: boolean (default: true)
+
+**API endpoints:**
+- `GET /api/pages` — list all pages for user
+- `POST /api/pages` — create new page
+- `GET /api/pages/[id]` — get page with links
+- `PATCH /api/pages/[id]` — update page
+- `DELETE /api/pages/[id]` — delete page
+- `PUT /api/pages/[id]/links` — bulk set links for page
+- `GET /api/pages/check-slug?slug=xxx&exclude=yyy` — check slug availability
+- `GET /api/links/[id]` — get page count for link (delete warning)
+
+**Reserved slugs:** dashboard, login, register, admin, api, auth, user, users, settings, categories, links, track-click, public, profile
 
 ## Environment Variables
 
@@ -196,19 +257,30 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=
 | Validation schemas | `lib/validation.ts` |
 | QR code generation | `lib/qr-code.ts` |
 | Rate limiting | `lib/rate-limit.ts` |
-| Short code + profile route | `app/[slug]/page.tsx` |
-| Link tracking API | `app/api/track-click/route.ts` |
 | Storage abstraction | `lib/storage.ts` (Supabase Storage + local fallback) |
+| SEO metadata | `lib/seo.ts` |
+| Short code + page route | `app/[slug]/page.tsx` |
+| Link tracking API | `app/api/track-click/route.ts` |
 | Logo upload API | `app/api/upload-logo/route.ts` |
+| Public page rendering | `components/user/public-page-header.tsx`, `components/link-card.tsx` |
 
 ## API Route Patterns
 
 **Auth check pattern:**
 ```typescript
-const userId = await getUserSession()
-if (!userId) {
+// User endpoints
+const session = await getUserSession()  // returns { userId, isAdmin } | null
+if (!session) {
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 }
+const userId = session.userId
+
+// Admin endpoints
+const session = await getVerifiedAdminSession()  // returns { userId, isAdmin } | null
+if (!session) {
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+}
+// getVerifiedAdminSession() = JWT verify + db.isAdminUser(userId)
 
 // Ownership verification
 if (resource.user_id !== userId) {
@@ -224,9 +296,11 @@ if (resource.user_id !== userId) {
 ## Testing Checklist
 
 1. **Auth flow:** Register → login (cookie set) → dashboard access → logout → redirect
-2. **Public profile:** Create user with custom_slug → add public links → visit `/{slug}` → verify no `/u/` prefix
-3. **URL shortener:** Create link (auto-generate code) → edit to custom code → visit `/{code}` → verify redirect + click count increment
-4. **Admin:** Add user to `admin_users` table → login at `/admin/login` → access admin dashboard
+2. **Public pages:** Create page with slug → add links → visit `/{slug}` → verify page renders with theme
+3. **Multi-page:** 1 user can create N public pages, each with unique slug, theme, layout
+4. **URL shortener:** Create link (auto-generate code) → edit to custom code → visit `/{code}` → verify redirect + click count increment
+5. **Admin:** Add user to `admin_users` table → login at `/admin/login` → access admin dashboard
+6. **Link deletion warning:** Delete link → check pageCount → show warning if link is in pages
 
 ## Security Notes
 
