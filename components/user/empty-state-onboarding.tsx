@@ -19,10 +19,10 @@ export function EmptyStateOnboarding({ linkCount }: EmptyStateOnboardingProps) {
 
   return (
     <Card className="border-brand-200 bg-brand-50/50">
-      <CardContent className="pt-6">
-        <h3 className="text-lg font-bold text-slate-900 mb-1">Selamat Datang di svlink! 👋</h3>
-        <p className="text-slate-600 mb-6">Mulai dalam 3 langkah mudah:</p>
-        <div className="space-y-4 mb-6">
+      <CardContent className="pt-4 sm:pt-6">
+        <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-1">Selamat Datang di svlink! 👋</h3>
+        <p className="text-sm text-slate-600 mb-4 sm:mb-6">Mulai dalam 3 langkah mudah:</p>
+        <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
           {steps.map((step, i) => (
             <div key={i} className="flex items-start gap-3">
               <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-white shadow-sm ${step.color}`}>

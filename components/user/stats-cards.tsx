@@ -86,11 +86,11 @@ function StatCard({
         style={{ backgroundColor: color }}
       />
 
-      <CardContent className="relative p-6">
+      <CardContent className="relative p-4 sm:p-6">
         <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-slate-600">{title}</p>
-            <p className="text-3xl font-bold text-slate-900 tabular-nums">
+          <div className="space-y-1 sm:space-y-2">
+            <p className="text-xs sm:text-sm font-medium text-slate-600">{title}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-slate-900 tabular-nums">
               {displayValue.toLocaleString()}
             </p>
 
@@ -112,15 +112,15 @@ function StatCard({
             )}
           </div>
 
-          <div className="flex flex-col items-end gap-2">
+          <div className="flex flex-col items-end gap-1 sm:gap-2">
             <div
-              className="flex h-12 w-12 items-center justify-center rounded-xl shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
+              className="flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-xl shadow-lg transition-all duration-300 group-hover:scale-110 group-hover:rotate-3"
               style={{
                 backgroundColor: color,
                 backgroundImage: `linear-gradient(135deg, ${color} 0%, ${color}dd 100%)`,
               }}
             >
-              <Icon className="h-6 w-6 text-white" />
+              <Icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
             </div>
 
             {/* Sparkline */}

@@ -91,7 +91,7 @@ export default async function UserDashboard() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         <div>
           <h1 className="font-bold text-slate-900">Dashboard</h1>
           <p className="text-slate-600">Kelola semua link dan kategori Anda</p>
@@ -112,7 +112,7 @@ export default async function UserDashboard() {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <ClicksMiniChart data={getSampleClickData()} />
           <TopLinks links={topLinks} />
         </div>

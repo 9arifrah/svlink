@@ -44,7 +44,7 @@ export function RecentLinks({ links }: RecentLinksProps) {
             {links.map((link) => (
               <div
                 key={link.id}
-                className="flex items-center justify-between gap-3 p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
+                className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
               >
                 <div className="min-w-0 flex-1">
                   <p className="font-semibold text-slate-900 truncate">

@@ -5,7 +5,7 @@ import { DashboardHeader } from './dashboard-header'
 import { MobileBottomNav } from './mobile-bottom-nav'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { ExternalLink, Home, Link2, FolderTree, Settings } from 'lucide-react'
+import { ExternalLink, Home, Link2, FolderTree, Settings, FileText } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -14,6 +14,7 @@ const mobileNavigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
   { name: 'Kelola Link', href: '/dashboard/links', icon: Link2 },
   { name: 'Kategori', href: '/dashboard/categories', icon: FolderTree },
+  { name: 'Halaman Publik', href: '/dashboard/pages', icon: FileText },
   { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
 ]
 
@@ -38,7 +39,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         <div className="flex">
           <DashboardSidebar />
 
-          <main className="flex-1 p-6 pb-20 lg:pb-8 lg:p-8 animate-fade-in">
+          <main className="flex-1 p-4 pb-24 sm:p-6 sm:pb-20 lg:pb-8 lg:p-8 animate-fade-in">
             <BreadcrumbNav />
             {children}
           </main>
@@ -74,6 +75,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                       : 'text-slate-700 hover:bg-slate-50 hover:shadow-sm'
                   }`}
                 >
+                  <item.icon className="h-5 w-5 shrink-0" />
                   {item.name}
                 </Link>
               )
