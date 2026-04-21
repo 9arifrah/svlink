@@ -86,9 +86,9 @@ export function QuickCreateDialog({ open, onOpenChange, onSuccess }: QuickCreate
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[460px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
+          <DialogTitle className="flex items-center gap-2 text-base sm:text-lg">
             <Plus className="h-5 w-5 text-blue-600" />
             Quick Create
           </DialogTitle>
@@ -97,21 +97,22 @@ export function QuickCreateDialog({ open, onOpenChange, onSuccess }: QuickCreate
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="title">Judul Link</Label>
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 py-4">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="title" className="text-xs sm:text-sm">Judul Link</Label>
               <Input
                 id="title"
                 placeholder="Contoh: Grup WhatsApp Peserta"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 required
+                className="text-sm"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="url">URL Tujuan</Label>
+            <div className="space-y-1.5 sm:space-y-2">
+              <Label htmlFor="url" className="text-xs sm:text-sm">URL Tujuan</Label>
               <Input
                 id="url"
                 type="url"
@@ -119,6 +120,7 @@ export function QuickCreateDialog({ open, onOpenChange, onSuccess }: QuickCreate
                 value={formData.url}
                 onChange={(e) => setFormData({ ...formData, url: e.target.value })}
                 required
+                className="text-sm"
               />
             </div>
           </div>
@@ -134,19 +136,20 @@ export function QuickCreateDialog({ open, onOpenChange, onSuccess }: QuickCreate
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 pt-2 border-t border-slate-100">
+          <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3 pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
               onClick={handleClose}
               disabled={loading}
+              className="w-full sm:w-auto"
             >
               Batal
             </Button>
             <Button
               type="submit"
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700"
+              className="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto"
             >
               {loading ? (
                 <>
