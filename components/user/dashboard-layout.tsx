@@ -23,27 +23,16 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-brand-50/20 to-accent-50/10 relative">
-      {/* Subtle grid pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage: `linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)`,
-          backgroundSize: '60px 60px',
-        }}
-      />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-brand-50/20 to-accent-50/10 overflow-x-hidden">
+      <DashboardHeader onMobileMenuOpen={() => setMobileMenuOpen(true)} />
 
-      <div className="relative">
-        <DashboardHeader onMobileMenuOpen={() => setMobileMenuOpen(true)} />
+      <div className="flex">
+        <DashboardSidebar />
 
-        <div className="flex">
-          <DashboardSidebar />
-
-          <main className="flex-1 p-4 pb-24 sm:p-6 sm:pb-20 lg:pb-8 lg:p-8 animate-fade-in">
-            <BreadcrumbNav />
-            {children}
-          </main>
-        </div>
+        <main className="flex-1 p-4 pt-4 pb-28 sm:p-6 sm:pt-6 sm:pb-24 lg:p-8 lg:pb-8 animate-fade-in">
+          <BreadcrumbNav />
+          {children}
+        </main>
       </div>
 
       {/* Mobile Navigation Sheet */}
