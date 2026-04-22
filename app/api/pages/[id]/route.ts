@@ -118,6 +118,7 @@ export async function PATCH(
       layout_style,
       show_categories,
       is_active,
+      link_ids,
     } = body;
 
     const updateData: Record<string, unknown> = {};
@@ -148,7 +149,7 @@ export async function PATCH(
     if (show_categories !== undefined) updateData.show_categories = show_categories;
     if (is_active !== undefined) updateData.is_active = is_active;
 
-    if (Object.keys(updateData).length === 0) {
+    if (Object.keys(updateData).length === 0 && !Array.isArray(link_ids)) {
       return NextResponse.json(
         { error: 'Tidak ada data yang diubah' },
         { status: 400 }
@@ -156,6 +157,11 @@ export async function PATCH(
     }
 
     const updatedPage = await db.updatePublicPage(id, updateData, session.userId);
+
+    // Sync links if link_ids was provided
+    if (Array.isArray(link_ids)) {
+      await db.setPublicPageLinks(id, link_ids);
+    }
 
     return NextResponse.json({ page: updatedPage });
   } catch (error) {
