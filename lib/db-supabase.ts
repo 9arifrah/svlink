@@ -846,5 +846,153 @@ export const supabaseClient: DatabaseClient = {
       totalClicks,
       totalCategories: categoriesResult.count || 0
     }
+  },
+
+  // Phase 1: Admin Quick Wins (Supabase)
+  async suspendUser(userId: string) {
+    await supabase.from('users').update({ is_suspended: true }).eq('id', userId)
+  },
+
+  async unsuspendUser(userId: string) {
+    await supabase.from('users').update({ is_suspended: false }).eq('id', userId)
+  },
+
+  async bulkUserAction(userIds: string[], action: 'suspend' | 'unsuspend' | 'activate' | 'delete') {
+    let success = 0
+    let errors = 0
+    for (const id of userIds) {
+      try {
+        if (action === 'suspend') await this.suspendUser(id)
+        else if (action === 'unsuspend') await this.unsuspendUser(id)
+        else if (action === 'activate') await supabase.from('users').update({ is_suspended: false }).eq('id', id)
+        else if (action === 'delete') await this.adminDeleteUser(id)
+        success++
+      } catch { errors++ }
+    }
+    return { success, errors }
+  },
+
+  async getAllPublicPages() {
+    const { data } = await supabase.from('public_pages').select('*, users(email, display_name)').order('created_at', { ascending: false })
+    return data || []
+  },
+
+  async getTopLinksByClicks(limit: number = 10) {
+    const { data } = await supabase
+      .from('links')
+      .select('*, users(email, display_name), categories(name)')
+      .order('click_count', { ascending: false })
+      .limit(limit)
+    return data || []
+  },
+
+  async exportLinksAsCSV() {
+    const { data } = await supabase.from('links').select('*, users(email, display_name), categories(name)').order('created_at', { ascending: false })
+    const header = 'ID,Title,URL,Description,Short Code,Clicks,Public,Active,Created At,User Email,User Name,Category\n'
+    const escapeCsv = (v: any) => v ? `"${String(v).replace(/"/g, '""')}"` : ''
+    const body = (data || []).map((r: any) =>
+      [r.id, r.title, r.url, r.description, r.short_code, r.click_count,
+       r.is_public ? 1 : 0, r.is_active ? 1 : 0, r.created_at,
+       r.users?.email, r.users?.display_name, r.categories?.name].map(escapeCsv).join(',')
+    ).join('\n')
+    return header + body
+  },
+
+  async exportUsersAsCSV() {
+    const { data: users } = await supabase.from('users').select('*').order('created_at', { ascending: false })
+    const header = 'ID,Email,Display Name,Custom Slug,Created At,Suspended,Failed Logins,Is Admin\n'
+    const escapeCsv = (v: any) => v ? `"${String(v).replace(/"/g, '""')}"` : ''
+    const rows: any[] = []
+    for (const u of (users || [])) {
+      const [{ count: linkCount }, { count: pageCount }, { data: adminData }] = await Promise.all([
+        supabase.from('links').select('id', { count: 'exact', head: true }).eq('user_id', u.id),
+        supabase.from('public_pages').select('id', { count: 'exact', head: true }).eq('user_id', u.id),
+        supabase.from('admin_users').select('user_id').eq('user_id', u.id)
+      ])
+      rows.push({ ...u, link_count: linkCount || 0, page_count: pageCount || 0, is_admin: adminData?.length ? 1 : 0 })
+    }
+    const body = rows.map(r =>
+      [r.id, r.email, r.display_name, r.custom_slug, r.created_at,
+       r.is_suspended ? 1 : 0, r.failed_login_count || 0, r.is_admin].map(escapeCsv).join(',')
+    ).join('\n')
+    return header + body
+  },
+
+  async trackFailedLogin(userId: string) {
+    const { data } = await supabase.from('users').select('failed_login_count').eq('id', userId).single()
+    const count = (data?.failed_login_count || 0) + 1
+    const locked = count >= 5
+    const lockedUntil = locked ? new Date(Date.now() + 15 * 60 * 1000).toISOString() : null
+    await supabase.from('users').update({
+      failed_login_count: count,
+      last_failed_login: new Date().toISOString(),
+      ...(locked && { locked_until: lockedUntil })
+    }).eq('id', userId)
+    return { locked, failedCount: count }
+  },
+
+  async resetFailedLogin(userId: string) {
+    await supabase.from('users').update({
+      failed_login_count: 0,
+      last_failed_login: null,
+      locked_until: null
+    }).eq('id', userId)
+  },
+
+  async getAnnouncements() {
+    const { data } = await supabase.from('announcements').select('*').order('created_at', { ascending: false })
+    return data || []
+  },
+
+  async getActiveAnnouncements() {
+    const { data } = await supabase
+      .from('announcements')
+      .select('*')
+      .eq('is_active', true)
+      .or('expires_at.is.null,expires_at.gt.' + new Date().toISOString())
+      .order('created_at', { ascending: false })
+    return data || []
+  },
+
+  async createAnnouncement(announcement: any) {
+    const { data, error } = await supabase.from('announcements').insert({
+      id: announcement.id,
+      title: announcement.title,
+      message: announcement.message,
+      is_active: announcement.is_active,
+      expires_at: announcement.expires_at || null
+    }).select().single()
+    if (error) throw error
+    return data
+  },
+
+  async updateAnnouncement(id: string, data: any) {
+    const updateData: any = {}
+    if (data.title !== undefined) updateData.title = data.title
+    if (data.message !== undefined) updateData.message = data.message
+    if (data.is_active !== undefined) updateData.is_active = data.is_active
+    if (data.expires_at !== undefined) updateData.expires_at = data.expires_at || null
+    const { data: result, error } = await supabase.from('announcements').update(updateData).eq('id', id).select().single()
+    if (error) throw error
+    return result
+  },
+
+  async deleteAnnouncement(id: string) {
+    await supabase.from('announcements').delete().eq('id', id)
+  },
+
+  async toggleMaintenanceMode(enabled: boolean) {
+    if (!supabase) return
+    if (enabled) {
+      await supabase.from('platform_settings').upsert({ key: 'maintenance_mode', value: 'true' })
+    } else {
+      await supabase.from('platform_settings').delete().eq('key', 'maintenance_mode')
+    }
+  },
+
+  async isMaintenanceMode() {
+    if (!supabase) return false
+    const { data } = await supabase.from('platform_settings').select('value').eq('key', 'maintenance_mode').single()
+    return data?.value === 'true'
   }
 }

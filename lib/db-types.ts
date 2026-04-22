@@ -100,6 +100,24 @@ export interface DatabaseClient {
   // Stats
   getUserStats(userId: string): Promise<any>
   getPlatformStats(): Promise<any>
+
+  // Phase 1: Admin Quick Wins
+  suspendUser(userId: string): Promise<void>
+  unsuspendUser(userId: string): Promise<void>
+  bulkUserAction(userIds: string[], action: 'suspend' | 'unsuspend' | 'activate' | 'delete'): Promise<{ success: number; errors: number }>
+  getAllPublicPages(): Promise<any[]>
+  getTopLinksByClicks(limit?: number): Promise<any[]>
+  exportLinksAsCSV(): Promise<string>
+  exportUsersAsCSV(): Promise<string>
+  trackFailedLogin(userId: string): Promise<{ locked: boolean; failedCount: number }>
+  resetFailedLogin(userId: string): Promise<void>
+  getAnnouncements(): Promise<any[]>
+  getActiveAnnouncements(): Promise<any[]>
+  createAnnouncement(announcement: any): Promise<any>
+  updateAnnouncement(id: string, data: any): Promise<any>
+  deleteAnnouncement(id: string): Promise<void>
+  toggleMaintenanceMode(enabled: boolean): Promise<void>
+  isMaintenanceMode(): Promise<boolean>
 }
 
 export type { Category, Link, User, UserSettings, Admin } from './supabase'

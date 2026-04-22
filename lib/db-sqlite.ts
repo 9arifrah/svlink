@@ -144,6 +144,23 @@ function initializeSchema() {
     CREATE INDEX IF NOT EXISTS idx_public_page_links_link_id ON public_page_links(link_id);
   `)
 
+  // Phase 1 Admin Migrations
+  db.exec(`ALTER TABLE users ADD COLUMN is_suspended INTEGER DEFAULT 0`)
+  db.exec(`ALTER TABLE users ADD COLUMN failed_login_count INTEGER DEFAULT 0`)
+  db.exec(`ALTER TABLE users ADD COLUMN last_failed_login DATETIME`)
+  db.exec(`ALTER TABLE users ADD COLUMN locked_until DATETIME`)
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS announcements (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      message TEXT NOT NULL,
+      is_active INTEGER DEFAULT 1,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      expires_at DATETIME
+    )
+  `)
+
   // Data migration: create default public_page for existing users who have custom_slug
   const usersWithSlug = db.prepare(
     "SELECT id, custom_slug, display_name FROM users WHERE custom_slug IS NOT NULL AND custom_slug != ''"
@@ -184,7 +201,8 @@ function rowToObject(row: any): any {
     ...row,
     is_public: Boolean(row.is_public),
     is_active: Boolean(row.is_active),
-    show_categories: Boolean(row.show_categories)
+    show_categories: Boolean(row.show_categories),
+    is_suspended: Boolean(row.is_suspended)
   }
 }
 
@@ -1095,6 +1113,175 @@ export const sqliteClient: DatabaseClient = {
       totalClicks: clicksResult.total || 0,
       totalCategories: categoriesResult.count
     }
+  },
+
+  // Phase 1: Admin Quick Wins
+  async suspendUser(userId: string) {
+    db.prepare('UPDATE users SET is_suspended = 1 WHERE id = ?').run(userId)
+  },
+
+  async unsuspendUser(userId: string) {
+    db.prepare('UPDATE users SET is_suspended = 0 WHERE id = ?').run(userId)
+  },
+
+  async bulkUserAction(userIds: string[], action: 'suspend' | 'unsuspend' | 'activate' | 'delete') {
+    let success = 0
+    let errors = 0
+    for (const id of userIds) {
+      try {
+        if (action === 'suspend') await this.suspendUser(id)
+        else if (action === 'unsuspend') await this.unsuspendUser(id)
+        else if (action === 'activate') {
+          db.prepare('UPDATE users SET is_suspended = 0 WHERE id = ?').run(id)
+        }
+        else if (action === 'delete') await this.adminDeleteUser(id)
+        success++
+      } catch { errors++ }
+    }
+    return { success, errors }
+  },
+
+  async getAllPublicPages() {
+    const rows = db.prepare(`
+      SELECT pp.*, u.email, u.display_name
+      FROM public_pages pp
+      LEFT JOIN users u ON pp.user_id = u.id
+      ORDER BY pp.created_at DESC
+    `).all() as any[]
+    return rows.map(r => rowToObject(r))
+  },
+
+  async getTopLinksByClicks(limit: number = 10) {
+    const rows = db.prepare(`
+      SELECT l.*, u.email, u.display_name, c.name as category_name
+      FROM links l
+      LEFT JOIN users u ON l.user_id = u.id
+      LEFT JOIN categories c ON l.category_id = c.id
+      ORDER BY l.click_count DESC
+      LIMIT ?
+    `).all(limit) as any[]
+    return rows.map(r => rowToObject(r))
+  },
+
+  async exportLinksAsCSV() {
+    const rows = db.prepare(`
+      SELECT l.id, l.title, l.url, l.description, l.short_code, l.click_count,
+             l.is_public, l.is_active, l.created_at,
+             u.email as user_email, u.display_name as user_name,
+             c.name as category_name
+      FROM links l
+      LEFT JOIN users u ON l.user_id = u.id
+      LEFT JOIN categories c ON l.category_id = c.id
+      ORDER BY l.created_at DESC
+    `).all() as any[]
+    const header = 'ID,Title,URL,Description,Short Code,Clicks,Public,Active,Created At,User Email,User Name,Category\n'
+    const escapeCsv = (v: any) => v ? `"${String(v).replace(/"/g, '""')}"` : ''
+    const body = rows.map(r =>
+      [r.id, r.title, r.url, r.description, r.short_code, r.click_count,
+       r.is_public ? 1 : 0, r.is_active ? 1 : 0, r.created_at,
+       r.user_email, r.user_name, r.category_name].map(escapeCsv).join(',')
+    ).join('\n')
+    return header + body
+  },
+
+  async exportUsersAsCSV() {
+    const users = db.prepare('SELECT * FROM users ORDER BY created_at DESC').all() as any[]
+    const header = 'ID,Email,Display Name,Custom Slug,Created At,Suspended,Failed Logins,Is Admin\n'
+    const escapeCsv = (v: any) => v ? `"${String(v).replace(/"/g, '""')}"` : ''
+    const rows2: any[] = []
+    for (const u of users) {
+      const linkCount = db.prepare('SELECT COUNT(*) as c FROM links WHERE user_id = ?').get(u.id) as any
+      const pageCount = db.prepare('SELECT COUNT(*) as c FROM public_pages WHERE user_id = ?').get(u.id) as any
+      const isAdmin = db.prepare('SELECT 1 FROM admin_users WHERE user_id = ?').get(u.id)
+      rows2.push({
+        ...u, link_count: linkCount.c, page_count: pageCount.c, is_admin: isAdmin ? 1 : 0
+      })
+    }
+    const body = rows2.map(r =>
+      [r.id, r.email, r.display_name, r.custom_slug, r.created_at,
+       r.is_suspended ? 1 : 0, r.failed_login_count || 0, r.is_admin].map(escapeCsv).join(',')
+    ).join('\n')
+    return header + body
+  },
+
+  async trackFailedLogin(userId: string) {
+    db.prepare(`
+      UPDATE users SET failed_login_count = COALESCE(failed_login_count, 0) + 1,
+                       last_failed_login = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(userId)
+    const user = db.prepare('SELECT failed_login_count FROM users WHERE id = ?').get(userId) as any
+    const locked = (user?.failed_login_count || 0) >= 5
+    if (locked) {
+      db.prepare("UPDATE users SET locked_until = datetime('now', '+15 minutes') WHERE id = ?").run(userId)
+    }
+    return { locked, failedCount: user?.failed_login_count || 0 }
+  },
+
+  async resetFailedLogin(userId: string) {
+    db.prepare(`
+      UPDATE users SET failed_login_count = 0, last_failed_login = NULL, locked_until = NULL
+      WHERE id = ?
+    `).run(userId)
+  },
+
+  async getAnnouncements() {
+    return db.prepare('SELECT * FROM announcements ORDER BY created_at DESC').all()
+  },
+
+  async getActiveAnnouncements() {
+    return db.prepare(`
+      SELECT * FROM announcements
+      WHERE is_active = 1 AND (expires_at IS NULL OR expires_at > datetime('now'))
+      ORDER BY created_at DESC
+    `).all()
+  },
+
+  async createAnnouncement(announcement: any) {
+    db.prepare(`
+      INSERT INTO announcements (id, title, message, is_active, expires_at)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(
+      announcement.id,
+      announcement.title,
+      announcement.message,
+      announcement.is_active ? 1 : 0,
+      announcement.expires_at || null
+    )
+    return db.prepare('SELECT * FROM announcements WHERE id = ?').get(announcement.id)
+  },
+
+  async updateAnnouncement(id: string, data: any) {
+    const fields: string[] = []
+    const values: any[] = []
+    if (data.title !== undefined) { fields.push('title = ?'); values.push(data.title) }
+    if (data.message !== undefined) { fields.push('message = ?'); values.push(data.message) }
+    if (data.is_active !== undefined) { fields.push('is_active = ?'); values.push(data.is_active ? 1 : 0) }
+    if (data.expires_at !== undefined) { fields.push('expires_at = ?'); values.push(data.expires_at || null) }
+    if (fields.length > 0) {
+      values.push(id)
+      db.prepare(`UPDATE announcements SET ${fields.join(', ')} WHERE id = ?`).run(...values)
+    }
+    return db.prepare('SELECT * FROM announcements WHERE id = ?').get(id)
+  },
+
+  async deleteAnnouncement(id: string) {
+    db.prepare('DELETE FROM announcements WHERE id = ?').run(id)
+  },
+
+  async toggleMaintenanceMode(enabled: boolean) {
+    const fs = require('fs')
+    const path = require('path')
+    const flagPath = path.join(process.cwd(), 'data', '.maintenance')
+    if (enabled) fs.writeFileSync(flagPath, 'true')
+    else if (fs.existsSync(flagPath)) fs.unlinkSync(flagPath)
+  },
+
+  async isMaintenanceMode() {
+    const fs = require('fs')
+    const path = require('path')
+    const flagPath = path.join(process.cwd(), 'data', '.maintenance')
+    return fs.existsSync(flagPath)
   }
 }
 

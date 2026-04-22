@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ExternalLink, User as UserIcon, Edit, Trash2, Plus } from 'lucide-react'
+import { ExternalLink, User as UserIcon, Edit, Trash2, Plus, Ban, ShieldOff, AlertTriangle } from 'lucide-react'
 import { UserFormDialog } from '@/components/admin/user-form-dialog'
 import {
   AlertDialog,
@@ -24,6 +24,9 @@ type User = {
   display_name?: string
   custom_slug?: string
   is_admin?: boolean
+  is_suspended?: boolean
+  failed_login_count?: number
+  locked_until?: string
   created_at: string
 }
 
@@ -38,6 +41,7 @@ export function UsersTable({ users }: UsersTableProps) {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [userToDelete, setUserToDelete] = useState<User | undefined>()
   const [loading, setLoading] = useState(false)
+  const [suspendingId, setSuspendingId] = useState<string | null>(null)
 
   const handleEdit = (user: User) => {
     // Ensure is_admin is properly set when passing user to dialog
@@ -82,6 +86,22 @@ export function UsersTable({ users }: UsersTableProps) {
   const confirmDelete = (user: User) => {
     setUserToDelete(user)
     setDeleteOpen(true)
+  }
+
+  const handleToggleSuspend = async (user: User) => {
+    setSuspendingId(user.id)
+    try {
+      const response = await fetch(`/api/admin/users/${user.id}/suspend`, {
+        method: 'PATCH'
+      })
+      if (response.ok) {
+        router.refresh()
+      }
+    } catch (error) {
+      console.error('[v0] Error toggling suspend:', error)
+    } finally {
+      setSuspendingId(null)
+    }
   }
   return (
     <>
@@ -131,10 +151,37 @@ export function UsersTable({ users }: UsersTableProps) {
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 sm:flex-nowrap">
+                {/* Status badges */}
+                {user.is_suspended && (
+                  <Badge variant="destructive" className="text-[10px] sm:text-xs flex items-center gap-1">
+                    <Ban className="h-3 w-3" /> Suspend
+                  </Badge>
+                )}
+                {user.locked_until && new Date(user.locked_until) > new Date() && (
+                  <Badge className="text-[10px] sm:text-xs bg-amber-600 hover:bg-amber-700 flex items-center gap-1">
+                    <AlertTriangle className="h-3 w-3" /> {user.failed_login_count}/5
+                  </Badge>
+                )}
                 <Badge variant={user.is_admin ? "default" : "secondary"} className="text-[10px] sm:text-xs">
                   {user.is_admin ? 'Admin' : 'Regular'}
                 </Badge>
                 <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleToggleSuspend(user)}
+                    disabled={suspendingId === user.id}
+                    className={`h-8 w-8 sm:h-9 sm:w-9 ${user.is_suspended ? 'text-green-400 hover:text-green-300 hover:bg-green-900/30' : 'text-amber-400 hover:text-amber-300 hover:bg-amber-900/30'}`}
+                    title={user.is_suspended ? 'Aktifkan user' : 'Suspend user'}
+                  >
+                    {suspendingId === user.id ? (
+                      <div className="h-3.5 w-3.5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                    ) : user.is_suspended ? (
+                      <ShieldOff className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    ) : (
+                      <Ban className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                    )}
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"

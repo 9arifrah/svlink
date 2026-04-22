@@ -42,15 +42,41 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Check if user is suspended or locked
+    if (user.is_suspended) {
+      return NextResponse.json(
+        { error: 'Akun ini telah dinonaktifkan. Hubungi admin.' },
+        { status: 403 }
+      )
+    }
+
+    if (user.locked_until && new Date(user.locked_until) > new Date()) {
+      const result = await db.trackFailedLogin(user.id)
+      return NextResponse.json(
+        { error: `Akun terkunci sementara. ${result.failedCount}/5 percobaan gagal.` },
+        { status: 429 }
+      )
+    }
+
     // Verify password hash
     const isValidPassword = await bcrypt.compare(password, user.password_hash)
 
     if (!isValidPassword) {
+      const result = await db.trackFailedLogin(user.id)
+      if (result.locked) {
+        return NextResponse.json(
+          { error: 'Akun terkunci selama 15 menit karena terlalu banyak percobaan gagal.' },
+          { status: 429 }
+        )
+      }
       return NextResponse.json(
-        { error: 'Email atau password salah' },
+        { error: `Email atau password salah. ${result.failedCount}/5 percobaan.` },
         { status: 401 }
       )
     }
+
+    // Reset failed login on successful login
+    await db.resetFailedLogin(user.id)
 
     // Create response with session cookie
     const response = NextResponse.json({
