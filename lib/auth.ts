@@ -2,6 +2,7 @@ import { SignJWT, jwtVerify } from 'jose'
 import { cookies } from 'next/headers'
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'fallback-secret-change-in-production-minimum-32-chars')
+const SESSION_COOKIE = 'svlink_session'
 
 export interface SessionPayload {
   userId: string
@@ -53,7 +54,7 @@ export async function verifySessionToken(token: string): Promise<SessionPayload 
  */
 export async function getUserSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies()
-  const session = cookieStore.get('user_session')
+  const session = cookieStore.get(SESSION_COOKIE)
 
   if (!session) {
     return null
@@ -68,7 +69,7 @@ export async function getUserSession(): Promise<SessionPayload | null> {
  */
 export async function getAdminSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies()
-  const session = cookieStore.get('admin_session')
+  const session = cookieStore.get(SESSION_COOKIE)
 
   if (!session) {
     return null
@@ -76,12 +77,22 @@ export async function getAdminSession(): Promise<SessionPayload | null> {
 
   const payload = await verifySessionToken(session.value)
 
-  // Double-check admin status in database
+  // Double-check admin status in JWT payload
   if (!payload || !payload.isAdmin) {
     return null
   }
 
   return payload
+}
+
+/**
+ * Get unified session from request (reads from svlink_session cookie)
+ */
+export async function getSession(): Promise<SessionPayload | null> {
+  const cookieStore = await cookies()
+  const session = cookieStore.get(SESSION_COOKIE)
+  if (!session) return null
+  return await verifySessionToken(session.value)
 }
 
 /**
@@ -91,7 +102,7 @@ export async function setUserSession(userId: string, maxAge: number = 60 * 60 * 
   const token = await createSessionToken(userId, false)
   const cookieStore = await cookies()
 
-  cookieStore.set('user_session', token, {
+  cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: false, // Disabled: no SSL configured. Set to true when HTTPS is enabled.
     sameSite: 'lax',
@@ -104,10 +115,19 @@ export async function setUserSession(userId: string, maxAge: number = 60 * 60 * 
  * Set admin session cookie
  */
 export async function setAdminSession(userId: string, maxAge: number = 60 * 60 * 24 * 7) {
-  const token = await createSessionToken(userId, true)
+  return setUnifiedSession(userId, maxAge)
+}
+
+/**
+ * Set unified session cookie (checks DB for admin status)
+ */
+export async function setUnifiedSession(userId: string, maxAge: number = 60 * 60 * 24 * 7) {
+  const { db } = await import('./db')
+  const isAdmin = await db.isAdminUser(userId)
+  const token = await createSessionToken(userId, isAdmin)
   const cookieStore = await cookies()
 
-  cookieStore.set('admin_session', token, {
+  cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: false, // Disabled: no SSL configured. Set to true when HTTPS is enabled.
     sameSite: 'lax',
@@ -121,13 +141,14 @@ export async function setAdminSession(userId: string, maxAge: number = 60 * 60 *
  */
 export async function clearUserSession() {
   const cookieStore = await cookies()
+  cookieStore.delete(SESSION_COOKIE)
   cookieStore.delete('user_session')
+  cookieStore.delete('admin_session')
 }
 
 /**
  * Clear admin session
  */
 export async function clearAdminSession() {
-  const cookieStore = await cookies()
-  cookieStore.delete('admin_session')
+  return clearUserSession()
 }

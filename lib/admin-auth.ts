@@ -1,5 +1,5 @@
 import { db } from '@/lib/db'
-import { getAdminSession, type SessionPayload } from './auth'
+import { getSession, type SessionPayload } from './auth'
 
 /**
  * Verify user is actually an admin by checking admin_users table
@@ -18,10 +18,10 @@ export async function verifyAdminAccess(userId: string): Promise<boolean> {
  * This is the secure way to check admin access in API routes
  */
 export async function getVerifiedAdminSession(): Promise<SessionPayload | null> {
-  // Get admin session (already handles JWT verification)
-  const payload = await getAdminSession()
+  // Get session from unified cookie
+  const payload = await getSession()
 
-  if (!payload) {
+  if (!payload || !payload.isAdmin) {
     return null
   }
 

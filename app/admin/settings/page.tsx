@@ -172,7 +172,7 @@ export default async function AdminSettings() {
             </a>
 
             <form
-              action="/api/admin/logout"
+              action="/api/auth/logout"
               method="POST"
               className="flex items-center justify-between rounded-md border border-red-700/50 bg-red-900/20 p-4 transition-colors hover:bg-red-900/30"
             >

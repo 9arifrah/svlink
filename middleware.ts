@@ -6,11 +6,11 @@ import path from 'path'
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret-change-in-production')
 
 async function isAdminSession(request: NextRequest): Promise<boolean> {
-  const token = request.cookies.get('admin_session')?.value
+  const token = request.cookies.get('svlink_session')?.value
   if (!token) return false
   try {
-    await jwtVerify(token, JWT_SECRET)
-    return true
+    const { payload } = await jwtVerify(token, JWT_SECRET)
+    return payload.isAdmin === true
   } catch {
     return false
   }

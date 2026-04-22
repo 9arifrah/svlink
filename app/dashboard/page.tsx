@@ -31,7 +31,7 @@ async function checkAuth() {
     redirect('/login')
   }
 
-  return session.userId
+  return session
 }
 
 async function getStats(userId: string) {
@@ -84,13 +84,13 @@ async function getTopLinks(userId: string) {
 }
 
 export default async function UserDashboard() {
-  const userId = await checkAuth()
-  const stats = await getStats(userId)
-  const recentLinks = await getRecentLinks(userId)
-  const topLinks = await getTopLinks(userId)
+  const session = await checkAuth()
+  const stats = await getStats(session.userId)
+  const recentLinks = await getRecentLinks(session.userId)
+  const topLinks = await getTopLinks(session.userId)
 
   return (
-    <DashboardLayout>
+    <DashboardLayout isAdmin={session.isAdmin}>
       <div className="space-y-4 sm:space-y-6">
         <div>
           <h1 className="font-bold text-slate-900">Dashboard</h1>

@@ -3,18 +3,26 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
-import { ExternalLink, FolderTree, BarChart3, Settings, LogOut, Home, Link2, FileText } from 'lucide-react'
+import { ExternalLink, FolderTree, BarChart3, Settings, LogOut, Home, Link2, FileText, Shield } from 'lucide-react'
 
-const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Kelola Link', href: '/dashboard/links', icon: ExternalLink },
-  { name: 'Kategori', href: '/dashboard/categories', icon: FolderTree },
-  { name: 'Halaman Publik', href: '/dashboard/pages', icon: FileText },
-  { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
-]
+interface DashboardSidebarProps {
+  isAdmin?: boolean
+}
 
-export function DashboardSidebar() {
+export function DashboardSidebar({ isAdmin }: DashboardSidebarProps) {
   const pathname = usePathname()
+
+  const navigation = [
+    { name: 'Dashboard', href: '/dashboard', icon: Home },
+    { name: 'Kelola Link', href: '/dashboard/links', icon: ExternalLink },
+    { name: 'Kategori', href: '/dashboard/categories', icon: FolderTree },
+    { name: 'Halaman Publik', href: '/dashboard/pages', icon: FileText },
+    { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
+  ]
+
+  if (isAdmin) {
+    navigation.push({ name: 'Admin Panel', href: '/admin/dashboard', icon: Shield })
+  }
 
   return (
     <div className="hidden lg:flex lg:flex-col w-64 h-screen border-r border-slate-200/60 bg-white/80 backdrop-blur-sm sticky top-0">

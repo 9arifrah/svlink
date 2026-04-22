@@ -78,14 +78,19 @@ export async function POST(request: NextRequest) {
     // Reset failed login on successful login
     await db.resetFailedLogin(user.id)
 
+    // Check admin status for redirect
+    const isAdmin = await db.isAdminUser(user.id)
+
     // Create response with session cookie
     const response = NextResponse.json({
       success: true,
+      redirect: isAdmin ? '/admin/dashboard' : '/dashboard',
       user: {
         id: user.id,
         email: user.email,
         display_name: user.display_name,
-        custom_slug: user.custom_slug
+        custom_slug: user.custom_slug,
+        isAdmin
       }
     })
 

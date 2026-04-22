@@ -63,6 +63,15 @@ const nextConfig = {
         ]
       }
     ]
+  },
+  async redirects() {
+    return [
+      {
+        source: '/admin/login',
+        destination: '/login',
+        permanent: true,
+      },
+    ]
   }
 }
 

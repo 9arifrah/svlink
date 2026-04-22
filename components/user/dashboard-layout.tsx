@@ -5,7 +5,7 @@ import { DashboardHeader } from './dashboard-header'
 import { MobileBottomNav } from './mobile-bottom-nav'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { ExternalLink, Home, Link2, FolderTree, Settings, FileText } from 'lucide-react'
+import { ExternalLink, Home, Link2, FolderTree, Settings, FileText, Shield } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -18,7 +18,12 @@ const mobileNavigation = [
   { name: 'Pengaturan', href: '/dashboard/settings', icon: Settings },
 ]
 
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
+interface DashboardLayoutProps {
+  children: React.ReactNode
+  isAdmin?: boolean
+}
+
+export function DashboardLayout({ children, isAdmin }: DashboardLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
 
@@ -27,7 +32,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       <DashboardHeader onMobileMenuOpen={() => setMobileMenuOpen(true)} />
 
       <div className="flex">
-        <DashboardSidebar />
+        <DashboardSidebar isAdmin={isAdmin} />
 
         <main className="flex-1 p-4 pt-4 pb-28 sm:p-6 sm:pt-6 sm:pb-24 lg:p-8 lg:pb-8 animate-fade-in">
           <BreadcrumbNav />
@@ -69,6 +74,20 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               )
             })}
+            {isAdmin && (
+              <Link
+                href="/admin/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                  pathname === '/admin/dashboard'
+                    ? 'bg-gradient-to-r from-brand-50 to-accent-50 text-brand-700 shadow-sm border-l-4 border-brand-600'
+                    : 'text-slate-700 hover:bg-slate-50 hover:shadow-sm'
+                }`}
+              >
+                <Shield className="h-5 w-5 shrink-0" />
+                Admin Panel
+              </Link>
+            )}
           </nav>
         </SheetContent>
       </Sheet>
