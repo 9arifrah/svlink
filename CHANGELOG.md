@@ -4,6 +4,84 @@ All notable changes to svlink will be documented in this file.
 
 ## [Unreleased]
 
+### Added - 2026-04-22
+
+#### Unified Login System (v1.3.0)
+- **Merged admin and user authentication** into single login form
+- **Unified session management** with `user_session` and `admin_session` cookies
+- **Simplified auth flow** — no separate admin login page
+- **Better error handling** with masked messages (prevents user enumeration)
+- **Updated lib/auth.ts** with new unified session pattern
+
+**Files Modified:**
+- `lib/auth.ts` — Unified session management
+- `app/api/auth/login/route.ts` — Merged login endpoint
+- `components/auth/login-form.tsx` — Unified login form
+- `middleware.ts` — Updated auth middleware
+
+**Breaking Changes:**
+- `/admin/login` route removed — admin login via `/login`
+- Admin users are identified via `admin_users` junction table
+
+---
+
+#### Admin Panel Phase 1 Quick Wins (v1.2.0)
+- **8 new admin features** implemented:
+  - View all public pages
+  - Suspend/activate pages
+  - Bulk user operations
+  - Account suspension (soft delete)
+  - Export CSV for users/links
+  - System announcements
+  - Failed login monitoring
+  - Maintenance mode toggle
+
+**Files Modified:**
+- `app/admin/dashboard/page.tsx` — Enhanced dashboard
+- `app/admin/stats/page.tsx` — Improved analytics
+- `lib/db-sqlite.ts` — New admin queries
+
+---
+
+#### Documentation Cleanup
+- **Removed 5 outdated files:**
+  - `PLAN_MULTI_PAGE.md` — Feature completed
+  - `SESSION_SUMMARY.md` — Historical session summary
+  - `UI_UX_IMPROVEMENT_PLAN.md` — All tasks completed
+  - `UI_UX_REVIEW_REPORT.md` — Issues resolved
+  - `docs/plans/responsive-fix.md` — All 17 components responsive
+
+**Updated Documentation:**
+- `README.md` — Removed references to deleted files
+- `AGENTS.md` — Updated responsive status
+- `docs/responsive-audit-report.md` — Marked as completed
+- `docs/review-shortener-link-feature.md` — Marked as implemented
+- `CHANGELOG.md` — Added recent entries
+
+---
+
+### Added - 2026-04-21
+
+#### Responsive Design Audit Complete (v1.0.0)
+- **All 17 non-UI components** made fully responsive:
+  - `page-form.tsx` — 679 lines, all 4 tabs responsive
+  - `settings-form.tsx` — Profile form responsive
+  - `profile-forms.tsx` — Delete account, password forms
+  - `pages-list.tsx` — Public pages list
+  - `public-page-header.tsx` — Header component
+  - `icon-picker.tsx` — Shared icon picker
+  - All admin components (login, forms, tables, dialogs)
+
+**Responsive Patterns Applied:**
+- Mobile-first padding: `p-4 sm:p-6`
+- Responsive text: `text-xs sm:text-sm`
+- Flexible layouts: `flex-col sm:flex-row`
+- Full-width buttons on mobile: `w-full sm:w-auto`
+
+**Git Tag:** `v1.0.0-responsive-audit`
+
+---
+
 ### Added - 2026-04-19
 
 #### UI/UX Improvement Plan (Fase 1-7)

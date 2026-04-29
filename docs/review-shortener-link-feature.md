@@ -1,8 +1,9 @@
 # Review: Fitur Shortener Link - svlink
 
 **Tanggal:** 2026-04-09  
-**Status:** Desain - Belum Diimplementasikan  
-**Pendekatan:** Hybrid (Auto-generate + Custom Editable)
+**Status:** ✅ **IMPLEMENTED** (Live di production)  
+**Pendekatan:** Hybrid (Auto-generate + Custom Editable)  
+**Git Tag:** `v1.3.0-unified-login`
 
 ---
 
@@ -19,6 +20,18 @@ Contoh:
 - `domain.com/google` (custom)
 - `domain.com/abc123` (auto-generated)
 - `domain.com/my-portfolio` (custom)
+
+### ✅ Implementation Status
+
+| Feature | Status | Notes |
+|---------|--------|-------|
+| Auto-generate short code | ✅ Live | 6-char alphanumeric, auto-created on new link |
+| Custom short code | ✅ Live | Editable via link form dialog |
+| Real-time validation | ✅ Live | Check availability via `/api/links/check-short-code` |
+| Reserved words | ✅ Live | Defined in `lib/validation.ts` |
+| Short link redirect | ✅ Live | Route `/[slug]/page.tsx` handles redirect (302) |
+| Click tracking | ✅ Live | Increment count before redirect |
+| QR code generation | ✅ Live | Auto-generated with short code |
 
 ---
 

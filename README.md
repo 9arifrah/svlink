@@ -396,8 +396,7 @@ Skor UI/UX: 6.6/10 → 8.7/10 (A-)
 - **Dashboard Enrichment:** Recent links, top links, click chart
 - **Landing Page:** CTA above fold, social proof, demo preview
 - **Auth UX:** Password strength indicator, better error messages
-
-Lihat `UI_UX_IMPROVEMENT_PLAN.md` untuk detail lengkap.
+- **Responsive Design:** Semua 17 komponen user dashboard sudah responsive (tag `v1.0.0-responsive-audit`)
 
 ## 📄 Lisensi
 
