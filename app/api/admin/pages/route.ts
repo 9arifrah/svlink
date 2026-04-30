@@ -48,6 +48,17 @@ export async function DELETE(request: Request) {
 
     await db.deletePublicPage(id, page.user_id)
 
+    // Log audit action
+    await db.logAuditAction({
+      userId: session.userId,
+      action: 'page.delete',
+      entityType: 'page',
+      entityId: id,
+      details: { reason: 'Admin action' },
+      ipAddress: request.headers.get('x-forwarded-for') || '',
+      userAgent: request.headers.get('user-agent') || '',
+    })
+
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('[v0] Error in admin pages DELETE:', session.userId)
@@ -91,6 +102,17 @@ export async function PATCH(request: Request) {
     }
 
     await db.updatePublicPage(id, { is_active }, page.user_id)
+
+    // Log audit action
+    await db.logAuditAction({
+      userId: session.userId,
+      action: is_active ? 'page.activate' : 'page.suspend',
+      entityType: 'page',
+      entityId: id,
+      details: { reason: 'Admin action', is_active },
+      ipAddress: request.headers.get('x-forwarded-for') || '',
+      userAgent: request.headers.get('user-agent') || '',
+    })
 
     return NextResponse.json({ success: true })
   } catch (error) {

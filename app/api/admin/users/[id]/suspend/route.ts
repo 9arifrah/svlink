@@ -29,10 +29,34 @@ export async function PATCH(
       await db.unsuspendUser(id)
       // Reset failed login attempts on unsuspend
       await db.resetFailedLogin(id)
+      
+      // Log audit action
+      await db.logAuditAction({
+        userId: session.userId,
+        action: 'user.unsuspend',
+        entityType: 'user',
+        entityId: id,
+        details: { reason: 'Admin action' },
+        ipAddress: request.headers.get('x-forwarded-for') || '',
+        userAgent: request.headers.get('user-agent') || '',
+      })
+      
       return NextResponse.json({ suspended: false })
     } else {
       // Suspend
       await db.suspendUser(id)
+      
+      // Log audit action
+      await db.logAuditAction({
+        userId: session.userId,
+        action: 'user.suspend',
+        entityType: 'user',
+        entityId: id,
+        details: { reason: 'Admin action' },
+        ipAddress: request.headers.get('x-forwarded-for') || '',
+        userAgent: request.headers.get('user-agent') || '',
+      })
+      
       return NextResponse.json({ suspended: true })
     }
   } catch (error) {

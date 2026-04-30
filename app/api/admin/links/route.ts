@@ -132,6 +132,17 @@ export async function DELETE(request: NextRequest) {
 
     await db.adminDeleteLink(id)
 
+    // Log audit action
+    await db.logAuditAction({
+      userId: session.userId,
+      action: 'link.delete',
+      entityType: 'link',
+      entityId: id,
+      details: { reason: 'Admin action' },
+      ipAddress: request.headers.get('x-forwarded-for') || '',
+      userAgent: request.headers.get('user-agent') || '',
+    })
+
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('[v0] Error in DELETE /api/admin/links by admin:', session.userId)

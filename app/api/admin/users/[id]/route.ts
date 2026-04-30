@@ -104,6 +104,17 @@ export async function DELETE(
 
     await db.adminDeleteUser(id)
 
+    // Log audit action
+    await db.logAuditAction({
+      userId: session.userId,
+      action: 'user.delete',
+      entityType: 'user',
+      entityId: id,
+      details: { reason: 'Admin action' },
+      ipAddress: request.headers.get('x-forwarded-for') || '',
+      userAgent: request.headers.get('user-agent') || '',
+    })
+
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('[v0] Error in users DELETE by admin:', session.userId)
