@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { ExternalLink, FolderTree, BarChart3, Settings, Users, Globe, Activity } from 'lucide-react'
 
 const navigation = [
-  { name: 'Kelola Link', href: '/admin/dashboard', icon: ExternalLink },
+  { name: 'Kelola Link', href: '/admin/links', icon: ExternalLink },
   { name: 'Kategori', href: '/admin/categories', icon: FolderTree },
   { name: 'Manajemen User', href: '/admin/users', icon: Users },
   { name: 'Statistik', href: '/admin/stats', icon: BarChart3 },

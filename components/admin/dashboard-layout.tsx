@@ -17,7 +17,7 @@ interface AdminDashboardLayoutProps {
 
 const mobileNavigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: Menu },
-  { name: 'Link', href: '/admin/dashboard', icon: ExternalLink },
+  { name: 'Link', href: '/admin/links', icon: ExternalLink },
   { name: 'User', href: '/admin/users', icon: ExternalLink },
   { name: 'Stats', href: '/admin/stats', icon: ExternalLink },
   { name: 'Settings', href: '/admin/settings', icon: ExternalLink },

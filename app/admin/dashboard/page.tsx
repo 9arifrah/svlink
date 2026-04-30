@@ -7,7 +7,7 @@ import { GrowthChart } from '@/components/admin/growth-chart'
 import { AuditStatsWidget } from '@/components/admin/audit-stats-widget'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ExternalLink, Trophy, Activity } from 'lucide-react'
+import { Trophy } from 'lucide-react'
 
 async function checkAuth() {
   const session = await getVerifiedAdminSession()
@@ -101,7 +101,7 @@ export default async function AdminDashboard() {
             Dashboard Admin
           </h1>
           <p className="text-sm sm:text-base text-slate-300 mt-1">
-            Kelola semua link, kategori, dan user di platform
+            Statistik dan analitik platform
           </p>
         </div>
 
@@ -143,13 +143,12 @@ export default async function AdminDashboard() {
                     <th className="text-left p-3 font-medium text-slate-300">User</th>
                     <th className="text-center p-3 font-medium text-slate-300">Clicks</th>
                     <th className="text-left p-3 font-medium text-slate-300">Short Code</th>
-                    <th className="text-left p-3 font-medium text-slate-300">URL</th>
                   </tr>
                 </thead>
                 <tbody>
                   {topLinks.length === 0 ? (
                     <tr>
-                      <td colSpan={6} className="p-6 text-center text-slate-400">
+                      <td colSpan={5} className="p-6 text-center text-slate-400">
                         Tidak ada data link
                       </td>
                     </tr>
@@ -188,37 +187,12 @@ export default async function AdminDashboard() {
                             {link.short_code || '—'}
                           </code>
                         </td>
-                        <td className="p-3">
-                          {link.url ? (
-                            <a
-                              href={link.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-400 hover:text-blue-300 flex items-center gap-1 truncate max-w-[200px]"
-                            >
-                              <span className="truncate">{link.url}</span>
-                              <ExternalLink className="h-3 w-3 flex-shrink-0" />
-                            </a>
-                          ) : (
-                            <span className="text-slate-500">—</span>
-                          )}
-                        </td>
                       </tr>
                     ))
                   )}
                 </tbody>
               </table>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Links */}
-        <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur animate-scale-in" style={{ animationDelay: '0.3s' }}>
-          <CardHeader className="border-b border-slate-700/50">
-            <CardTitle className="text-lg font-semibold text-white">Link Terbaru</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-6">
-            <LinksTable links={links} categories={categories} />
           </CardContent>
         </Card>
       </div>
