@@ -13,7 +13,18 @@ export function AuditStatsWidget() {
   useEffect(() => {
     fetch('/api/admin/audit-logs/stats?days=7')
       .then(res => res.json())
-      .then(setStats)
+      .then(data => {
+        // Handle API error responses
+        if (data.error) {
+          console.error('Audit stats error:', data.error)
+          setStats(null)
+        } else {
+          setStats({
+            totalActions: data.totalActions || 0,
+            actionsByType: Array.isArray(data.actionsByType) ? data.actionsByType : []
+          })
+        }
+      })
       .catch(console.error)
   }, [])
 
@@ -28,10 +39,10 @@ export function AuditStatsWidget() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="text-2xl font-bold">{stats.totalActions}</div>
+        <div className="text-2xl font-bold">{stats.totalActions || 0}</div>
         <div className="text-sm text-slate-500">actions in last 7 days</div>
         
-        {stats.actionsByType.length > 0 && (
+        {stats.actionsByType && stats.actionsByType.length > 0 && (
           <div className="space-y-2">
             <div className="text-xs font-medium">Top Actions:</div>
             {stats.actionsByType.slice(0, 5).map(action => (

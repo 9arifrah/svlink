@@ -1373,39 +1373,39 @@ export const sqliteClient: DatabaseClient = {
     actionsByType: Array<{ action: string; count: number }>;
     topUsers: Array<{ userId: string; email: string; count: number }>;
   }> {
-    const since = new Date()
-    since.setDate(since.getDate() - days)
+    // SQLite uses datetime() function for date comparison
+    const since = `datetime('now', '-${days} days')`
     
     const totalStmt = db.prepare(`
-      SELECT COUNT(*) as count FROM audit_logs WHERE created_at >= ?
+      SELECT COUNT(*) as count FROM audit_logs WHERE created_at >= datetime(?)
     `)
-    const totalResult = totalStmt.get(since.toISOString()) as { count: number }
+    const totalResult = totalStmt.get(since) as { count: number }
     
     const byTypeStmt = db.prepare(`
       SELECT action, COUNT(*) as count 
       FROM audit_logs 
-      WHERE created_at >= ?
+      WHERE created_at >= datetime(?)
       GROUP BY action
       ORDER BY count DESC
       LIMIT 10
     `)
-    const actionsByType = byTypeStmt.all(since.toISOString()) as Array<{ action: string; count: number }>
+    const actionsByType = byTypeStmt.all(since) as Array<{ action: string; count: number }>
     
     const topUsersStmt = db.prepare(`
       SELECT al.user_id, u.email, COUNT(*) as count
       FROM audit_logs al
       LEFT JOIN users u ON al.user_id = u.id
-      WHERE al.created_at >= ?
+      WHERE al.created_at >= datetime(?)
       GROUP BY al.user_id
       ORDER BY count DESC
       LIMIT 10
     `)
-    const topUsers = topUsersStmt.all(since.toISOString()) as Array<{ userId: string; email: string; count: number }>
+    const topUsers = topUsersStmt.all(since) as Array<{ userId: string; email: string; count: number }>
     
     return {
       totalActions: totalResult.count,
-      actionsByType,
-      topUsers
+      actionsByType: actionsByType || [],
+      topUsers: topUsers || []
     }
   }
 }
