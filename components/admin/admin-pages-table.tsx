@@ -23,7 +23,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Layout, Trash2, ToggleLeft, ToggleRight, Loader2, ExternalLink } from 'lucide-react'
+import { Layout, Trash2, ToggleLeft, ToggleRight, Loader2, ExternalLink, Search } from 'lucide-react'
 
 type PageData = {
   id: string
@@ -42,6 +42,15 @@ export function AdminPagesTable() {
   const [deleteOpen, setDeleteOpen] = useState(false)
   const [pageToDelete, setPageToDelete] = useState<PageData | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredPages = searchQuery
+    ? pages.filter(page =>
+        page.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        page.slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (page.user_email || '').toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : pages
 
   const fetchPages = async () => {
     try {
@@ -117,11 +126,23 @@ export function AdminPagesTable() {
     <>
       <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
         <CardHeader className="border-b border-slate-700/50">
-          <CardTitle className="flex items-center gap-2">
-            <Layout className="h-4 w-4 sm:h-5 sm:w-5 text-slate-300" />
-            <span className="text-white text-sm sm:text-base">
-              Halaman Publik ({pages.length})
-            </span>
+          <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Layout className="h-4 w-4 sm:h-5 sm:w-5 text-slate-300" />
+              <span className="text-white text-sm sm:text-base">
+                Halaman Publik ({filteredPages.length})
+              </span>
+            </div>
+            <div className="relative w-full sm:w-64">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Cari halaman..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 text-sm bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50"
+              />
+            </div>
           </CardTitle>
         </CardHeader>
 
@@ -130,10 +151,12 @@ export function AdminPagesTable() {
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
             </div>
-          ) : pages.length === 0 ? (
+          ) : filteredPages.length === 0 ? (
             <div className="rounded-lg border-2 border-dashed border-slate-700/50 bg-slate-700/30 p-8 sm:p-12 text-center">
               <Layout className="mx-auto mb-3 sm:mb-4 h-10 w-10 sm:h-12 sm:w-12 text-slate-500" />
-              <p className="text-xs sm:text-sm text-slate-400">Belum ada halaman publik</p>
+              <p className="text-xs sm:text-sm text-slate-400">
+                {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada halaman publik'}
+              </p>
             </div>
           ) : (
             <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur overflow-hidden overflow-x-auto">
@@ -149,7 +172,7 @@ export function AdminPagesTable() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {pages.map((page) => (
+                  {filteredPages.map((page) => (
                     <TableRow key={page.id} className="hover:bg-slate-700/50">
                       <TableCell className="font-medium text-white whitespace-nowrap text-xs sm:text-sm py-2 sm:py-4 pr-2 sm:pr-4">
                         {page.title}

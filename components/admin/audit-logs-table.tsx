@@ -5,8 +5,10 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
 import { formatDistanceToNow } from 'date-fns'
 import { id } from 'date-fns/locale'
+import { Search } from 'lucide-react'
 
 interface AuditLog {
   id: string
@@ -30,7 +32,18 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
   const [logs, setLogs] = useState<AuditLog[]>(initialLogs)
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(0)
+  const [searchQuery, setSearchQuery] = useState('')
   const pageSize = 20
+
+  const filteredLogs = searchQuery
+    ? logs.filter(log =>
+        (log.user_email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (log.user_display_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        log.action.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        log.entity_type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (log.details || '').toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : logs
 
   useEffect(() => {
     fetchLogs(page)
@@ -62,6 +75,18 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
 
   return (
     <div className="space-y-4">
+      {/* Search */}
+      <div className="relative w-full sm:w-80">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <Input
+          type="text"
+          placeholder="Cari audit log..."
+          value={searchQuery}
+          onChange={(e) => { setSearchQuery(e.target.value); setPage(0) }}
+          className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 text-sm"
+        />
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -80,14 +105,14 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
                 Loading...
               </TableCell>
             </TableRow>
-          ) : logs.length === 0 ? (
+          ) : filteredLogs.length === 0 ? (
             <TableRow>
               <TableCell colSpan={6} className="text-center py-8 text-slate-500">
-                Belum ada audit logs
+                {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada audit logs'}
               </TableCell>
             </TableRow>
           ) : (
-            logs.map((log) => (
+            filteredLogs.map((log) => (
               <TableRow key={log.id}>
                 <TableCell className="whitespace-nowrap">
                   {formatDistanceToNow(new Date(log.created_at), {

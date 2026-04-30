@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ExternalLink, User as UserIcon, Edit, Trash2, Plus, Ban, ShieldOff, AlertTriangle } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { ExternalLink, User as UserIcon, Edit, Trash2, Plus, Ban, ShieldOff, AlertTriangle, Search } from 'lucide-react'
 import { UserFormDialog } from '@/components/admin/user-form-dialog'
 import {
   AlertDialog,
@@ -42,6 +43,15 @@ export function UsersTable({ users }: UsersTableProps) {
   const [userToDelete, setUserToDelete] = useState<User | undefined>()
   const [loading, setLoading] = useState(false)
   const [suspendingId, setSuspendingId] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredUsers = searchQuery
+    ? users.filter(user =>
+        user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (user.display_name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (user.custom_slug || '').toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : users
 
   const handleEdit = (user: User) => {
     // Ensure is_admin is properly set when passing user to dialog
@@ -107,22 +117,34 @@ export function UsersTable({ users }: UsersTableProps) {
     <>
       <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
         <CardHeader className="border-b border-slate-700/50">
-          <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2">
               <UserIcon className="h-4 w-4 sm:h-5 sm:w-5 text-slate-300" />
-              <span className="text-white text-sm sm:text-base">Daftar Pengguna ({users.length})</span>
+              <span className="text-white text-sm sm:text-base">Daftar Pengguna ({filteredUsers.length})</span>
             </div>
-            <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm">
-              <Plus className="h-3.5 w-3.5 mr-1 sm:h-4 sm:w-4 sm:mr-2" />
-              <span className="hidden sm:inline">Tambah User</span>
-              <span className="inline sm:hidden">Tambah</span>
-            </Button>
-          </CardTitle>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1 sm:flex-none">
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Input
+                  type="text"
+                  placeholder="Cari user..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 w-full sm:w-56 text-xs sm:text-sm"
+                />
+              </div>
+              <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm whitespace-nowrap">
+                <Plus className="h-3.5 w-3.5 mr-1 sm:h-4 sm:w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Tambah User</span>
+                <span className="inline sm:hidden">Tambah</span>
+              </Button>
+            </div>
+          </div>
         </CardHeader>
       
       <CardContent>
         <div className="space-y-2 sm:space-y-3">
-          {users.map((user: any) => (
+          {filteredUsers.map((user: any) => (
             <div
               key={user.id}
               className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3 rounded-lg border border-slate-700/50 p-3 sm:p-4 hover:bg-slate-700/50 transition-colors"
@@ -203,10 +225,12 @@ export function UsersTable({ users }: UsersTableProps) {
             </div>
           ))}
 
-          {users.length === 0 && (
+          {filteredUsers.length === 0 && (
             <div className="rounded-lg border-2 border-dashed border-slate-700/50 bg-slate-700/30 p-8 sm:p-12 text-center">
               <UserIcon className="mx-auto mb-3 sm:mb-4 h-10 w-10 sm:h-12 sm:w-12 text-slate-500" />
-              <p className="text-xs sm:text-sm text-slate-400">Belum ada pengguna</p>
+              <p className="text-xs sm:text-sm text-slate-400">
+                {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada pengguna'}
+              </p>
             </div>
           )}
         </div>

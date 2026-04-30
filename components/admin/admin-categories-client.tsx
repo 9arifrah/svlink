@@ -24,7 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Plus, Edit2, Trash2, Loader2 } from 'lucide-react'
+import { Plus, Edit2, Trash2, Loader2, Search } from 'lucide-react'
 
 interface Category {
   id: string
@@ -46,6 +46,7 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
   const [open, setOpen] = useState(false)
   const [editingId, setEditingId] = useState<string | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [searchQuery, setSearchQuery] = useState('')
 
   const [formData, setFormData] = useState({
     name: '',
@@ -53,6 +54,13 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
     description: '',
     sort_order: 0,
   })
+
+  const filteredCategories = searchQuery
+    ? categories.filter(cat =>
+        cat.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (cat.description || '').toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : categories
 
   // Fetch categories
   useEffect(() => {
@@ -164,17 +172,29 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
             </p>
           </div>
 
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button
-                onClick={() => handleOpenDialog()}
-                className="gap-2 bg-blue-600 hover:bg-blue-700 text-sm sm:text-base"
-              >
-                <Plus className="h-4 w-4" />
-                <span className="hidden sm:inline">Tambah Kategori</span>
-                <span className="inline sm:hidden">Tambah</span>
-              </Button>
-            </DialogTrigger>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                type="text"
+                placeholder="Cari kategori..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 w-full sm:w-64"
+              />
+            </div>
+
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  onClick={() => handleOpenDialog()}
+                  className="gap-2 bg-blue-600 hover:bg-blue-700 text-sm sm:text-base"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span className="hidden sm:inline">Tambah Kategori</span>
+                  <span className="inline sm:hidden">Tambah</span>
+                </Button>
+              </DialogTrigger>
 
             <DialogContent>
               <DialogHeader>
@@ -276,6 +296,7 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
               </form>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
         {/* Confirm Delete Dialog */}
@@ -317,16 +338,20 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
           <div className="flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
           </div>
-        ) : categories.length === 0 ? (
+        ) : filteredCategories.length === 0 ? (
           <div className="rounded-lg border-2 border-dashed border-slate-700 bg-slate-800/50 backdrop-blur p-12 text-center">
-            <p className="text-slate-400 mb-4">Belum ada kategori</p>
-            <Button
-              onClick={() => handleOpenDialog()}
-              className="gap-2 bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="h-4 w-4" />
-              Buat Kategori Pertama
-            </Button>
+            <p className="text-slate-400 mb-4">
+              {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada kategori'}
+            </p>
+            {!searchQuery && (
+              <Button
+                onClick={() => handleOpenDialog()}
+                className="gap-2 bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4" />
+                Buat Kategori Pertama
+              </Button>
+            )}
           </div>
         ) : (
           <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur overflow-hidden overflow-x-auto">
@@ -341,7 +366,7 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {categories.map((category) => (
+                {filteredCategories.map((category) => (
                   <TableRow key={category.id} className="hover:bg-slate-700/50">
                     <TableCell className="text-xl sm:text-2xl whitespace-nowrap py-2 sm:py-4 pr-2 sm:pr-4">{category.icon}</TableCell>
                     <TableCell className="font-medium text-white whitespace-nowrap text-xs sm:text-sm py-2 sm:py-4 pr-2 sm:pr-4">
