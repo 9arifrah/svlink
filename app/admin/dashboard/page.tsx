@@ -1,14 +1,14 @@
 import { getVerifiedAdminSession } from '@/lib/admin-auth'
 import { redirect } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/db'
 import { DashboardLayout } from '@/components/admin/dashboard-layout'
 import { LinksTable } from '@/components/admin/links-table'
 import { StatsCards } from '@/components/admin/stats-cards'
-
 import { GrowthChart } from '@/components/admin/growth-chart'
+import { AuditStatsWidget } from '@/components/admin/audit-stats-widget'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ExternalLink, Trophy } from 'lucide-react'
+import { ExternalLink, Trophy, Activity } from 'lucide-react'
 
 async function checkAuth() {
   const session = await getVerifiedAdminSession()
@@ -21,94 +21,55 @@ async function checkAuth() {
 }
 
 async function getLinks() {
-  if (!supabase) {
-    console.error('[v0] Supabase client not initialized')
-    return []
-  }
-
-  const { data: links, error } = await supabase
-    .from('links')
-    .select(`
-      *,
-      category:categories(*),
-      user:users(email, display_name)
-    `)
-    .order('created_at', { ascending: false })
-
-  if (error) {
+  try {
+    const links = await db.getLinks()
+    return links
+  } catch (error) {
     console.error('[v0] Error fetching links:', error)
     return []
   }
-
-  return links
 }
 
 async function getCategories() {
-  if (!supabase) {
-    console.error('[v0] Supabase client not initialized')
-    return []
-  }
-
-  const { data: categories, error } = await supabase
-    .from('categories')
-    .select('*')
-    .order('sort_order')
-
-  if (error) {
+  try {
+    const categories = await db.getCategories()
+    return categories
+  } catch (error) {
     console.error('[v0] Error fetching categories:', error)
     return []
   }
-
-  return categories
 }
 
 async function getUsers() {
-  if (!supabase) {
-    console.error('[v0] Supabase client not initialized')
-    return []
-  }
-
-  const { data: users, error } = await supabase
-    .from('users')
-    .select('created_at')
-    .order('created_at', { ascending: false })
-
-  if (error) {
+  try {
+    const users = await db.getAllUsers()
+    return users.map(user => ({ created_at: user.created_at }))
+  } catch (error) {
     console.error('[v0] Error fetching users:', error)
     return []
   }
-
-  return users
 }
-
-async function getTopLinks() {
-  if (!supabase) {
-    console.error('[v0] Supabase client not initialized')
-    return []
-  }
-
-  const { data: links, error } = await supabase
-    .from('links')
-    .select(`
-      *,
-      users(email, display_name),
-      categories(name)
-    `)
-    .order('click_count', { ascending: false })
-    .limit(10)
-
-  if (error) {
-    console.error('[v0] Error fetching top links:', error)
-    return []
-  }
-
-  return links
-}
-
 
 async function getStats() {
-  if (!supabase) {
-    console.error('[v0] Supabase client not initialized')
+  try {
+    const links = await db.getLinks()
+    const totalLinks = links.length
+    const activeLinks = links.filter(link => link.is_active).length
+    const totalClicks = links.reduce((sum, link) => sum + (link.click_count || 0), 0)
+    const categories = await db.getCategories()
+    const totalCategories = categories.length
+    const users = await db.getAllUsers()
+    const totalUsers = users.length
+
+    return {
+      totalLinks,
+      activeLinks,
+      totalClicks,
+      totalCategories,
+      totalUsers
+    }
+  } catch (error) {
+    console.error('[v0] Error fetching stats:', error)
     return {
       totalLinks: 0,
       activeLinks: 0,
@@ -117,36 +78,18 @@ async function getStats() {
       totalUsers: 0
     }
   }
+}
 
-  const { count: totalLinks } = await supabase
-    .from('links')
-    .select('*', { count: 'exact', head: true })
-
-  const { count: activeLinks } = await supabase
-    .from('links')
-    .select('*', { count: 'exact', head: true })
-    .eq('is_active', true)
-
-  const { data: clickData } = await supabase
-    .from('links')
-    .select('click_count')
-
-  const totalClicks = clickData?.reduce((sum, link) => sum + (link.click_count || 0), 0) || 0
-
-  const { count: totalCategories } = await supabase
-    .from('categories')
-    .select('*', { count: 'exact', head: true })
-
-  const { count: totalUsers } = await supabase
-    .from('users')
-    .select('*', { count: 'exact', head: true })
-
-  return {
-    totalLinks: totalLinks || 0,
-    activeLinks: activeLinks || 0,
-    totalClicks,
-    totalCategories: totalCategories || 0,
-    totalUsers: totalUsers || 0
+async function getTopLinks() {
+  try {
+    const links = await db.getLinks()
+    // Sort by click_count descending
+    const sortedLinks = links.sort((a, b) => (b.click_count || 0) - (a.click_count || 0))
+    // Take top 10
+    return sortedLinks.slice(0, 10)
+  } catch (error) {
+    console.error('[v0] Error fetching top links:', error)
+    return []
   }
 }
 
@@ -187,6 +130,11 @@ export default async function AdminDashboard() {
         {/* Growth Chart */}
         <div className="animate-scale-in" style={{ animationDelay: '0.2s' }}>
           <GrowthChart links={links} users={users} />
+        </div>
+
+        {/* Audit Stats Widget */}
+        <div className="animate-scale-in" style={{ animationDelay: '0.22s' }}>
+          <AuditStatsWidget />
         </div>
 
         {/* Top 10 Links by Clicks */}
