@@ -153,6 +153,7 @@ function initializeSchema() {
     'ALTER TABLE users ADD COLUMN failed_login_count INTEGER DEFAULT 0',
     'ALTER TABLE users ADD COLUMN last_failed_login DATETIME',
     'ALTER TABLE users ADD COLUMN locked_until DATETIME',
+    'ALTER TABLE categories ADD COLUMN description TEXT',
   ]
   for (const sql of migrations) {
     try { db.exec(sql) } catch { /* column already exists */ }
