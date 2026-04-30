@@ -994,5 +994,40 @@ export const supabaseClient: DatabaseClient = {
     if (!supabase) return false
     const { data } = await supabase.from('platform_settings').select('value').eq('key', 'maintenance_mode').single()
     return data?.value === 'true'
+  },
+
+  // Audit Logs (Supabase stubs - not implemented for Supabase backend)
+  async logAuditAction(_params: {
+    userId: string;
+    action: string;
+    entityType: string;
+    entityId?: string;
+    details?: Record<string, unknown>;
+    ipAddress?: string;
+    userAgent?: string;
+  }): Promise<void> {
+    // Stub: Audit logs only implemented for SQLite backend
+    console.warn('[db-supabase] logAuditAction not implemented for Supabase backend')
+  },
+
+  async getAuditLogs(_params: {
+    userId?: string;
+    entityType?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ logs: any[]; total: number }> {
+    // Stub: Audit logs only implemented for SQLite backend
+    console.warn('[db-supabase] getAuditLogs not implemented for Supabase backend')
+    return { logs: [], total: 0 }
+  },
+
+  async getAuditStats(_days: number = 7): Promise<{
+    totalActions: number;
+    actionsByType: Array<{ action: string; count: number }>;
+    topUsers: Array<{ userId: string; email: string; count: number }>;
+  }> {
+    // Stub: Audit logs only implemented for SQLite backend
+    console.warn('[db-supabase] getAuditStats not implemented for Supabase backend')
+    return { totalActions: 0, actionsByType: [], topUsers: [] }
   }
 }

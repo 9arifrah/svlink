@@ -17,7 +17,10 @@ const db = new Database(dbPath)
 db.pragma('foreign_keys = ON')
 
 // Initialize database schema
+let schemaInitialized = false
 function initializeSchema() {
+  if (schemaInitialized) return
+  
   // Users table
   db.exec(`
     CREATE TABLE IF NOT EXISTS users (
@@ -144,11 +147,16 @@ function initializeSchema() {
     CREATE INDEX IF NOT EXISTS idx_public_page_links_link_id ON public_page_links(link_id);
   `)
 
-  // Phase 1 Admin Migrations
-  db.exec(`ALTER TABLE users ADD COLUMN is_suspended INTEGER DEFAULT 0`)
-  db.exec(`ALTER TABLE users ADD COLUMN failed_login_count INTEGER DEFAULT 0`)
-  db.exec(`ALTER TABLE users ADD COLUMN last_failed_login DATETIME`)
-  db.exec(`ALTER TABLE users ADD COLUMN locked_until DATETIME`)
+  // Phase 1 Admin Migrations — safe re-run (SQLite has no IF NOT EXISTS for ALTER TABLE)
+  const migrations = [
+    'ALTER TABLE users ADD COLUMN is_suspended INTEGER DEFAULT 0',
+    'ALTER TABLE users ADD COLUMN failed_login_count INTEGER DEFAULT 0',
+    'ALTER TABLE users ADD COLUMN last_failed_login DATETIME',
+    'ALTER TABLE users ADD COLUMN locked_until DATETIME',
+  ]
+  for (const sql of migrations) {
+    try { db.exec(sql) } catch { /* column already exists */ }
+  }
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS announcements (
@@ -189,6 +197,8 @@ function initializeSchema() {
       }
     }
   }
+  
+  schemaInitialized = true
 }
 
 // Initialize schema on import
@@ -1282,6 +1292,121 @@ export const sqliteClient: DatabaseClient = {
     const path = require('path')
     const flagPath = path.join(process.cwd(), 'data', '.maintenance')
     return fs.existsSync(flagPath)
+  },
+
+  // Audit Logs
+  async logAuditAction(params: {
+    userId: string;
+    action: string;
+    entityType: string;
+    entityId?: string;
+    details?: Record<string, unknown>;
+    ipAddress?: string;
+    userAgent?: string;
+  }): Promise<void> {
+    const stmt = db.prepare(`
+      INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details, ip_address, user_agent)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `)
+    
+    stmt.run(
+      params.userId,
+      params.action,
+      params.entityType,
+      params.entityId || null,
+      params.details ? JSON.stringify(params.details) : null,
+      params.ipAddress || null,
+      params.userAgent || null
+    )
+  },
+
+  async getAuditLogs(params: {
+    userId?: string;
+    entityType?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ logs: any[]; total: number }> {
+    const { userId, entityType, limit = 50, offset = 0 } = params
+    
+    let whereClause = '1=1'
+    const bindParams: any[] = []
+    
+    if (userId) {
+      whereClause += ' AND user_id = ?'
+      bindParams.push(userId)
+    }
+    
+    if (entityType) {
+      whereClause += ' AND entity_type = ?'
+      bindParams.push(entityType)
+    }
+    
+    // Get total count
+    const countStmt = db.prepare(`
+      SELECT COUNT(*) as count FROM audit_logs WHERE ${whereClause}
+    `)
+    const countResult = countStmt.get(...bindParams) as { count: number }
+    
+    // Get logs with user info
+    const logsStmt = db.prepare(`
+      SELECT 
+        al.*,
+        u.email as user_email,
+        u.display_name as user_display_name
+      FROM audit_logs al
+      LEFT JOIN users u ON al.user_id = u.id
+      WHERE ${whereClause}
+      ORDER BY al.created_at DESC
+      LIMIT ? OFFSET ?
+    `)
+    
+    const logs = logsStmt.all(...bindParams, limit, offset)
+    
+    return {
+      logs: logs as any[],
+      total: countResult.count
+    }
+  },
+
+  async getAuditStats(days: number = 7): Promise<{
+    totalActions: number;
+    actionsByType: Array<{ action: string; count: number }>;
+    topUsers: Array<{ userId: string; email: string; count: number }>;
+  }> {
+    const since = new Date()
+    since.setDate(since.getDate() - days)
+    
+    const totalStmt = db.prepare(`
+      SELECT COUNT(*) as count FROM audit_logs WHERE created_at >= ?
+    `)
+    const totalResult = totalStmt.get(since.toISOString()) as { count: number }
+    
+    const byTypeStmt = db.prepare(`
+      SELECT action, COUNT(*) as count 
+      FROM audit_logs 
+      WHERE created_at >= ?
+      GROUP BY action
+      ORDER BY count DESC
+      LIMIT 10
+    `)
+    const actionsByType = byTypeStmt.all(since.toISOString()) as Array<{ action: string; count: number }>
+    
+    const topUsersStmt = db.prepare(`
+      SELECT al.user_id, u.email, COUNT(*) as count
+      FROM audit_logs al
+      LEFT JOIN users u ON al.user_id = u.id
+      WHERE al.created_at >= ?
+      GROUP BY al.user_id
+      ORDER BY count DESC
+      LIMIT 10
+    `)
+    const topUsers = topUsersStmt.all(since.toISOString()) as Array<{ userId: string; email: string; count: number }>
+    
+    return {
+      totalActions: totalResult.count,
+      actionsByType,
+      topUsers
+    }
   }
 }
 

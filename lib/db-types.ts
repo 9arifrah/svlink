@@ -118,6 +118,28 @@ export interface DatabaseClient {
   deleteAnnouncement(id: string): Promise<void>
   toggleMaintenanceMode(enabled: boolean): Promise<void>
   isMaintenanceMode(): Promise<boolean>
+
+  // Audit Logs
+  logAuditAction(params: {
+    userId: string;
+    action: string;
+    entityType: string;
+    entityId?: string;
+    details?: Record<string, unknown>;
+    ipAddress?: string;
+    userAgent?: string;
+  }): Promise<void>
+  getAuditLogs(params: {
+    userId?: string;
+    entityType?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ logs: any[]; total: number }>
+  getAuditStats(days?: number): Promise<{
+    totalActions: number;
+    actionsByType: Array<{ action: string; count: number }>;
+    topUsers: Array<{ userId: string; email: string; count: number }>;
+  }>
 }
 
 export type { Category, Link, User, UserSettings, Admin } from './supabase'
