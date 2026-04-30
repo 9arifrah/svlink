@@ -1153,7 +1153,7 @@ export const sqliteClient: DatabaseClient = {
 
   async getAllPublicPages() {
     const rows = db.prepare(`
-      SELECT pp.*, u.email, u.display_name
+      SELECT pp.*, u.email as user_email, u.display_name as user_display_name
       FROM public_pages pp
       LEFT JOIN users u ON pp.user_id = u.id
       ORDER BY pp.created_at DESC

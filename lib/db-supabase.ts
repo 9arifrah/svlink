@@ -874,7 +874,11 @@ export const supabaseClient: DatabaseClient = {
 
   async getAllPublicPages() {
     const { data } = await supabase.from('public_pages').select('*, users(email, display_name)').order('created_at', { ascending: false })
-    return data || []
+    return (data || []).map((page: any) => ({
+      ...page,
+      user_email: page.users?.email || null,
+      user_display_name: page.users?.display_name || null,
+    }))
   },
 
   async getTopLinksByClicks(limit: number = 10) {
