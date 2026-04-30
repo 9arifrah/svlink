@@ -59,7 +59,9 @@ export function LoginForm() {
         return
       }
 
-      router.push('/dashboard')
+      // Redirect based on role from API response
+      const redirectPath = data.redirect || '/dashboard'
+      router.push(redirectPath)
       router.refresh()
     } catch (err) {
       console.error('[v0] User login error:', err)

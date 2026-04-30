@@ -7,8 +7,15 @@ function createMockSupabaseClient(): SupabaseClient {
   const mockClient = {
     from: () => ({
       select: () => ({
-        order: () => ({
+        order: (...args: any[]) => ({
+          limit: (...limitArgs: any[]) => ({ eq: () => ({ data: [], error: null }), data: [], error: null, then: (cb: any) => cb({ data: [], error: null }) }),
           eq: () => ({ data: [], error: null }),
+          data: [],
+          error: null,
+          then: (cb: any) => cb({ data: [], error: null }),
+        }),
+        limit: (...args: any[]) => ({
+          order: (...orderArgs: any[]) => ({ eq: () => ({ data: [], error: null }), data: [], error: null, then: (cb: any) => cb({ data: [], error: null }) }),
           data: [],
           error: null,
           then: (cb: any) => cb({ data: [], error: null }),

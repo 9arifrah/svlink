@@ -1,7 +1,6 @@
 import { getVerifiedAdminSession } from '@/lib/admin-auth'
 import { redirect } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import { DashboardLayout } from '@/components/admin/dashboard-layout'
 import { AdminCategoriesClient } from '@/components/admin/admin-categories-client'
 
 async function checkAuth() {

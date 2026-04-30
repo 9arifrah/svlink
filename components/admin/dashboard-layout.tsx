@@ -2,6 +2,7 @@
 
 import { AdminSidebar } from './admin-sidebar'
 import { AdminHeader } from './admin-header'
+import { AdminMobileBottomNav } from './admin-mobile-bottom-nav'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
 import { ExternalLink, Menu } from 'lucide-react'
@@ -9,26 +10,31 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+interface AdminDashboardLayoutProps {
+  children: React.ReactNode
+  isAdmin?: boolean
+}
+
 const mobileNavigation = [
-  { name: 'Kelola Link', href: '/admin/dashboard', icon: Menu },
-  { name: 'Kategori', href: '/admin/categories', icon: ExternalLink },
-  { name: 'Manajemen User', href: '/admin/users', icon: ExternalLink },
-  { name: 'Statistik', href: '/admin/stats', icon: ExternalLink },
-  { name: 'Pengaturan', href: '/admin/settings', icon: ExternalLink },
+  { name: 'Dashboard', href: '/admin/dashboard', icon: Menu },
+  { name: 'Link', href: '/admin/dashboard', icon: ExternalLink },
+  { name: 'User', href: '/admin/users', icon: ExternalLink },
+  { name: 'Stats', href: '/admin/stats', icon: ExternalLink },
+  { name: 'Settings', href: '/admin/settings', icon: ExternalLink },
 ]
 
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
+export function DashboardLayout({ children, isAdmin }: AdminDashboardLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const pathname = usePathname()
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+    <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-x-hidden">
       <AdminSidebar />
 
       <div className="flex-1 lg:pl-64">
         <AdminHeader onMobileMenuOpen={() => setMobileMenuOpen(true)} />
 
-        <main className="p-6 lg:p-8 animate-fade-in">
+        <main className="p-4 pt-4 pb-28 sm:p-6 sm:pt-6 sm:pb-24 lg:p-8 lg:pb-8 animate-fade-in">
           <BreadcrumbNav />
           {children}
         </main>
@@ -67,9 +73,26 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                 </Link>
               )
             })}
+            {isAdmin && (
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                  pathname === '/dashboard'
+                    ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-400 shadow-lg shadow-emerald-500/10 border-l-4 border-emerald-500'
+                    : 'text-slate-300 hover:bg-slate-800/50 hover:text-white hover:shadow-lg'
+                }`}
+              >
+                <ExternalLink className="h-5 w-5 shrink-0" />
+                User Dashboard
+              </Link>
+            )}
           </nav>
         </SheetContent>
       </Sheet>
+
+      {/* Mobile Bottom Navigation */}
+      <AdminMobileBottomNav />
     </div>
   )
 }

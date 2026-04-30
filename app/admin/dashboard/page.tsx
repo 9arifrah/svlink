@@ -2,7 +2,6 @@ import { getVerifiedAdminSession } from '@/lib/admin-auth'
 import { redirect } from 'next/navigation'
 import { db } from '@/lib/db'
 import { DashboardLayout } from '@/components/admin/dashboard-layout'
-import { LinksTable } from '@/components/admin/links-table'
 import { StatsCards } from '@/components/admin/stats-cards'
 import { GrowthChart } from '@/components/admin/growth-chart'
 import { AuditStatsWidget } from '@/components/admin/audit-stats-widget'
@@ -26,16 +25,6 @@ async function getLinks() {
     return links
   } catch (error) {
     console.error('[v0] Error fetching links:', error)
-    return []
-  }
-}
-
-async function getCategories() {
-  try {
-    const categories = await db.getCategories()
-    return categories
-  } catch (error) {
-    console.error('[v0] Error fetching categories:', error)
     return []
   }
 }
@@ -96,16 +85,15 @@ async function getTopLinks() {
 export default async function AdminDashboard() {
   await checkAuth()
 
-  const [links, categories, stats, users, topLinks] = await Promise.all([
+  const [links, stats, users, topLinks] = await Promise.all([
     getLinks(),
-    getCategories(),
     getStats(),
     getUsers(),
     getTopLinks()
   ])
 
   return (
-    <DashboardLayout>
+    <DashboardLayout isAdmin={true}>
       <div className="space-y-6 overflow-x-hidden animate-fade-in">
         {/* Header */}
         <div className="animate-scale-in">

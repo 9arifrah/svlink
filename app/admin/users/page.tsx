@@ -38,7 +38,7 @@ export default async function AdminUsers() {
   const users = await getUsers()
 
   return (
-    <DashboardLayout>
+    <DashboardLayout isAdmin={true}>
       <div className="space-y-6 animate-fade-in">
         {/* Header */}
         <div className="animate-scale-in">

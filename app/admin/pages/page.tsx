@@ -17,7 +17,7 @@ export default async function AdminPages() {
   await checkAuth()
 
   return (
-    <DashboardLayout>
+    <DashboardLayout isAdmin={true}>
       <div className="space-y-6 overflow-x-hidden animate-fade-in">
         {/* Header */}
         <div className="animate-scale-in">

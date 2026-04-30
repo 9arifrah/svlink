@@ -1,6 +1,6 @@
 import { getVerifiedAdminSession } from '@/lib/admin-auth'
 import { redirect } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/db'
 import { DashboardLayout } from '@/components/admin/dashboard-layout'
 import { Users, Link as LinkIcon, FolderOpen, MousePointer2, TrendingUp } from 'lucide-react'
 
@@ -15,8 +15,42 @@ async function checkAuth() {
 }
 
 async function getStats() {
-  if (!supabase) {
-    console.error('[v0] Supabase client not initialized')
+  try {
+    // Get total users
+    const allUsers = await db.getAllUsers()
+    const totalUsers = allUsers.length
+
+    // Get total links
+    const allLinks = await db.adminGetAllLinks()
+    const totalLinks = allLinks.length
+    const activeLinks = allLinks.filter((l: any) => l.is_active).length
+    const inactiveLinks = allLinks.filter((l: any) => !l.is_active).length
+
+    // Get total categories
+    const allCategories = await db.adminGetAllCategories()
+    const totalCategories = allCategories.length
+
+    // Get total clicks
+    const totalClicks = allLinks.reduce((sum: number, link: any) => sum + (link.click_count || 0), 0)
+
+    // Get admin count
+    let adminCount = 0
+    for (const user of allUsers) {
+      const isAdmin = await db.isAdminUser(user.id)
+      if (isAdmin) adminCount++
+    }
+
+    return {
+      totalUsers,
+      totalLinks,
+      activeLinks,
+      inactiveLinks,
+      totalCategories,
+      totalClicks,
+      adminCount,
+    }
+  } catch (error) {
+    console.error('[Admin Stats] Error fetching stats:', error)
     return {
       totalUsers: 0,
       totalLinks: 0,
@@ -26,55 +60,6 @@ async function getStats() {
       totalClicks: 0,
       adminCount: 0,
     }
-  }
-
-  // Get total users
-  const { count: totalUsers } = await supabase
-    .from('users')
-    .select('*', { count: 'exact', head: true })
-
-  // Get total links
-  const { count: totalLinks } = await supabase
-    .from('links')
-    .select('*', { count: 'exact', head: true })
-
-  // Get active links
-  const { count: activeLinks } = await supabase
-    .from('links')
-    .select('*', { count: 'exact', head: true })
-    .eq('is_active', true)
-
-  // Get inactive links
-  const { count: inactiveLinks } = await supabase
-    .from('links')
-    .select('*', { count: 'exact', head: true })
-    .eq('is_active', false)
-
-  // Get total categories
-  const { count: totalCategories } = await supabase
-    .from('categories')
-    .select('*', { count: 'exact', head: true })
-
-  // Get total clicks
-  const { data: linksData } = await supabase
-    .from('links')
-    .select('click_count')
-
-  const totalClicks = linksData?.reduce((sum, link) => sum + (link.click_count || 0), 0) || 0
-
-  // Get admin count
-  const { count: adminCount } = await supabase
-    .from('admin_users')
-    .select('*', { count: 'exact', head: true })
-
-  return {
-    totalUsers: totalUsers || 0,
-    totalLinks: totalLinks || 0,
-    activeLinks: activeLinks || 0,
-    inactiveLinks: inactiveLinks || 0,
-    totalCategories: totalCategories || 0,
-    totalClicks,
-    adminCount: adminCount || 0,
   }
 }
 
@@ -118,7 +103,7 @@ export default async function AdminStats() {
   ]
 
   return (
-    <DashboardLayout>
+    <DashboardLayout isAdmin={true}>
       <div className="space-y-6 animate-fade-in">
         {/* Header */}
         <div className="animate-scale-in">

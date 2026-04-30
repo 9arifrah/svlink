@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { jwtVerify } from 'jose'
-import fs from 'fs'
-import path from 'path'
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret-change-in-production')
 
@@ -33,9 +31,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Check maintenance mode flag file (for SQLite/local dev)
-  const flagPath = path.join(process.cwd(), 'data', '.maintenance')
-  const isMaintenance = fs.existsSync(flagPath)
+  // Check maintenance mode via environment variable (edge-runtime compatible)
+  const isMaintenance = process.env.MAINTENANCE_MODE === 'true'
 
   if (isMaintenance) {
     const admin = await isAdminSession(request)

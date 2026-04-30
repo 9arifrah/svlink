@@ -96,19 +96,10 @@ export async function getSession(): Promise<SessionPayload | null> {
 }
 
 /**
- * Set user session cookie
+ * Set user session cookie (delegates to unified session)
  */
 export async function setUserSession(userId: string, maxAge: number = 60 * 60 * 24 * 7) {
-  const token = await createSessionToken(userId, false)
-  const cookieStore = await cookies()
-
-  cookieStore.set(SESSION_COOKIE, token, {
-    httpOnly: true,
-    secure: false, // Disabled: no SSL configured. Set to true when HTTPS is enabled.
-    sameSite: 'lax',
-    maxAge,
-    path: '/'
-  })
+  return setUnifiedSession(userId, maxAge)
 }
 
 /**
