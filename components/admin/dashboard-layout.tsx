@@ -18,8 +18,11 @@ interface AdminDashboardLayoutProps {
 const mobileNavigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: Menu },
   { name: 'Link', href: '/admin/links', icon: ExternalLink },
+  { name: 'Kategori', href: '/admin/categories', icon: ExternalLink },
   { name: 'User', href: '/admin/users', icon: ExternalLink },
+  { name: 'Halaman Publik', href: '/admin/pages', icon: ExternalLink },
   { name: 'Stats', href: '/admin/stats', icon: ExternalLink },
+  { name: 'Audit Logs', href: '/admin/audit-logs', icon: ExternalLink },
   { name: 'Settings', href: '/admin/settings', icon: ExternalLink },
 ]
 

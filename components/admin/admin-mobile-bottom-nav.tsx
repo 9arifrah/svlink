@@ -2,14 +2,17 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Link2, Users, BarChart3, Settings } from 'lucide-react'
+import { LayoutDashboard, Link2, FolderTree, Users, Globe, BarChart3, Activity, Settings } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const navItems = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
   { name: 'Link', href: '/admin/links', icon: Link2 },
+  { name: 'Kategori', href: '/admin/categories', icon: FolderTree },
   { name: 'User', href: '/admin/users', icon: Users },
+  { name: 'Pages', href: '/admin/pages', icon: Globe },
   { name: 'Stats', href: '/admin/stats', icon: BarChart3 },
+  { name: 'Audit', href: '/admin/audit-logs', icon: Activity },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
 ]
 
