@@ -48,12 +48,16 @@ export function AnnouncementsManager() {
       const res = await fetch('/api/admin/announcements', { credentials: 'include' })
       const data = await res.json()
       if (res.ok) {
-        setAnnouncements(data)
+        // Handle both array and object response
+        const announcementsData = Array.isArray(data) ? data : (data.announcements || [])
+        setAnnouncements(announcementsData)
       } else {
         setError(data.error || 'Gagal memuat pengumuman')
+        setAnnouncements([])
       }
     } catch {
       setError('Gagal terhubung ke server')
+      setAnnouncements([])
     } finally {
       setLoading(false)
     }
