@@ -1,6 +1,6 @@
 import { getVerifiedAdminSession } from '@/lib/admin-auth'
 import { redirect } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { db } from '@/lib/db'
 import { DashboardLayout } from '@/components/admin/dashboard-layout'
 import { UsersTable } from '@/components/admin/users-table'
 
@@ -15,22 +15,13 @@ async function checkAuth() {
 }
 
 async function getUsers() {
-  if (!supabase) {
-    console.error('[v0] Supabase client not initialized')
-    return []
-  }
-
-  const { data: users, error } = await supabase
-    .from('users')
-    .select('*')
-    .order('created_at', { ascending: false })
-
-  if (error) {
+  try {
+    const users = await db.getAllUsersWithAdminStatus()
+    return users
+  } catch (error) {
     console.error('[v0] Error fetching users:', error)
     return []
   }
-
-  return users || []
 }
 
 export default async function AdminUsers() {
