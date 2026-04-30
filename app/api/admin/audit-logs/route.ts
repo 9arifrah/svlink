@@ -1,4 +1,3 @@
-// app/api/admin/audit-logs/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { getVerifiedAdminSession } from '@/lib/admin-auth'
 import { db } from '@/lib/db'
