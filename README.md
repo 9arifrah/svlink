@@ -19,11 +19,14 @@ Platform manajemen tautan profesional yang memungkinkan pengguna mengatur, memba
 - 🏆 **Top Links** - Link terpopuler berdasarkan klik
 
 ### Untuk Admin:
-- 📈 **Dashboard Admin** - Statistik platform secara keseluruhan
-- 👥 **Manajemen Pengguna** - Kelola akun pengguna
-- 🔗 **Manajemen Tautan Global** - Monitor semua tautan di platform
-- 📁 **Kategori Global** - Kelola kategori di seluruh platform
-- 📊 **Analitik** - Grafik pertumbuhan dan statistik detail
+- 📈 **Dashboard Analytics** — Statistik platform, grafik pertumbuhan, audit stats, top 10 links by clicks
+- 🔗 **Manajemen Link** — Kelola semua link di platform (CRUD, search, filter)
+- 👥 **Manajemen Pengguna** — Suspend/activate user, bulk operations, monitoring failed login
+- 📁 **Kategori Global** — Kelola kategori di seluruh platform (CRUD, icon, sort order)
+- 🌐 **Halaman Publik** — Kelola public page user (activate/deactivate, delete)
+- 📊 **Analitik** — Grafik pertumbuhan user dan link
+- 📋 **Audit Logs** — Riwayat aksi admin di platform
+- ⚙️ **Pengaturan** — Maintenance mode, announcements, backfill QR/short code
 
 ## 🛠️ Tech Stack
 
@@ -287,13 +290,15 @@ NEXT_PUBLIC_SITE_URL=https://svlink.vercel.app
 - `/dashboard/settings` - Pengaturan profil
 
 ### Panel Admin (Protected):
-- `/admin/login` - Login admin
-- `/admin/dashboard` - Dashboard admin dengan statistik platform
-- `/admin/users` - Manajemen pengguna
-- `/admin/links` - Manajemen tautan global
-- `/admin/categories` - Manajemen kategori global
-- `/admin/stats` - Analitik dan grafik
-- `/admin/settings` - Pengaturan admin
+- `/admin/login` — Login admin (redirect ke `/login`)
+- `/admin/dashboard` — Dashboard analytics platform (statistik, grafik, top links)
+- `/admin/links` — Manajemen link global (CRUD semua link)
+- `/admin/users` — Moderasi user (suspend/activate, bulk actions, failed login)
+- `/admin/categories` — Manajemen kategori global (CRUD, icon, sort order)
+- `/admin/pages` — Kelola public page user (activate/deactivate, delete)
+- `/admin/stats` — Analitik dan grafik detail
+- `/admin/audit-logs` — Audit trail aksi admin
+- `/admin/settings` — Pengaturan platform (maintenance, announcements, backfill)
 
 ## 🔐 Keamanan
 
@@ -314,10 +319,12 @@ NEXT_PUBLIC_SITE_URL=https://svlink.vercel.app
 
 ### Autentikasi
 **Implementasi Kustom (Bukan Supabase Auth):**
-- Cookie-based session management menggunakan `user_session` dan `admin_session` cookies
+- Unified cookie-based session management menggunakan `svlink_session` cookie
 - Password di-hash dengan bcryptjs (10 salt rounds)
 - Sessions disimpan sebagai httpOnly cookies dengan expiry 7 hari
-- Autentikasi admin terpisah via tabel `admin_users`
+- Admin users diidentifikasi via tabel `admin_users` (junction table)
+- Single `/login` endpoint — admin redirect ke `/admin/dashboard`, user ke `/dashboard`
+- `/admin/login` redirect ke `/login` (next.config.mjs)
 
 ### API Routes
 **Autentikasi Check:**
@@ -371,9 +378,14 @@ components/
 
 ### Test Admin:
 1. Pastikan user exists di tabel `admin_users`
-2. Login di `/admin/login`
-3. Akses `/admin/dashboard` (harus show platform stats)
-4. Test user/link/category management
+2. Login di `/login` (admin user akan redirect ke `/admin/dashboard`)
+3. Akses `/admin/dashboard` (harus show platform stats, growth chart, audit stats, top 10 links)
+4. Akses `/admin/links` — harus tampil LinksTable CRUD
+5. Akses `/admin/users` — harus tampil UsersTable dengan suspend/activate
+6. Akses `/admin/categories` — harus tampil CRUD kategori
+7. Akses `/admin/pages` — harus tampil daftar public page dengan toggle active/nonaktif
+8. Akses `/admin/audit-logs` — harus tampil audit trail
+9. Sidebar navigasi harus lengkap di semua device (desktop + mobile)
 
 ### Test URL Shortener:
 1. Login dan buat new link (short code otomatis di-generate)

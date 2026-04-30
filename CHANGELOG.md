@@ -4,6 +4,37 @@ All notable changes to svlink will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed - 2026-04-30
+
+#### v1.4.4 — Admin Pages Email Fix
+- Fixed `user_email` column mismatch in `/admin/pages` table
+- SQLite: Added alias `u.email as user_email` in `getAllPublicPages()` query
+- Supabase: Flattened nested `users.email` → `user_email` in response mapping
+
+#### v1.4.3 — Admin Pages Toggle Fix
+- Added missing `PUT /api/admin/pages/[id]` route handler
+- Toggle activate/deactivate public page from admin panel now works
+
+#### v1.4.2 — Admin Navigation Complete
+- Added Kategori, Halaman Publik, and Audit Logs to mobile sidebar sheet menu
+- Added Kategori, Pages, Audit Logs to admin mobile bottom navigation
+- All admin menus now consistent across desktop sidebar, mobile sheet, and bottom nav
+
+#### v1.4.1 — Admin Categories SQLite Support
+- Fixed `/admin/categories` page to use `db.adminGetAllCategories()` instead of direct Supabase
+- Categories management now works in both SQLite (dev) and Supabase (prod)
+
+#### v1.4.0 — Admin Navigation & Dashboard Separation
+- Fixed navigation href for "Kelola Link" in sidebar → now points to `/admin/links` (was `/admin/dashboard`)
+- Separated admin dashboard content:
+  - `/admin/dashboard` → Analytics only (StatsCards, GrowthChart, AuditStatsWidget, Top 10 Links)
+  - `/admin/links` → Link management (LinksTable CRUD)
+  - `/admin/users` → User moderation (suspend/activate, bulk actions) — unchanged
+- Removed duplicate LinksTable section from `/admin/dashboard`
+- Updated dashboard subtitle: "Statistik dan analitik platform"
+
+---
+
 ### Added - 2026-04-22
 
 #### Unified Login System (v1.3.0)
