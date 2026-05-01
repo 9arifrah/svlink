@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
@@ -9,21 +12,100 @@ import {
   Shield,
   Zap,
   Globe,
-  Star,
   Check,
   ArrowRight,
-  Facebook,
-  Twitter,
-  Linkedin,
   Github,
-  Mail,
-  Send,
-  Link2
+  Twitter,
+  Link2,
+  Menu,
+  X,
 } from 'lucide-react'
 
 export default function HomePage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+
   return (
     <div className="min-h-screen bg-white">
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200/50">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="flex h-16 items-center justify-between">
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-brand-600 to-brand-700 shadow-md shadow-brand-500/20">
+                <ExternalLink className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-lg font-bold text-slate-900">svlink</span>
+            </Link>
+
+            {/* Desktop Nav */}
+            <div className="hidden md:flex items-center gap-8">
+              <a href="#features" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+                Fitur
+              </a>
+              <a href="#cara-kerja" className="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">
+                Cara Kerja
+              </a>
+              <Link href="/login">
+                <Button variant="ghost" className="text-sm font-medium text-slate-700 hover:text-slate-900">
+                  Masuk
+                </Button>
+              </Link>
+              <Link href="/register">
+                <Button size="sm" className="text-sm bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 shadow-md shadow-brand-500/20">
+                  Daftar Gratis
+                </Button>
+              </Link>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden flex h-10 w-10 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100"
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
+
+          {/* Mobile Menu */}
+          {mobileMenuOpen && (
+            <div className="md:hidden border-t border-slate-200/50 py-4 animate-fade-in">
+              <div className="flex flex-col gap-2">
+                <a
+                  href="#features"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+                >
+                  Fitur
+                </a>
+                <a
+                  href="#cara-kerja"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 rounded-lg transition-colors"
+                >
+                  Cara Kerja
+                </a>
+                <div className="flex gap-2 px-4 pt-2 border-t border-slate-200/50 mt-2">
+                  <Link href="/login" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="outline" className="w-full text-sm">
+                      Masuk
+                    </Button>
+                  </Link>
+                  <Link href="/register" className="flex-1" onClick={() => setMobileMenuOpen(false)}>
+                    <Button className="w-full text-sm bg-gradient-to-r from-brand-600 to-brand-700">
+                      Daftar
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </nav>
+
+      {/* Spacer for fixed navbar */}
+      <div className="h-16" />
+
       {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-brand-50 via-brand-50/50 to-accent-50/30">
         {/* Animated gradient mesh overlay */}
@@ -259,7 +341,7 @@ export default function HomePage() {
       </section>
 
       {/* How It Works Section */}
-      <div className="bg-gradient-to-br from-slate-50 to-blue-50 py-24">
+      <div id="cara-kerja" className="bg-gradient-to-br from-slate-50 to-blue-50 py-24">
         <div className="mx-auto max-w-7xl px-4">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-4xl font-bold text-slate-900">
