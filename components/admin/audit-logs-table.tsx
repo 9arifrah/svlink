@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { formatDistanceToNow } from 'date-fns'
+import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { Search } from 'lucide-react'
 
@@ -115,10 +115,7 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
             filteredLogs.map((log) => (
               <TableRow key={log.id}>
                 <TableCell className="whitespace-nowrap">
-                  {formatDistanceToNow(new Date(log.created_at), {
-                    addSuffix: true,
-                    locale: id,
-                  })}
+                  {format(new Date(log.created_at.replace(' ', 'T')), 'dd MMM yyyy, HH:mm', { locale: id })}
                 </TableCell>
                 <TableCell>
                   <div>
