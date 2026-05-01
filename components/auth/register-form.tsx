@@ -90,7 +90,7 @@ export function RegisterForm() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-4 sm:mx-0 border-slate-200/60 shadow-soft-lg bg-white/80 backdrop-blur-sm">
+    <Card className="w-full border-slate-200/60 shadow-soft-lg bg-white/80 backdrop-blur-sm">
       <CardHeader className="p-4 sm:p-6">
         <CardTitle className="text-lg sm:text-xl text-slate-900">Registrasi</CardTitle>
       </CardHeader>
