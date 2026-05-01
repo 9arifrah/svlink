@@ -73,6 +73,11 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
     return 'secondary'
   }
 
+  const parseReason = (details: string | null) => {
+    if (!details) return '-'
+    try { return JSON.parse(details).reason || '-'; } catch { return '-'; }
+  }
+
   return (
     <div className="space-y-4">
       {/* Search */}
@@ -87,16 +92,17 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
         />
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-slate-700/50">
+      {/* Desktop table */}
+      <div className="hidden sm:block overflow-x-auto rounded-lg border border-slate-700/50">
         <Table>
           <TableHeader>
             <TableRow className="bg-slate-800/80">
-              <TableHead className="whitespace-nowrap text-xs sm:text-sm">Waktu</TableHead>
-              <TableHead className="whitespace-nowrap text-xs sm:text-sm">Admin</TableHead>
-              <TableHead className="whitespace-nowrap text-xs sm:text-sm">Aksi</TableHead>
-              <TableHead className="hidden sm:table-cell whitespace-nowrap text-xs sm:text-sm">Entity</TableHead>
-              <TableHead className="hidden lg:table-cell whitespace-nowrap text-xs sm:text-sm">IP</TableHead>
-              <TableHead className="hidden md:table-cell whitespace-nowrap text-xs sm:text-sm">Details</TableHead>
+              <TableHead className="whitespace-nowrap text-sm">Waktu</TableHead>
+              <TableHead className="whitespace-nowrap text-sm">Admin</TableHead>
+              <TableHead className="whitespace-nowrap text-sm">Aksi</TableHead>
+              <TableHead className="whitespace-nowrap text-sm">Entity</TableHead>
+              <TableHead className="hidden lg:table-cell whitespace-nowrap text-sm">IP</TableHead>
+              <TableHead className="hidden md:table-cell whitespace-nowrap text-sm">Details</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -115,27 +121,27 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
             ) : (
               filteredLogs.map((log) => (
                 <TableRow key={log.id} className="hover:bg-slate-700/30">
-                  <TableCell className="whitespace-nowrap text-[10px] sm:text-xs">
+                  <TableCell className="whitespace-nowrap text-xs">
                     {format(new Date(log.created_at.replace(' ', 'T')), 'dd MMM yyyy, HH:mm', { locale: id })}
                   </TableCell>
                   <TableCell>
                     <div>
-                      <div className="font-medium text-xs sm:text-sm text-white">{log.user_display_name || log.user_email}</div>
-                      <div className="text-[10px] sm:text-xs text-slate-400 truncate max-w-[140px]">{log.user_email}</div>
+                      <div className="font-medium text-sm text-white">{log.user_display_name || log.user_email}</div>
+                      <div className="text-xs text-slate-400 truncate max-w-[160px]">{log.user_email}</div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={getActionColor(log.action)} className="text-[10px] sm:text-xs">
+                    <Badge variant={getActionColor(log.action)} className="text-xs">
                       {log.action}
                     </Badge>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell">
-                    <div className="text-xs sm:text-sm">
-                      <span className="font-mono text-[10px] sm:text-xs bg-slate-700 px-2 py-1 rounded text-emerald-400">
+                  <TableCell>
+                    <div className="text-sm">
+                      <span className="font-mono text-xs bg-slate-700 px-2 py-1 rounded text-emerald-400">
                         {log.entity_type}
                       </span>
                       {log.entity_id && (
-                        <span className="ml-2 text-slate-400 text-[10px] sm:text-xs">{log.entity_id.slice(0, 8)}...</span>
+                        <span className="ml-2 text-slate-400 text-xs">{log.entity_id.slice(0, 8)}...</span>
                       )}
                     </div>
                   </TableCell>
@@ -143,13 +149,58 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
                     {log.ip_address || '-'}
                   </TableCell>
                   <TableCell className="hidden md:table-cell max-w-xs truncate text-xs text-slate-400">
-                    {log.details ? (() => { try { return JSON.parse(log.details).reason || '-'; } catch { return '-'; } })() : '-'}
+                    {parseReason(log.details)}
                   </TableCell>
                 </TableRow>
               ))
             )}
           </TableBody>
         </Table>
+      </div>
+
+      {/* Mobile card view */}
+      <div className="sm:hidden space-y-2">
+        {loading ? (
+          <p className="text-center text-slate-400 py-8 text-sm">Loading...</p>
+        ) : filteredLogs.length === 0 ? (
+          <p className="text-center text-slate-500 py-8 text-sm">
+            {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada audit logs'}
+          </p>
+        ) : (
+          filteredLogs.map((log) => (
+            <div
+              key={log.id}
+              className="rounded-lg border border-slate-700/50 bg-slate-700/30 p-3"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Badge variant={getActionColor(log.action)} className="text-[10px]">
+                      {log.action}
+                    </Badge>
+                    <span className="font-mono text-[10px] bg-slate-600 px-1.5 py-0.5 rounded text-emerald-400">
+                      {log.entity_type}
+                    </span>
+                  </div>
+                  <div className="text-xs text-white font-medium truncate">
+                    {log.user_display_name || log.user_email}
+                  </div>
+                  <div className="text-[10px] text-slate-400 truncate">
+                    {log.user_email}
+                  </div>
+                </div>
+                <span className="text-[10px] text-slate-500 whitespace-nowrap flex-shrink-0">
+                  {format(new Date(log.created_at.replace(' ', 'T')), 'dd MMM, HH:mm', { locale: id })}
+                </span>
+              </div>
+              {log.details && parseReason(log.details) !== '-' && (
+                <p className="text-[10px] text-slate-400 mt-1 truncate">
+                  {parseReason(log.details)}
+                </p>
+              )}
+            </div>
+          ))
+        )}
       </div>
 
       {/* Pagination */}
