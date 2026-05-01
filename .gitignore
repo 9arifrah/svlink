@@ -46,4 +46,4 @@ data/*.db
 *.swo
 
 # OS
-Thumbs.db
+Thumbs.db*.sqlite

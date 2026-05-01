@@ -93,9 +93,9 @@ export function DashboardLayout({ children, isAdmin }: AdminDashboardLayoutProps
           </nav>
         </SheetContent>
       </Sheet>
-
-      {/* Mobile Bottom Navigation */}
-      <AdminMobileBottomNav />
     </div>
+
+    {/* Mobile Bottom Navigation — outside root div to avoid overflow-x-hidden clipping */}
+    <AdminMobileBottomNav />
   )
 }
