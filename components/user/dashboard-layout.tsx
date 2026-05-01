@@ -5,7 +5,7 @@ import { DashboardHeader } from './dashboard-header'
 import { MobileBottomNav } from './mobile-bottom-nav'
 import { BreadcrumbNav } from '@/components/ui/breadcrumb-nav'
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet'
-import { ExternalLink, Home, Link2, FolderTree, Settings, FileText, Shield } from 'lucide-react'
+import { Link2, Home, FolderTree, Settings, FileText, Shield } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -28,6 +28,7 @@ export function DashboardLayout({ children, isAdmin }: DashboardLayoutProps) {
   const pathname = usePathname()
 
   return (
+    <>
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-brand-50/20 to-accent-50/10 overflow-x-hidden">
       <DashboardHeader onMobileMenuOpen={() => setMobileMenuOpen(true)} />
 
@@ -91,9 +92,10 @@ export function DashboardLayout({ children, isAdmin }: DashboardLayoutProps) {
           </nav>
         </SheetContent>
       </Sheet>
-
-      {/* Mobile Bottom Navigation */}
-      <MobileBottomNav />
     </div>
+
+    {/* Mobile Bottom Navigation -- outside root div to avoid overflow-x-hidden clipping */}
+    <MobileBottomNav />
+    </>
   )
 }
