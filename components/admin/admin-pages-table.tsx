@@ -159,85 +159,147 @@ export function AdminPagesTable() {
               </p>
             </div>
           ) : (
-            <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur overflow-hidden overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-slate-700/50">
-                    <TableHead className="whitespace-nowrap py-2 sm:py-3 pr-2 sm:pr-4">Judul</TableHead>
-                    <TableHead className="whitespace-nowrap py-2 sm:py-3 pr-2 sm:pr-4">Slug</TableHead>
-                    <TableHead className="hidden sm:table-cell whitespace-nowrap py-2 sm:py-3 pr-2 sm:pr-4">Email Pengguna</TableHead>
-                    <TableHead className="whitespace-nowrap py-2 sm:py-3 pr-2 sm:pr-4">Status</TableHead>
-                    <TableHead className="hidden md:table-cell whitespace-nowrap py-2 sm:py-3 pr-2 sm:pr-4">Dibuat</TableHead>
-                    <TableHead className="text-right whitespace-nowrap py-2 sm:py-3">Aksi</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredPages.map((page) => (
-                    <TableRow key={page.id} className="hover:bg-slate-700/50">
-                      <TableCell className="font-medium text-white whitespace-nowrap text-xs sm:text-sm py-2 sm:py-4 pr-2 sm:pr-4">
-                        {page.title}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap py-2 sm:py-4 pr-2 sm:pr-4">
+            <>
+              {/* Desktop table */}
+              <div className="hidden sm:block rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur overflow-hidden overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-slate-700/50">
+                      <TableHead className="whitespace-nowrap py-2 sm:py-3 pr-2 sm:pr-4 text-sm">Judul</TableHead>
+                      <TableHead className="whitespace-nowrap py-2 sm:py-3 pr-2 sm:pr-4 text-sm">Slug</TableHead>
+                      <TableHead className="hidden sm:table-cell whitespace-nowrap py-2 sm:py-3 pr-2 sm:pr-4 text-sm">Email Pengguna</TableHead>
+                      <TableHead className="whitespace-nowrap py-2 sm:py-3 pr-2 sm:pr-4 text-sm">Status</TableHead>
+                      <TableHead className="hidden md:table-cell whitespace-nowrap py-2 sm:py-3 pr-2 sm:pr-4 text-sm">Dibuat</TableHead>
+                      <TableHead className="text-right whitespace-nowrap py-2 sm:py-3 text-sm">Aksi</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredPages.map((page) => (
+                      <TableRow key={page.id} className="hover:bg-slate-700/50">
+                        <TableCell className="font-medium text-white whitespace-nowrap text-sm py-2 sm:py-4 pr-2 sm:pr-4">
+                          {page.title}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap py-2 sm:py-4 pr-2 sm:pr-4">
+                          <a
+                            href={`/${page.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-blue-400 hover:text-blue-300 hover:underline text-sm"
+                          >
+                            <span className="truncate max-w-[120px] sm:max-w-none">{page.slug}</span>
+                            <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                          </a>
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell text-slate-400 max-w-[180px] truncate text-xs py-2 sm:py-4 pr-2 sm:pr-4">
+                          {page.user_email}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap py-2 sm:py-4 pr-2 sm:pr-4">
+                          <Badge variant={page.is_active ? 'success' : 'secondary'} className="text-xs">
+                            {page.is_active ? 'Aktif' : 'Nonaktif'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell text-slate-400 whitespace-nowrap text-xs py-2 sm:py-4 pr-2 sm:pr-4">
+                          {new Date(page.created_at).toLocaleDateString('id-ID')}
+                        </TableCell>
+                        <TableCell className="text-right whitespace-nowrap py-2 sm:py-4">
+                          <div className="flex items-center justify-end gap-1.5 sm:gap-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => handleToggle(page)}
+                              disabled={togglingId === page.id}
+                              className="h-8 w-8 sm:h-9 sm:w-9 text-slate-400 hover:text-white hover:bg-slate-700/50"
+                            >
+                              {togglingId === page.id ? (
+                                <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" />
+                              ) : page.is_active ? (
+                                <ToggleRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                              ) : (
+                                <ToggleLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                              )}
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => confirmDelete(page)}
+                              className="h-8 w-8 sm:h-9 sm:w-9 text-red-400 hover:text-red-300 hover:bg-red-900/30"
+                            >
+                              <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile card view */}
+              <div className="sm:hidden space-y-2">
+                {filteredPages.map((page) => (
+                  <div
+                    key={page.id}
+                    className="rounded-lg border border-slate-700/50 bg-slate-700/30 p-3"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-white text-sm truncate">
+                          {page.title}
+                        </div>
                         <a
                           href={`/${page.slug}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-blue-400 hover:text-blue-300 hover:underline text-xs sm:text-sm"
+                          className="flex items-center gap-1 text-blue-400 hover:text-blue-300 text-xs mt-0.5"
                         >
-                          <span className="truncate max-w-[120px] sm:max-w-none">{page.slug}</span>
                           <ExternalLink className="h-3 w-3 flex-shrink-0" />
+                          <span className="truncate">/{page.slug}</span>
                         </a>
-                      </TableCell>
-                      <TableCell className="hidden sm:table-cell text-slate-400 max-w-[180px] truncate text-[10px] sm:text-xs py-2 sm:py-4 pr-2 sm:pr-4">
-                        {page.user_email}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap py-2 sm:py-4 pr-2 sm:pr-4">
-                        <Badge variant={page.is_active ? 'success' : 'secondary'} className="text-[10px] sm:text-xs">
+                        <div className="text-[10px] text-slate-400 truncate mt-0.5">
+                          {page.user_email}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
+                        <Badge variant={page.is_active ? 'success' : 'secondary'} className="text-[10px]">
                           {page.is_active ? 'Aktif' : 'Nonaktif'}
                         </Badge>
-                      </TableCell>
-                      <TableCell className="hidden md:table-cell text-slate-400 whitespace-nowrap text-[10px] sm:text-xs py-2 sm:py-4 pr-2 sm:pr-4">
-                        {new Date(page.created_at).toLocaleDateString('id-ID')}
-                      </TableCell>
-                      <TableCell className="text-right whitespace-nowrap py-2 sm:py-4">
-                        <div className="flex items-center justify-end gap-1.5 sm:gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
+                        <div className="flex items-center gap-1">
+                          <button
                             onClick={() => handleToggle(page)}
                             disabled={togglingId === page.id}
-                            className="h-8 w-8 sm:h-9 sm:w-9 text-slate-400 hover:text-white hover:bg-slate-700/50"
+                            className="h-7 w-7 flex items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
                           >
                             {togglingId === page.id ? (
-                              <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" />
+                              <Loader2 className="h-3.5 w-3.5 animate-spin" />
                             ) : page.is_active ? (
-                              <ToggleRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                              <ToggleRight className="h-3.5 w-3.5" />
                             ) : (
-                              <ToggleLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                              <ToggleLeft className="h-3.5 w-3.5" />
                             )}
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
+                          </button>
+                          <button
                             onClick={() => confirmDelete(page)}
-                            className="h-8 w-8 sm:h-9 sm:w-9 text-red-400 hover:text-red-300 hover:bg-red-900/30"
+                            className="h-7 w-7 flex items-center justify-center rounded-md text-red-400 hover:text-red-300 hover:bg-red-900/30 transition-colors"
                           >
-                            <Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                          </Button>
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
                         </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-slate-500 mt-1">
+                      Dibuat {new Date(page.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
 
       {/* Delete Confirmation Dialog */}
       <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent className="bg-slate-800 border-slate-700/50 max-w-[95vw] sm:max-w-lg">
+        <AlertDialogContent className="bg-slate-800 border-slate-700/50 max-w-[95vw] sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-white text-base sm:text-lg">
               Hapus Halaman?
