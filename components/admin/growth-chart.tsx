@@ -44,7 +44,7 @@ export function GrowthChart({ links, users }: GrowthChartProps) {
 
     return (
         <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
-            <CardHeader>
+            <CardHeader className="p-4 sm:p-6">
                 <CardTitle className="text-base sm:text-lg font-semibold text-slate-300 mb-2 sm:mb-4">
                     Tren Pertumbuhan (7 Hari Terakhir)
                 </CardTitle>

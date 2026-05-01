@@ -66,7 +66,7 @@ export function LinksTable({ links, categories }: LinksTableProps) {
 
   return (
     <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
-      <CardHeader className="border-b border-slate-700/50">
+      <CardHeader className="border-b border-slate-700/50 p-4 sm:p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <CardTitle className="text-white">Daftar Semua Link</CardTitle>
           <Button onClick={() => setIsAddDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
@@ -86,7 +86,7 @@ export function LinksTable({ links, categories }: LinksTableProps) {
         </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="p-4 sm:p-6">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>

@@ -31,6 +31,7 @@ export function DashboardLayout({ children, isAdmin }: AdminDashboardLayoutProps
   const pathname = usePathname()
 
   return (
+    <>
     <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 overflow-x-hidden">
       <AdminSidebar />
 
@@ -95,7 +96,8 @@ export function DashboardLayout({ children, isAdmin }: AdminDashboardLayoutProps
       </Sheet>
     </div>
 
-    {/* Mobile Bottom Navigation — outside root div to avoid overflow-x-hidden clipping */}
+    {/* Mobile Bottom Navigation -- outside root div to avoid overflow-x-hidden clipping */}
     <AdminMobileBottomNav />
+    </>
   )
 }

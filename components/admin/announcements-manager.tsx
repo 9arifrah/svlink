@@ -171,7 +171,7 @@ export function AnnouncementsManager() {
               Tambah
             </Button>
           </DialogTrigger>
-          <DialogContent className="bg-slate-800 border-slate-700 text-white">
+          <DialogContent className="bg-slate-800 border-slate-700 text-white max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>{editing ? 'Edit Pengumuman' : 'Tambah Pengumuman'}</DialogTitle>
             </DialogHeader>

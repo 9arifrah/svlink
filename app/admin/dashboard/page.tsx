@@ -94,7 +94,7 @@ export default async function AdminDashboard() {
 
   return (
     <DashboardLayout isAdmin={true}>
-      <div className="space-y-6 overflow-x-hidden animate-fade-in">
+      <div className="space-y-6 animate-fade-in">
         {/* Header */}
         <div className="animate-scale-in">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">
@@ -107,10 +107,10 @@ export default async function AdminDashboard() {
 
         {/* Stats Cards */}
         <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur animate-scale-in" style={{ animationDelay: '0.1s' }}>
-          <CardHeader className="border-b border-slate-700/50">
-            <CardTitle className="text-lg font-semibold text-white">Statistik Platform</CardTitle>
+          <CardHeader className="border-b border-slate-700/50 p-4 sm:p-6">
+            <CardTitle className="text-base sm:text-lg font-semibold text-white">Statistik Platform</CardTitle>
           </CardHeader>
-          <CardContent className="pt-6">
+          <CardContent className="pt-4 sm:pt-6 p-4 sm:p-6">
             <StatsCards stats={stats} />
           </CardContent>
         </Card>
@@ -127,14 +127,15 @@ export default async function AdminDashboard() {
 
         {/* Top 10 Links by Clicks */}
         <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur animate-scale-in" style={{ animationDelay: '0.25s' }}>
-          <CardHeader className="border-b border-slate-700/50">
-            <CardTitle className="text-lg font-semibold text-white flex items-center gap-2">
-              <Trophy className="h-5 w-5 text-amber-400" />
+          <CardHeader className="border-b border-slate-700/50 p-4 sm:p-6">
+            <CardTitle className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+              <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-amber-400" />
               Top 10 Links by Clicks
             </CardTitle>
           </CardHeader>
-          <CardContent className="pt-6">
-            <div className="overflow-x-auto">
+          <CardContent className="p-4 sm:p-6 pt-4 sm:pt-6">
+            {/* Desktop table */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-slate-700/50">
@@ -192,6 +193,44 @@ export default async function AdminDashboard() {
                   )}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile card view */}
+            <div className="sm:hidden space-y-2">
+              {topLinks.length === 0 ? (
+                <p className="p-4 text-center text-slate-400 text-sm">Tidak ada data link</p>
+              ) : (
+                topLinks.map((link: any, index: number) => (
+                  <div
+                    key={link.id}
+                    className="rounded-lg border border-slate-700/50 bg-slate-700/30 p-3"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 min-w-0 flex-1">
+                        {index < 3 ? (
+                          <Badge className={
+                            index === 0 ? 'bg-amber-900/30 text-amber-400' :
+                            index === 1 ? 'bg-slate-600/30 text-slate-300' :
+                            'bg-orange-900/30 text-orange-400'
+                          }>
+                            {index + 1}
+                          </Badge>
+                        ) : (
+                          <span className="text-slate-400 text-xs font-medium">#{index + 1}</span>
+                        )}
+                        <span className="text-white font-medium text-sm truncate">{link.title || '—'}</span>
+                      </div>
+                      <span className="text-white font-bold text-sm ml-2">{link.click_count || 0} klik</span>
+                    </div>
+                    <div className="flex items-center justify-between mt-1.5">
+                      <span className="text-slate-400 text-xs truncate">{link.users?.display_name || link.users?.email || '—'}</span>
+                      <code className="text-xs bg-slate-600 px-2 py-0.5 rounded text-emerald-400">
+                        {link.short_code || '—'}
+                      </code>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </CardContent>
         </Card>

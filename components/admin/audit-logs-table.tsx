@@ -87,89 +87,91 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
         />
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Waktu</TableHead>
-            <TableHead>Admin</TableHead>
-            <TableHead>Aksi</TableHead>
-            <TableHead>Entity</TableHead>
-            <TableHead>IP Address</TableHead>
-            <TableHead>Details</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {loading ? (
-            <TableRow>
-              <TableCell colSpan={6} className="text-center py-8">
-                Loading...
-              </TableCell>
+      <div className="overflow-x-auto rounded-lg border border-slate-700/50">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-slate-800/80">
+              <TableHead className="whitespace-nowrap text-xs sm:text-sm">Waktu</TableHead>
+              <TableHead className="whitespace-nowrap text-xs sm:text-sm">Admin</TableHead>
+              <TableHead className="whitespace-nowrap text-xs sm:text-sm">Aksi</TableHead>
+              <TableHead className="hidden sm:table-cell whitespace-nowrap text-xs sm:text-sm">Entity</TableHead>
+              <TableHead className="hidden lg:table-cell whitespace-nowrap text-xs sm:text-sm">IP</TableHead>
+              <TableHead className="hidden md:table-cell whitespace-nowrap text-xs sm:text-sm">Details</TableHead>
             </TableRow>
-          ) : filteredLogs.length === 0 ? (
-            <TableRow>
-              <TableCell colSpan={6} className="text-center py-8 text-slate-500">
-                {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada audit logs'}
-              </TableCell>
-            </TableRow>
-          ) : (
-            filteredLogs.map((log) => (
-              <TableRow key={log.id}>
-                <TableCell className="whitespace-nowrap">
-                  {format(new Date(log.created_at.replace(' ', 'T')), 'dd MMM yyyy, HH:mm', { locale: id })}
-                </TableCell>
-                <TableCell>
-                  <div>
-                    <div className="font-medium">{log.user_display_name || log.user_email}</div>
-                    <div className="text-xs text-slate-500">{log.user_email}</div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={getActionColor(log.action)}>
-                    {log.action}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  <div className="text-sm">
-                    <span className="font-mono text-xs bg-slate-100 px-2 py-1 rounded">
-                      {log.entity_type}
-                    </span>
-                    {log.entity_id && (
-                      <span className="ml-2 text-slate-500">{log.entity_id.slice(0, 8)}...</span>
-                    )}
-                  </div>
-                </TableCell>
-                <TableCell className="font-mono text-xs">
-                  {log.ip_address || '-'}
-                </TableCell>
-                <TableCell className="max-w-xs truncate text-xs">
-                  {log.details ? JSON.parse(log.details).reason || '-' : '-'}
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-slate-400">
+                  Loading...
                 </TableCell>
               </TableRow>
-            ))
-          )}
-        </TableBody>
-      </Table>
+            ) : filteredLogs.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-8 text-slate-500">
+                  {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada audit logs'}
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredLogs.map((log) => (
+                <TableRow key={log.id} className="hover:bg-slate-700/30">
+                  <TableCell className="whitespace-nowrap text-[10px] sm:text-xs">
+                    {format(new Date(log.created_at.replace(' ', 'T')), 'dd MMM yyyy, HH:mm', { locale: id })}
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <div className="font-medium text-xs sm:text-sm text-white">{log.user_display_name || log.user_email}</div>
+                      <div className="text-[10px] sm:text-xs text-slate-400 truncate max-w-[140px]">{log.user_email}</div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={getActionColor(log.action)} className="text-[10px] sm:text-xs">
+                      {log.action}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">
+                    <div className="text-xs sm:text-sm">
+                      <span className="font-mono text-[10px] sm:text-xs bg-slate-700 px-2 py-1 rounded text-emerald-400">
+                        {log.entity_type}
+                      </span>
+                      {log.entity_id && (
+                        <span className="ml-2 text-slate-400 text-[10px] sm:text-xs">{log.entity_id.slice(0, 8)}...</span>
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden lg:table-cell font-mono text-xs">
+                    {log.ip_address || '-'}
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell max-w-xs truncate text-xs text-slate-400">
+                    {log.details ? (() => { try { return JSON.parse(log.details).reason || '-'; } catch { return '-'; } })() : '-'}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <div className="text-sm text-slate-500">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="text-xs sm:text-sm text-slate-400">
           Total: {total} logs
         </div>
         <div className="flex gap-2">
           <button
             onClick={() => setPage(p => Math.max(0, p - 1))}
             disabled={page === 0}
-            className="px-3 py-1 text-sm border rounded disabled:opacity-50"
+            className="px-3 py-1 text-xs sm:text-sm border border-slate-600 rounded disabled:opacity-50 text-slate-300 hover:bg-slate-700/50"
           >
             Previous
           </button>
-          <span className="px-3 py-1 text-sm">
+          <span className="px-3 py-1 text-xs sm:text-sm text-slate-300">
             Page {page + 1}
           </span>
           <button
             onClick={() => setPage(p => p + 1)}
             disabled={logs.length < pageSize}
-            className="px-3 py-1 text-sm border rounded disabled:opacity-50"
+            className="px-3 py-1 text-xs sm:text-sm border border-slate-600 rounded disabled:opacity-50 text-slate-300 hover:bg-slate-700/50"
           >
             Next
           </button>

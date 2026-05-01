@@ -30,7 +30,7 @@ export default async function AdminUsers() {
 
   return (
     <DashboardLayout isAdmin={true}>
-      <div className="space-y-6 animate-fade-in">
+      <div className="space-y-4 sm:space-y-6 overflow-x-hidden animate-fade-in">
         {/* Header */}
         <div className="animate-scale-in">
           <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">

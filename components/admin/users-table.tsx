@@ -116,7 +116,7 @@ export function UsersTable({ users }: UsersTableProps) {
   return (
     <>
       <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
-        <CardHeader className="border-b border-slate-700/50">
+        <CardHeader className="border-b border-slate-700/50 p-4 sm:p-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div className="flex items-center gap-2">
               <UserIcon className="h-4 w-4 sm:h-5 sm:w-5 text-slate-300" />

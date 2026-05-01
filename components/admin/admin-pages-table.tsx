@@ -125,7 +125,7 @@ export function AdminPagesTable() {
   return (
     <>
       <Card className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
-        <CardHeader className="border-b border-slate-700/50">
+        <CardHeader className="border-b border-slate-700/50 p-4 sm:p-6">
           <CardTitle className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div className="flex items-center gap-2">
               <Layout className="h-4 w-4 sm:h-5 sm:w-5 text-slate-300" />
@@ -146,7 +146,7 @@ export function AdminPagesTable() {
           </CardTitle>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           {loading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-blue-400" />

@@ -52,16 +52,16 @@ export function StatsCards({ stats }: { stats: Stats }) {
     <div className="grid gap-2 sm:gap-4 grid-cols-1 min-[450px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       {cards.map((card) => (
         <Card key={card.title} className="shadow-soft-md border-slate-700/50 bg-slate-800/50 backdrop-blur">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 p-2 sm:pb-2 sm:p-4 sm:lg:p-6">
-            <CardTitle className="text-[10px] sm:text-xs md:text-sm font-medium text-slate-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 sm:pb-2 p-2 sm:p-4 lg:p-6">
+            <CardTitle className="text-[10px] sm:text-sm font-medium text-slate-300">
               {card.title}
             </CardTitle>
-            <div className={`rounded-lg p-1 sm:p-2 sm:lg:p-2.5 ${card.bgColor}`}>
-              <card.icon className={`h-2.5 w-2.5 sm:h-4 sm:w-4 sm:lg:h-5 sm:lg:w-5 ${card.color}`} />
+            <div className={`rounded-lg p-1 sm:p-2 lg:p-2.5 ${card.bgColor}`}>
+              <card.icon className={`h-2.5 w-2.5 sm:h-4 sm:w-4 lg:h-5 lg:w-5 ${card.color}`} />
             </div>
           </CardHeader>
-          <CardContent className="p-2 sm:p-4 sm:lg:p-6 pt-0 sm:pt-0 sm:lg:pt-0">
-            <div className="text-lg sm:text-2xl sm:lg:text-3xl font-bold text-white">{card.value}</div>
+          <CardContent className="p-2 sm:p-4 lg:p-6 pt-0">
+            <div className="text-lg sm:text-2xl lg:text-3xl font-bold text-white">{card.value}</div>
           </CardContent>
         </Card>
       ))}
