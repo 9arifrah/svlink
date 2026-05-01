@@ -93,8 +93,8 @@ export default async function UserDashboard() {
     <DashboardLayout isAdmin={session.isAdmin}>
       <div className="space-y-4 sm:space-y-6">
         <div>
-          <h1 className="font-bold text-slate-900">Dashboard</h1>
-          <p className="text-slate-600">Kelola semua link dan kategori Anda</p>
+          <h1 className="text-lg sm:text-xl font-bold text-slate-900">Dashboard</h1>
+          <p className="text-xs sm:text-sm text-slate-600">Kelola semua link dan kategori Anda</p>
         </div>
 
         <EmptyStateOnboarding linkCount={stats.totalLinks} />
@@ -103,9 +103,9 @@ export default async function UserDashboard() {
 
         <RecentLinks links={recentLinks} />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Statistik Link</CardTitle>
+        <Card className="p-3 sm:p-4 lg:p-6">
+          <CardHeader className="p-0">
+            <CardTitle className="text-sm sm:text-base">Statistik Link</CardTitle>
           </CardHeader>
           <CardContent>
             <AutoRefreshStats initialStats={stats} />

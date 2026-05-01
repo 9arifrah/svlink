@@ -31,7 +31,7 @@ export function DashboardLayout({ children, isAdmin }: DashboardLayoutProps) {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-brand-50/20 to-accent-50/10 overflow-x-hidden">
       <DashboardHeader onMobileMenuOpen={() => setMobileMenuOpen(true)} />
 
-      <div className="flex">
+      <div className="flex flex-1">
         <DashboardSidebar isAdmin={isAdmin} />
 
         <main className="flex-1 p-4 pt-4 pb-28 sm:p-6 sm:pt-6 sm:pb-24 lg:p-8 lg:pb-8 animate-fade-in">

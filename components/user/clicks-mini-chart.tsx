@@ -14,9 +14,9 @@ type ClicksMiniChartProps = {
 
 export function ClicksMiniChart({ data }: ClicksMiniChartProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base">Klik 7 Hari Terakhir</CardTitle>
+    <Card className="p-3 sm:p-4 lg:p-6">
+      <CardHeader className="p-0">
+        <CardTitle className="text-xs sm:text-base">Klik 7 Hari Terakhir</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[160px] sm:h-[200px] overflow-hidden">

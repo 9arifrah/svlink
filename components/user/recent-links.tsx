@@ -20,8 +20,8 @@ interface RecentLinksProps {
 
 export function RecentLinks({ links }: RecentLinksProps) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
+    <Card className="p-3 sm:p-4 lg:p-6">
+      <CardHeader className="flex flex-row items-center justify-between p-0">
         <CardTitle className="flex items-center gap-2">
           <Link2 className="h-5 w-5" />
           Link Terbaru

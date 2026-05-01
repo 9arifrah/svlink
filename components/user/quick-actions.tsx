@@ -25,9 +25,9 @@ export function QuickActions() {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Aksi Cepat</CardTitle>
+      <Card className="p-3 sm:p-4 lg:p-6">
+        <CardHeader className="p-0">
+          <CardTitle className="text-sm sm:text-base">Aksi Cepat</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-2 sm:gap-3">

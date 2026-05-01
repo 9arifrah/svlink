@@ -20,9 +20,9 @@ export function TopLinks({ links }: TopLinksProps) {
   ]
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base flex items-center gap-2">
+    <Card className="p-3 sm:p-4 lg:p-6">
+      <CardHeader className="p-0">
+        <CardTitle className="text-xs sm:text-base flex items-center gap-2">
           <Trophy className="h-4 w-4 text-yellow-500" />
           Link Terpopuler
         </CardTitle>
