@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo } from 'react'
 import { ExternalLink, QrCode } from 'lucide-react'
 import type { Link } from '@/lib/supabase'
 import { ariaLabels } from '@/lib/accessibility'
@@ -36,12 +36,6 @@ export function LinkCard({ link, themeColor = '#3b82f6', variant = 'default' }: 
   const domain = useMemo(() => getDomain(link.url), [link.url])
   const faviconUrl = domain ? getFaviconUrl(domain) : null
   const showFavicon = faviconUrl && !faviconError
-
-  // Use client-only origin to prevent hydration mismatch
-  const [origin, setOrigin] = useState('')
-  useEffect(() => {
-    setOrigin(window.location.origin)
-  }, [])
 
   const handleClick = async () => {
     setIsClicked(true)
@@ -129,9 +123,9 @@ export function LinkCard({ link, themeColor = '#3b82f6', variant = 'default' }: 
             {!isCompact && !link.description && link.short_code && (
               <p
                 className="mt-1 font-mono text-slate-500 truncate transition-all duration-200 group-hover:translate-x-1 text-xs sm:text-sm"
-                title={`${origin}/${link.short_code}`}
+                title={`/${link.short_code}`}
               >
-                {origin}/{link.short_code}
+                /{link.short_code}
               </p>
             )}
           </div>
