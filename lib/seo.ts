@@ -11,7 +11,7 @@ export const siteConfig = {
   name: 'svlink',
   title: 'svlink - Platform Link Management Profesional',
   description: 'Platform link management profesional yang memungkinkan Anda mengatur, berbagi, dan menampilkan link penting dengan cara yang elegan dan personal.',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://svlink.example.com',
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://www.svlink.my.id',
   ogImage: '/og-image.png',
   links: {
     twitter: 'https://twitter.com/svlink',
@@ -212,7 +212,7 @@ export function generateOrganizationStructuredData() {
     contactPoint: {
       '@type': 'ContactPoint',
       contactType: 'Customer Service',
-      email: 'support@svlink.example.com',
+      email: 'support@svlink.my.id',
     },
   }
 }

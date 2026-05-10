@@ -22,7 +22,7 @@ function getDomain(url: string): string | null {
 }
 
 function getFaviconUrl(domain: string): string {
-  return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
+  return `https://icons.duckduckgo.com/ip3/${domain}.ico`
 }
 
 export function LinkCard({ link, themeColor = '#3b82f6', variant = 'default' }: LinkCardProps) {
@@ -123,9 +123,9 @@ export function LinkCard({ link, themeColor = '#3b82f6', variant = 'default' }: 
             {!isCompact && !link.description && link.short_code && (
               <p
                 className="mt-1 font-mono text-slate-500 truncate transition-all duration-200 group-hover:translate-x-1 text-xs sm:text-sm"
-                title={`/${link.short_code}`}
+                title={`svlink.my.id/${link.short_code}`}
               >
-                /{link.short_code}
+                svlink.my.id/{link.short_code}
               </p>
             )}
           </div>
