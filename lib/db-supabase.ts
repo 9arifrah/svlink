@@ -688,7 +688,7 @@ export const supabaseClient: DatabaseClient = {
       .from('public_pages')
       .select('*')
       .eq('slug', slug)
-      .eq('is_active', true)
+      .eq('is_active', 1)
       .single()
     return error ? null : data
   },
@@ -819,7 +819,7 @@ export const supabaseClient: DatabaseClient = {
       supabase.from('links').select('id', { count: 'exact', head: true }).eq('user_id', userId),
       supabase.from('categories').select('id', { count: 'exact', head: true }).eq('user_id', userId),
       supabase.from('links').select('click_count').eq('user_id', userId),
-      supabase.from('links').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('is_public', true)
+      supabase.from('links').select('id', { count: 'exact', head: true }).eq('user_id', userId).eq('is_public', 1)
     ])
 
     const totalClicks = clicksResult.data?.reduce((sum, link) => sum + (link.click_count || 0), 0) || 0
@@ -954,7 +954,7 @@ export const supabaseClient: DatabaseClient = {
     const { data } = await supabase
       .from('announcements')
       .select('*')
-      .eq('is_active', true)
+      .eq('is_active', 1)
       .or('expires_at.is.null,expires_at.gt.' + new Date().toISOString())
       .order('created_at', { ascending: false })
     return data || []
