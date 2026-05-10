@@ -189,8 +189,8 @@ export const supabaseClient: DatabaseClient = {
         url: link.url,
         description: link.description,
         category_id: link.category_id,
-        is_public: link.is_public,
-        is_active: link.is_active ?? true,
+        is_public: link.is_public !== undefined ? (link.is_public ? 1 : 0) : 1,
+        is_active: link.is_active !== undefined ? (link.is_active ? 1 : 0) : 1,
         qr_code: link.qr_code,
         short_code: link.short_code,
         user_id: link.user_id
@@ -216,10 +216,11 @@ export const supabaseClient: DatabaseClient = {
 
     const updateData: any = {}
     const allowedFields = ['title', 'url', 'description', 'category_id', 'is_public', 'is_active', 'qr_code', 'short_code']
+    const booleanFields = ['is_public', 'is_active']
 
     for (const field of allowedFields) {
       if (data[field] !== undefined) {
-        updateData[field] = data[field]
+        updateData[field] = booleanFields.includes(field) ? (data[field] ? 1 : 0) : data[field]
       }
     }
 
@@ -367,8 +368,8 @@ export const supabaseClient: DatabaseClient = {
         url: link.url,
         description: link.description,
         category_id: link.category_id,
-        is_public: link.is_public,
-        is_active: link.is_active ?? true,
+        is_public: link.is_public !== undefined ? (link.is_public ? 1 : 0) : 1,
+        is_active: link.is_active !== undefined ? (link.is_active ? 1 : 0) : 1,
         qr_code: link.qr_code,
         short_code: link.short_code,
         user_id: link.user_id
@@ -386,10 +387,11 @@ export const supabaseClient: DatabaseClient = {
   async adminUpdateLink(id: string, data: any) {
     const updateData: any = {}
     const allowedFields = ['title', 'url', 'description', 'category_id', 'is_public', 'is_active', 'qr_code', 'short_code', 'user_id']
+    const booleanFields = ['is_public', 'is_active']
 
     for (const field of allowedFields) {
       if (data[field] !== undefined) {
-        updateData[field] = data[field]
+        updateData[field] = booleanFields.includes(field) ? (data[field] ? 1 : 0) : data[field]
       }
     }
 
@@ -471,7 +473,7 @@ export const supabaseClient: DatabaseClient = {
         id: crypto.randomUUID(),
         user_id: user.id,
         theme_color: '#3b82f6',
-        show_categories: true
+        show_categories: 1
       })
 
     if (settingsError) {
@@ -718,8 +720,8 @@ export const supabaseClient: DatabaseClient = {
         logo_url: page.logo_url || null,
         theme_color: page.theme_color || '#3b82f6',
         layout_style: page.layout_style || 'list',
-        show_categories: page.show_categories !== undefined ? page.show_categories : true,
-        is_active: page.is_active !== undefined ? page.is_active : true,
+        show_categories: page.show_categories !== undefined ? (page.show_categories ? 1 : 0) : 1,
+        is_active: page.is_active !== undefined ? (page.is_active ? 1 : 0) : 1,
         sort_order: page.sort_order || 0
       })
       .select()
@@ -736,8 +738,8 @@ export const supabaseClient: DatabaseClient = {
     if (data.logo_url !== undefined) updateData.logo_url = data.logo_url
     if (data.theme_color !== undefined) updateData.theme_color = data.theme_color
     if (data.layout_style !== undefined) updateData.layout_style = data.layout_style
-    if (data.show_categories !== undefined) updateData.show_categories = data.show_categories
-    if (data.is_active !== undefined) updateData.is_active = data.is_active
+    if (data.show_categories !== undefined) updateData.show_categories = data.show_categories ? 1 : 0
+    if (data.is_active !== undefined) updateData.is_active = data.is_active ? 1 : 0
     if (data.sort_order !== undefined) updateData.sort_order = data.sort_order
 
     const { data: result, error } = await supabase
@@ -850,11 +852,11 @@ export const supabaseClient: DatabaseClient = {
 
   // Phase 1: Admin Quick Wins (Supabase)
   async suspendUser(userId: string) {
-    await supabase.from('users').update({ is_suspended: true }).eq('id', userId)
+    await supabase.from('users').update({ is_suspended: 1 }).eq('id', userId)
   },
 
   async unsuspendUser(userId: string) {
-    await supabase.from('users').update({ is_suspended: false }).eq('id', userId)
+    await supabase.from('users').update({ is_suspended: 0 }).eq('id', userId)
   },
 
   async bulkUserAction(userIds: string[], action: 'suspend' | 'unsuspend' | 'activate' | 'delete') {
@@ -864,7 +866,7 @@ export const supabaseClient: DatabaseClient = {
       try {
         if (action === 'suspend') await this.suspendUser(id)
         else if (action === 'unsuspend') await this.unsuspendUser(id)
-        else if (action === 'activate') await supabase.from('users').update({ is_suspended: false }).eq('id', id)
+        else if (action === 'activate') await supabase.from('users').update({ is_suspended: 0 }).eq('id', id)
         else if (action === 'delete') await this.adminDeleteUser(id)
         success++
       } catch { errors++ }
@@ -963,7 +965,7 @@ export const supabaseClient: DatabaseClient = {
       id: announcement.id,
       title: announcement.title,
       message: announcement.message,
-      is_active: announcement.is_active,
+      is_active: announcement.is_active !== undefined ? (announcement.is_active ? 1 : 0) : 1,
       expires_at: announcement.expires_at || null
     }).select().single()
     if (error) throw error
@@ -974,7 +976,7 @@ export const supabaseClient: DatabaseClient = {
     const updateData: any = {}
     if (data.title !== undefined) updateData.title = data.title
     if (data.message !== undefined) updateData.message = data.message
-    if (data.is_active !== undefined) updateData.is_active = data.is_active
+    if (data.is_active !== undefined) updateData.is_active = data.is_active ? 1 : 0
     if (data.expires_at !== undefined) updateData.expires_at = data.expires_at || null
     const { data: result, error } = await supabase.from('announcements').update(updateData).eq('id', id).select().single()
     if (error) throw error
