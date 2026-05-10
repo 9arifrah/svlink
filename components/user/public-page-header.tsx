@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { ExternalLink, Share2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useToast } from '@/hooks/use-toast'
@@ -16,17 +15,10 @@ type PublicPageHeaderProps = {
 }
 
 export function PublicPageHeader({ displayName, settings }: PublicPageHeaderProps) {
-  const [mounted, setMounted] = useState(false)
   const themeColor = settings.theme_color || '#3b82f6'
   const { toast } = useToast()
 
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
   const handleShare = async () => {
-    if (!mounted) return
-
     if (navigator.share) {
       try {
         await navigator.share({
@@ -43,10 +35,6 @@ export function PublicPageHeader({ displayName, settings }: PublicPageHeaderProp
         description: "Link telah disalin ke clipboard",
       })
     }
-  }
-
-  if (!mounted) {
-    return null
   }
 
   return (
