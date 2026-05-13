@@ -253,7 +253,20 @@ export const supabaseClient: DatabaseClient = {
   async incrementClickCount(id: string) {
     // Use RPC function for thread-safe increment
     const { error } = await supabase.rpc('increment_click_count', { link_id: id })
-    if (error) throw error
+    if (error) {
+      // Fallback: fetch current count and update manually
+      const { data } = await supabase
+        .from('links')
+        .select('click_count')
+        .eq('id', id)
+        .single()
+      if (data) {
+        await supabase
+          .from('links')
+          .update({ click_count: (data.click_count || 0) + 1 })
+          .eq('id', id)
+      }
+    }
   },
 
   async getPageCountForLink(linkId: string): Promise<number> {
@@ -1002,8 +1015,8 @@ export const supabaseClient: DatabaseClient = {
     return data?.value === 'true'
   },
 
-  // Audit Logs (Supabase stubs - not implemented for Supabase backend)
-  async logAuditAction(_params: {
+  // Audit Logs (Supabase)
+  async logAuditAction(params: {
     userId: string;
     action: string;
     entityType: string;
@@ -1012,28 +1025,83 @@ export const supabaseClient: DatabaseClient = {
     ipAddress?: string;
     userAgent?: string;
   }): Promise<void> {
-    // Stub: Audit logs only implemented for SQLite backend
-    console.warn('[db-supabase] logAuditAction not implemented for Supabase backend')
+    await supabase.from('audit_logs').insert({
+      id: crypto.randomUUID(),
+      user_id: params.userId,
+      action: params.action,
+      entity_type: params.entityType,
+      entity_id: params.entityId || null,
+      details: params.details ? JSON.stringify(params.details) : null,
+      ip_address: params.ipAddress || null,
+      user_agent: params.userAgent || null,
+    })
   },
 
-  async getAuditLogs(_params: {
+  async getAuditLogs(params: {
     userId?: string;
     entityType?: string;
     limit?: number;
     offset?: number;
   }): Promise<{ logs: any[]; total: number }> {
-    // Stub: Audit logs only implemented for SQLite backend
-    console.warn('[db-supabase] getAuditLogs not implemented for Supabase backend')
-    return { logs: [], total: 0 }
+    let query = supabase
+      .from('audit_logs')
+      .select('*, users(email, display_name)', { count: 'exact' })
+      .order('created_at', { ascending: false })
+
+    if (params.userId) query = query.eq('user_id', params.userId)
+    if (params.entityType) query = query.eq('entity_type', params.entityType)
+    if (params.limit) query = query.limit(params.limit)
+    if (params.offset) query = query.range(params.offset, params.offset + (params.limit || 20) - 1)
+
+    const { data, count, error } = await query
+    if (error) return { logs: [], total: 0 }
+
+    const logs = (data || []).map((log: any) => ({
+      ...log,
+      user_email: log.users?.email || null,
+      user_display_name: log.users?.display_name || null,
+    }))
+
+    return { logs, total: count || 0 }
   },
 
-  async getAuditStats(_days: number = 7): Promise<{
+  async getAuditStats(days: number = 7): Promise<{
     totalActions: number;
     actionsByType: Array<{ action: string; count: number }>;
     topUsers: Array<{ userId: string; email: string; count: number }>;
   }> {
-    // Stub: Audit logs only implemented for SQLite backend
-    console.warn('[db-supabase] getAuditStats not implemented for Supabase backend')
-    return { totalActions: 0, actionsByType: [], topUsers: [] }
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
+
+    const [{ count: totalActions }, { data: actionsData }, { data: usersData }] = await Promise.all([
+      supabase.from('audit_logs').select('id', { count: 'exact', head: true }).gte('created_at', since),
+      supabase.from('audit_logs').select('action, count').gte('created_at', since),
+      supabase.from('audit_logs').select('user_id, users(email)').gte('created_at', since),
+    ])
+
+    // Count by action type
+    const actionCounts: Record<string, number> = {}
+    for (const row of (actionsData || [])) {
+      actionCounts[row.action] = (actionCounts[row.action] || 0) + (row.count || 1)
+    }
+    const actionsByType = Object.entries(actionCounts)
+      .map(([action, count]) => ({ action, count }))
+      .sort((a, b) => b.count - a.count)
+
+    // Count by user
+    const userCounts: Record<string, { email: string; count: number }> = {}
+    for (const row of (usersData || [])) {
+      const uid = row.user_id
+      if (!userCounts[uid]) {
+        const userEmail = (row as any).users?.email || 'Unknown'
+        userCounts[uid] = { email: userEmail, count: 0 }
+      }
+      userCounts[uid].count++
+    }
+    const topUsers = Object.entries(userCounts)
+      .map(([userId, { email, count }]) => ({ userId, email, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10)
+
+    return { totalActions: totalActions || 0, actionsByType, topUsers }
   }
 }
