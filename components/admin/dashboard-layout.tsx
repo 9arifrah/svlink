@@ -54,7 +54,7 @@ export function DashboardLayout({ children, isAdmin }: AdminDashboardLayoutProps
               </div>
               <SheetTitle className="text-left">
                 <div className="font-semibold text-white">Admin Panel</div>
-                <div className="text-xs text-slate-400">Link Manager</div>
+                <div className="text-xs text-slate-300">Link Manager</div>
               </SheetTitle>
             </div>
           </SheetHeader>

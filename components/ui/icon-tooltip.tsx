@@ -59,7 +59,7 @@ export function ShortcutBadge({ keys }: ShortcutBadgeProps) {
       {keys.map((key, index) => (
         <kbd
           key={index}
-          className="rounded bg-slate-800 px-1.5 py-0.5 text-xs font-mono text-slate-300"
+          className="rounded bg-slate-800 px-1.5 py-0.5 text-xs font-mono text-slate-500"
         >
           {key}
         </kbd>

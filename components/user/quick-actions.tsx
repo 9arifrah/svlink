@@ -43,7 +43,7 @@ export function QuickActions() {
           <p className="text-xs sm:text-sm text-muted-foreground mt-2 sm:mt-3 flex flex-wrap items-center gap-1.5 sm:gap-2">
             <Link2 className="h-3.5 w-3.5" />
             Short link
-            <span className="text-slate-300">|</span>
+            <span className="text-slate-500">|</span>
             <QrCode className="h-3.5 w-3.5" />
             QR code
           </p>

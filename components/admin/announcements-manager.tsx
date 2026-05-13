@@ -162,7 +162,7 @@ export function AnnouncementsManager() {
         </div>
         <div className="flex-1">
           <h2 className="text-lg sm:text-xl font-semibold text-white">Pengumuman Platform</h2>
-          <p className="text-xs sm:text-sm text-slate-400">Kelola pengumuman untuk pengguna</p>
+          <p className="text-xs sm:text-sm text-slate-300">Kelola pengumuman untuk pengguna</p>
         </div>
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) { setEditing(null); setFormData({ title: '', message: '', is_active: true }) } }}>
           <DialogTrigger asChild>
@@ -234,10 +234,10 @@ export function AnnouncementsManager() {
 
       {loading ? (
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 text-slate-400 animate-spin" />
+          <Loader2 className="h-6 w-6 text-slate-300 animate-spin" />
         </div>
       ) : announcements.length === 0 ? (
-        <p className="text-center text-slate-400 py-8">Belum ada pengumuman</p>
+        <p className="text-center text-slate-300 py-8">Belum ada pengumuman</p>
       ) : (
         <div className="space-y-3">
           {announcements.map((a) => (
@@ -252,32 +252,32 @@ export function AnnouncementsManager() {
                     {a.is_active ? (
                       <Badge className="bg-green-900/30 text-green-400 border-green-700/50 text-xs">Aktif</Badge>
                     ) : (
-                      <Badge className="bg-slate-700/50 text-slate-400 border-slate-600/50 text-xs">Draft</Badge>
+                      <Badge className="bg-slate-700/50 text-slate-300 border-slate-600/50 text-xs">Draft</Badge>
                     )}
                   </div>
                   <p className="text-sm text-slate-300 line-clamp-2">{a.message}</p>
-                  <p className="text-xs text-slate-500 mt-2">
+                  <p className="text-xs text-slate-300 mt-2">
                     {new Date(a.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                   </p>
                 </div>
                 <div className="flex items-center gap-1 flex-shrink-0">
                   <button
                     onClick={() => handleToggleActive(a.id, a.is_active)}
-                    className="p-2 rounded-md text-slate-400 hover:text-cyan-400 hover:bg-cyan-900/20 transition-colors"
+                    className="p-2 rounded-md text-slate-300 hover:text-cyan-400 hover:bg-cyan-900/20 transition-colors"
                     title={a.is_active ? 'Nonaktifkan' : 'Aktifkan'}
                   >
                     {a.is_active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                   </button>
                   <button
                     onClick={() => openEdit(a)}
-                    className="p-2 rounded-md text-slate-400 hover:text-blue-400 hover:bg-blue-900/20 transition-colors"
+                    className="p-2 rounded-md text-slate-300 hover:text-blue-400 hover:bg-blue-900/20 transition-colors"
                     title="Edit"
                   >
                     <Pencil className="h-4 w-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(a.id)}
-                    className="p-2 rounded-md text-slate-400 hover:text-red-400 hover:bg-red-900/20 transition-colors"
+                    className="p-2 rounded-md text-slate-300 hover:text-red-400 hover:bg-red-900/20 transition-colors"
                     title="Hapus"
                   >
                     <Trash2 className="h-4 w-4" />

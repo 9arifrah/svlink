@@ -40,7 +40,7 @@ export function AuditStatsWidget() {
       </CardHeader>
       <CardContent className="p-4 sm:p-6 pt-0 sm:pt-0 space-y-3 sm:space-y-4">
         <div className="text-xl sm:text-2xl font-bold text-white">{stats.totalActions || 0}</div>
-        <div className="text-xs sm:text-sm text-slate-400">actions in last 7 days</div>
+        <div className="text-xs sm:text-sm text-slate-300">actions in last 7 days</div>
         
         {stats.actionsByType && stats.actionsByType.length > 0 && (
           <div className="space-y-2">

@@ -69,7 +69,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       <div className="space-y-2 sm:space-y-3">
         <Label htmlFor="displayName">Nama Tampilan</Label>
         <div className="relative">
-          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input
             id="displayName"
             value={displayName}
@@ -83,7 +83,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
       <div className="space-y-2 sm:space-y-3">
         <Label htmlFor="email">Email</Label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input
             id="email"
             value={user.email}
@@ -176,7 +176,7 @@ export function PasswordForm() {
       <div className="space-y-2 sm:space-y-3">
         <Label htmlFor="currentPassword">Password Lama</Label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input
             id="currentPassword"
             type="password"
@@ -191,7 +191,7 @@ export function PasswordForm() {
       <div className="space-y-2 sm:space-y-3">
         <Label htmlFor="newPassword">Password Baru</Label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input
             id="newPassword"
             type="password"
@@ -207,7 +207,7 @@ export function PasswordForm() {
       <div className="space-y-2 sm:space-y-3">
         <Label htmlFor="confirmPassword">Konfirmasi Password Baru</Label>
         <div className="relative">
-          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <Input
             id="confirmPassword"
             type="password"

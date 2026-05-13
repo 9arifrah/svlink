@@ -28,7 +28,7 @@ export function AdminSidebar() {
           </div>
           <div>
             <div className="text-sm font-bold text-white">Admin Panel</div>
-            <p className="text-xs text-slate-400">Link Manager</p>
+            <p className="text-xs text-slate-300">Link Manager</p>
           </div>
         </div>
       </div>

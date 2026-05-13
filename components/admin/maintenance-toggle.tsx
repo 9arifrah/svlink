@@ -66,7 +66,7 @@ export function MaintenanceToggle() {
     return (
       <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-soft-md">
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="h-6 w-6 text-slate-400 animate-spin" />
+          <Loader2 className="h-6 w-6 text-slate-300 animate-spin" />
         </div>
       </div>
     )
@@ -77,14 +77,14 @@ export function MaintenanceToggle() {
       <div className="mb-4 sm:mb-6 flex items-center gap-3">
         <div
           className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg ${
-            isMaintenance ? 'bg-red-600' : 'bg-green-600'
+            isMaintenance ? 'bg-red-600' : 'bg-green-700'
           }`}
         >
           <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
         </div>
         <div className="flex-1">
           <h2 className="text-lg sm:text-xl font-semibold text-white">Mode Maintenance</h2>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-300">
             {isMaintenance
               ? 'Platform sedang dalam maintenance'
               : 'Platform berjalan normal'}
@@ -99,7 +99,7 @@ export function MaintenanceToggle() {
         >
           <div
             className={`h-2 w-2 rounded-full ${
-              isMaintenance ? 'bg-red-500' : 'bg-green-500'
+              isMaintenance ? 'bg-red-600' : 'bg-green-600'
             }`}
           />
           {isMaintenance ? 'Maintenance' : 'Online'}
@@ -126,7 +126,7 @@ export function MaintenanceToggle() {
             <p className="text-sm font-medium text-white">
               {isMaintenance ? 'Nonaktifkan Maintenance Mode' : 'Aktifkan Maintenance Mode'}
             </p>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-300 mt-1">
               {isMaintenance
                 ? 'Platform akan kembali normal dan user dapat mengakses'
                 : 'Semua user akan dialihkan ke halaman maintenance'}
@@ -137,7 +137,7 @@ export function MaintenanceToggle() {
             disabled={actionLoading}
             className={
               isMaintenance
-                ? 'bg-green-600 hover:bg-green-700 whitespace-nowrap'
+                ? 'bg-green-700 hover:bg-green-800 whitespace-nowrap'
                 : 'bg-red-600 hover:bg-red-700 whitespace-nowrap'
             }
           >

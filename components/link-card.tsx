@@ -22,7 +22,7 @@ function getDomain(url: string): string | null {
 }
 
 function getFaviconUrl(domain: string): string {
-  return `https://icons.duckduckgo.com/ip3/${domain}.ico`
+  return `https://www.google.com/s2/favicons?domain=${domain}&sz=32`
 }
 
 export function LinkCard({ link, themeColor = '#3b82f6', variant = 'default' }: LinkCardProps) {
@@ -139,7 +139,7 @@ export function LinkCard({ link, themeColor = '#3b82f6', variant = 'default' }: 
                 }}
                 className={cn(
                   "transition-all duration-200",
-                  "text-slate-400 hover:scale-110 hover:text-slate-600",
+                  "text-slate-500 hover:scale-110 hover:text-slate-600",
                   "h-4 w-4 sm:h-5 sm:w-5"
                 )}
                 title="Lihat QR Code"
@@ -156,7 +156,7 @@ export function LinkCard({ link, themeColor = '#3b82f6', variant = 'default' }: 
             <ExternalLink
               className={cn(
                 "transition-all duration-200",
-                "text-slate-400 group-hover:text-slate-600",
+                "text-slate-500 group-hover:text-slate-600",
                 "h-4 w-4 sm:h-5 sm:w-5"
               )}
               style={{

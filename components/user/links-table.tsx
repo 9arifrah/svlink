@@ -163,7 +163,7 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
         </div>
 
         <div className="relative mt-4">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
           <Input
             placeholder="Cari link..."
             value={searchQuery}
@@ -338,7 +338,7 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
                         </Button>
                       </div>
                     ) : (
-                      <span className="text-xs text-slate-400">-</span>
+                      <span className="text-xs text-slate-500">-</span>
                     )}
                   </td>
                   <td className="hidden lg:table-cell py-4 pr-4 whitespace-nowrap">

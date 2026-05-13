@@ -82,13 +82,13 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
     <div className="space-y-4">
       {/* Search */}
       <div className="relative w-full sm:w-80">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" />
         <Input
           type="text"
           placeholder="Cari audit log..."
           value={searchQuery}
           onChange={(e) => { setSearchQuery(e.target.value); setPage(0) }}
-          className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 text-sm"
+          className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-300 text-sm"
         />
       </div>
 
@@ -108,13 +108,13 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-slate-400">
+                <TableCell colSpan={6} className="text-center py-8 text-slate-300">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : filteredLogs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-8 text-slate-500">
+                <TableCell colSpan={6} className="text-center py-8 text-slate-300">
                   {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada audit logs'}
                 </TableCell>
               </TableRow>
@@ -127,7 +127,7 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
                   <TableCell>
                     <div>
                       <div className="font-medium text-sm text-white">{log.user_display_name || log.user_email}</div>
-                      <div className="text-xs text-slate-400 truncate max-w-[160px]">{log.user_email}</div>
+                      <div className="text-xs text-slate-300 truncate max-w-[160px]">{log.user_email}</div>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -141,14 +141,14 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
                         {log.entity_type}
                       </span>
                       {log.entity_id && (
-                        <span className="ml-2 text-slate-400 text-xs">{log.entity_id.slice(0, 8)}...</span>
+                        <span className="ml-2 text-slate-300 text-xs">{log.entity_id.slice(0, 8)}...</span>
                       )}
                     </div>
                   </TableCell>
                   <TableCell className="hidden lg:table-cell font-mono text-xs">
                     {log.ip_address || '-'}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell max-w-xs truncate text-xs text-slate-400">
+                  <TableCell className="hidden md:table-cell max-w-xs truncate text-xs text-slate-300">
                     {parseReason(log.details)}
                   </TableCell>
                 </TableRow>
@@ -161,9 +161,9 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
       {/* Mobile card view */}
       <div className="sm:hidden space-y-2">
         {loading ? (
-          <p className="text-center text-slate-400 py-8 text-sm">Loading...</p>
+          <p className="text-center text-slate-300 py-8 text-sm">Loading...</p>
         ) : filteredLogs.length === 0 ? (
-          <p className="text-center text-slate-500 py-8 text-sm">
+          <p className="text-center text-slate-300 py-8 text-sm">
             {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada audit logs'}
           </p>
         ) : (
@@ -185,16 +185,16 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
                   <div className="text-xs text-white font-medium truncate">
                     {log.user_display_name || log.user_email}
                   </div>
-                  <div className="text-[10px] text-slate-400 truncate">
+                  <div className="text-[10px] text-slate-300 truncate">
                     {log.user_email}
                   </div>
                 </div>
-                <span className="text-[10px] text-slate-500 whitespace-nowrap flex-shrink-0">
+                <span className="text-[10px] text-slate-300 whitespace-nowrap flex-shrink-0">
                   {format(new Date(log.created_at.replace(' ', 'T')), 'dd MMM, HH:mm', { locale: id })}
                 </span>
               </div>
               {log.details && parseReason(log.details) !== '-' && (
-                <p className="text-[10px] text-slate-400 mt-1 truncate">
+                <p className="text-[10px] text-slate-300 mt-1 truncate">
                   {parseReason(log.details)}
                 </p>
               )}
@@ -205,7 +205,7 @@ export function AuditLogsTable({ initialLogs, total }: AuditLogsTableProps) {
 
       {/* Pagination */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="text-xs sm:text-sm text-slate-400">
+        <div className="text-xs sm:text-sm text-slate-300">
           Total: {total} logs
         </div>
         <div className="flex gap-2">

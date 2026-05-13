@@ -70,8 +70,8 @@ export function CategoriesTable({ categories, userId }: CategoriesTableProps) {
                     <Badge variant="outline" className="border-slate-200 text-[10px] sm:text-xs">
                       {category.links?.length || 0} link
                     </Badge>
-                    <span className="text-slate-400">•</span>
-                    <span className="text-[10px] sm:text-xs text-slate-400">Urutan {category.sort_order}</span>
+                    <span className="text-slate-500">•</span>
+                    <span className="text-[10px] sm:text-xs text-slate-500">Urutan {category.sort_order}</span>
                   </div>
                 </div>
               </div>
@@ -100,7 +100,7 @@ export function CategoriesTable({ categories, userId }: CategoriesTableProps) {
             <div className="rounded-xl border-2 border-dashed border-slate-300 bg-slate-50/30 p-12 text-center animate-scale-in">
               <div className="flex flex-col items-center justify-center">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 mb-4">
-                  <Plus className="h-8 w-8 text-slate-400" />
+                  <Plus className="h-8 w-8 text-slate-500" />
                 </div>
                 <p className="font-medium text-slate-700">Belum ada kategori</p>
                 <p className="mt-2 text-sm text-slate-500">

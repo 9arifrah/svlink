@@ -29,7 +29,7 @@ export function MobileBottomNav() {
               href={item.href}
               className={cn(
                 "flex flex-col items-center justify-center gap-0.5 py-2 rounded-lg transition-colors w-[72px] flex-shrink-0",
-                isActive ? "text-brand-600" : "text-slate-400 hover:text-slate-600"
+                isActive ? "text-brand-600" : "text-slate-500 hover:text-slate-600"
               )}
             >
               <Icon className="h-5 w-5" />
