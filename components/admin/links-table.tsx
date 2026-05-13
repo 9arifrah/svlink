@@ -76,12 +76,12 @@ export function LinksTable({ links, categories }: LinksTableProps) {
         </div>
 
         <div className="relative mt-4">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" />
           <Input
             placeholder="Cari link..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:bg-slate-700/70 focus:border-slate-500/50"
+            className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-300 focus:bg-slate-700/70 focus:border-slate-500/50"
           />
         </div>
       </CardHeader>
@@ -106,7 +106,7 @@ export function LinksTable({ links, categories }: LinksTableProps) {
                   <td className="py-2 sm:py-4 pr-2 sm:pr-4 min-w-[140px] sm:min-w-[180px]">
                     <div>
                       <div className="font-medium text-white text-xs sm:text-sm">{link.title}</div>
-                      <div className="text-[10px] sm:text-xs text-slate-400 truncate max-w-[120px] sm:max-w-[180px]" title={link.url}>
+                      <div className="text-[10px] sm:text-xs text-slate-300 truncate max-w-[120px] sm:max-w-[180px]" title={link.url}>
                         {link.url}
                       </div>
                     </div>
@@ -158,7 +158,7 @@ export function LinksTable({ links, categories }: LinksTableProps) {
           </table>
 
           {filteredLinks.length === 0 && (
-            <div className="py-12 text-center text-slate-400 min-w-[350px] text-xs sm:text-sm">
+            <div className="py-12 text-center text-slate-300 min-w-[350px] text-xs sm:text-sm">
               {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada link'}
             </div>
           )}

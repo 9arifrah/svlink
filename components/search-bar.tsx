@@ -23,7 +23,7 @@ export function SearchBar({ links, themeColor = '#3b82f6' }: { links: Link[], th
         <label htmlFor="search-input" className="sr-only">
           {ariaLabels.search}
         </label>
-        <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" aria-hidden="true" />
+        <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors" aria-hidden="true" />
         <Input
           id="search-input"
           type="text"
@@ -52,7 +52,7 @@ export function SearchBar({ links, themeColor = '#3b82f6' }: { links: Link[], th
           ) : (
             <div className="py-8 text-center" role="status">
               <div className="flex flex-col items-center justify-center">
-                <Search className="h-12 w-12 text-slate-400 mb-4" aria-hidden="true" />
+                <Search className="h-12 w-12 text-slate-500 mb-4" aria-hidden="true" />
                 <p className="text-slate-900 font-medium mb-1">Tidak ada hasil yang ditemukan</p>
                 <p className="text-sm text-slate-500">Coba kata kunci lain untuk mencari link</p>
               </div>

@@ -163,7 +163,7 @@ export function LinkFormDialog({ open, onOpenChange, link, categories }: LinkFor
           <div className="border-t border-slate-100" />
 
           <div className="flex items-start gap-2">
-            <Settings2 className="h-4 w-4 text-slate-500 mt-0.5" />
+            <Settings2 className="h-4 w-4 text-slate-300 mt-0.5" />
             <div className="flex-1">
               <LinkStatusSegmentedControl
                 value={formData.status}

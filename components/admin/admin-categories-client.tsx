@@ -199,13 +199,13 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
               </div>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1 sm:flex-none">
-                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" />
                   <Input
                     type="text"
                     placeholder="Cari kategori..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 w-full sm:w-56 text-xs sm:text-sm"
+                    className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-300 w-full sm:w-56 text-xs sm:text-sm"
                   />
                 </div>
 
@@ -258,7 +258,7 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
                           }
                           placeholder="Contoh: Media Sosial"
                           required
-                          className="bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:bg-slate-700/70 focus:border-slate-500/50"
+                          className="bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-300 focus:bg-slate-700/70 focus:border-slate-500/50"
                         />
                       </div>
 
@@ -276,7 +276,7 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
                           }
                           placeholder="Jelaskan kategori ini..."
                           rows={3}
-                          className="bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:bg-slate-700/70 focus:border-slate-500/50"
+                          className="bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-300 focus:bg-slate-700/70 focus:border-slate-500/50"
                         />
                       </div>
 
@@ -294,7 +294,7 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
                             })
                           }
                           placeholder="0"
-                          className="bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 focus:bg-slate-700/70 focus:border-slate-500/50"
+                          className="bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-300 focus:bg-slate-700/70 focus:border-slate-500/50"
                         />
                       </div>
 
@@ -332,8 +332,8 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
               </div>
             ) : filteredCategories.length === 0 ? (
               <div className="rounded-lg border-2 border-dashed border-slate-700/50 bg-slate-700/30 p-8 sm:p-12 text-center">
-                <FolderTree className="mx-auto mb-3 sm:mb-4 h-10 w-10 sm:h-12 sm:w-12 text-slate-500" />
-                <p className="text-xs sm:text-sm text-slate-400">
+                <FolderTree className="mx-auto mb-3 sm:mb-4 h-10 w-10 sm:h-12 sm:w-12 text-slate-300" />
+                <p className="text-xs sm:text-sm text-slate-300">
                   {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada kategori'}
                 </p>
                 {!searchQuery && (
@@ -367,10 +367,10 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
                           <TableCell className="font-medium text-white whitespace-nowrap text-sm">
                             {category.name}
                           </TableCell>
-                          <TableCell className="hidden md:table-cell text-slate-400 max-w-xs truncate text-xs">
+                          <TableCell className="hidden md:table-cell text-slate-300 max-w-xs truncate text-xs">
                             {category.description || '-'}
                           </TableCell>
-                          <TableCell className="hidden sm:table-cell text-right text-slate-400 whitespace-nowrap text-xs">
+                          <TableCell className="hidden sm:table-cell text-right text-slate-300 whitespace-nowrap text-xs">
                             {category.sort_order}
                           </TableCell>
                           <TableCell className="text-right whitespace-nowrap">
@@ -413,11 +413,11 @@ export function AdminCategoriesClient({ initialCategories }: AdminCategoriesClie
                             {category.name}
                           </div>
                           {category.description && (
-                            <p className="text-xs text-slate-400 truncate mt-0.5">
+                            <p className="text-xs text-slate-300 truncate mt-0.5">
                               {category.description}
                             </p>
                           )}
-                          <div className="text-[10px] text-slate-500 mt-0.5">
+                          <div className="text-[10px] text-slate-300 mt-0.5">
                             Urutan: {category.sort_order}
                           </div>
                         </div>

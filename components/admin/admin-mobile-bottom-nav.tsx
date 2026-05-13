@@ -37,7 +37,7 @@ export function AdminMobileBottomNav() {
                 "flex flex-col items-center justify-center gap-0.5 py-2 rounded-lg transition-colors w-[72px] flex-shrink-0",
                 isActive 
                   ? "text-emerald-400 bg-emerald-500/10" 
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                  : "text-slate-300 hover:text-slate-200 hover:bg-slate-800/50"
               )}
             >
               <Icon className="h-5 w-5" />

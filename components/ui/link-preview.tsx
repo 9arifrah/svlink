@@ -68,7 +68,7 @@ export function LinkPreview({ url, themeColor = '#3b82f6', size = 'md' }: LinkPr
       )}>
         <div className="flex-shrink-0">
           <Loader2 className={cn(
-            "animate-spin text-slate-400",
+            "animate-spin text-slate-500",
             size === 'sm' ? 'h-4 w-4' : size === 'md' ? 'h-5 w-5' : 'h-6 w-6'
           )} />
         </div>
@@ -179,7 +179,7 @@ export function LinkPreview({ url, themeColor = '#3b82f6', size = 'md' }: LinkPr
       {/* External Link Icon */}
       <ExternalLink
         className={cn(
-          "flex-shrink-0 text-slate-400",
+          "flex-shrink-0 text-slate-500",
           size === 'sm' ? 'h-3 w-3' : size === 'md' ? 'h-4 w-4' : 'h-5 w-5'
         )}
       />
@@ -281,7 +281,7 @@ export function LinkPreviewCard({
           </div>
 
           {/* External Link Icon */}
-          <ExternalLink className="h-5 w-5 flex-shrink-0 text-slate-400 transition-all duration-300 group-hover:scale-110" />
+          <ExternalLink className="h-5 w-5 flex-shrink-0 text-slate-500 transition-all duration-300 group-hover:scale-110" />
         </div>
       </div>
     </div>

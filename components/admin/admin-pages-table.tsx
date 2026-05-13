@@ -134,13 +134,13 @@ export function AdminPagesTable() {
               </span>
             </div>
             <div className="relative w-full sm:w-64">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" />
               <input
                 type="text"
                 placeholder="Cari halaman..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-sm bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50"
+                className="w-full pl-10 pr-4 py-2 text-sm bg-slate-700/50 border border-slate-600/50 rounded-lg text-white placeholder:text-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50"
               />
             </div>
           </CardTitle>
@@ -153,8 +153,8 @@ export function AdminPagesTable() {
             </div>
           ) : filteredPages.length === 0 ? (
             <div className="rounded-lg border-2 border-dashed border-slate-700/50 bg-slate-700/30 p-8 sm:p-12 text-center">
-              <Layout className="mx-auto mb-3 sm:mb-4 h-10 w-10 sm:h-12 sm:w-12 text-slate-500" />
-              <p className="text-xs sm:text-sm text-slate-400">
+              <Layout className="mx-auto mb-3 sm:mb-4 h-10 w-10 sm:h-12 sm:w-12 text-slate-300" />
+              <p className="text-xs sm:text-sm text-slate-300">
                 {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada halaman publik'}
               </p>
             </div>
@@ -190,7 +190,7 @@ export function AdminPagesTable() {
                             <ExternalLink className="h-3 w-3 flex-shrink-0" />
                           </a>
                         </TableCell>
-                        <TableCell className="hidden sm:table-cell text-slate-400 max-w-[180px] truncate text-xs py-2 sm:py-4 pr-2 sm:pr-4">
+                        <TableCell className="hidden sm:table-cell text-slate-300 max-w-[180px] truncate text-xs py-2 sm:py-4 pr-2 sm:pr-4">
                           {page.user_email}
                         </TableCell>
                         <TableCell className="whitespace-nowrap py-2 sm:py-4 pr-2 sm:pr-4">
@@ -198,7 +198,7 @@ export function AdminPagesTable() {
                             {page.is_active ? 'Aktif' : 'Nonaktif'}
                           </Badge>
                         </TableCell>
-                        <TableCell className="hidden md:table-cell text-slate-400 whitespace-nowrap text-xs py-2 sm:py-4 pr-2 sm:pr-4">
+                        <TableCell className="hidden md:table-cell text-slate-300 whitespace-nowrap text-xs py-2 sm:py-4 pr-2 sm:pr-4">
                           {new Date(page.created_at).toLocaleDateString('id-ID')}
                         </TableCell>
                         <TableCell className="text-right whitespace-nowrap py-2 sm:py-4">
@@ -208,7 +208,7 @@ export function AdminPagesTable() {
                               size="icon"
                               onClick={() => handleToggle(page)}
                               disabled={togglingId === page.id}
-                              className="h-8 w-8 sm:h-9 sm:w-9 text-slate-400 hover:text-white hover:bg-slate-700/50"
+                              className="h-8 w-8 sm:h-9 sm:w-9 text-slate-300 hover:text-white hover:bg-slate-700/50"
                             >
                               {togglingId === page.id ? (
                                 <Loader2 className="h-3.5 w-3.5 sm:h-4 sm:w-4 animate-spin" />
@@ -255,7 +255,7 @@ export function AdminPagesTable() {
                           <ExternalLink className="h-3 w-3 flex-shrink-0" />
                           <span className="truncate">/{page.slug}</span>
                         </a>
-                        <div className="text-[10px] text-slate-400 truncate mt-0.5">
+                        <div className="text-[10px] text-slate-300 truncate mt-0.5">
                           {page.user_email}
                         </div>
                       </div>
@@ -267,7 +267,7 @@ export function AdminPagesTable() {
                           <button
                             onClick={() => handleToggle(page)}
                             disabled={togglingId === page.id}
-                            className="h-7 w-7 flex items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-slate-700/50 transition-colors"
+                            className="h-7 w-7 flex items-center justify-center rounded-md text-slate-300 hover:text-white hover:bg-slate-700/50 transition-colors"
                           >
                             {togglingId === page.id ? (
                               <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -286,7 +286,7 @@ export function AdminPagesTable() {
                         </div>
                       </div>
                     </div>
-                    <div className="text-[10px] text-slate-500 mt-1">
+                    <div className="text-[10px] text-slate-300 mt-1">
                       Dibuat {new Date(page.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </div>
                   </div>

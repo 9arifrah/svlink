@@ -99,7 +99,7 @@ export function RegisterForm() {
           <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="displayName" className="text-xs sm:text-sm text-slate-700">Nama Tampilan</Label>
             <div className="relative group">
-              <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+              <User className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
               <Input
                 id="displayName"
                 type="text"
@@ -114,7 +114,7 @@ export function RegisterForm() {
           <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="email" className="text-xs sm:text-sm text-slate-700">Email</Label>
             <div className="relative group">
-              <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+              <Mail className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors" />
               <Input
                 id="email"
                 type="email"
@@ -130,7 +130,7 @@ export function RegisterForm() {
           <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="password" className="text-xs sm:text-sm text-slate-700">Password</Label>
             <div className="relative group">
-              <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors z-10" />
+              <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors z-10" />
               <Input
                 id="password"
                 type={showPassword ? 'text' : 'password'}
@@ -144,7 +144,7 @@ export function RegisterForm() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 transition-colors"
                 aria-label={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
               >
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
@@ -197,7 +197,7 @@ export function RegisterForm() {
           <div className="space-y-1.5 sm:space-y-2">
             <Label htmlFor="confirmPassword" className="text-xs sm:text-sm text-slate-700">Konfirmasi Password</Label>
             <div className="relative group">
-              <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors z-10" />
+              <Lock className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500 group-focus-within:text-blue-500 transition-colors z-10" />
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? 'text' : 'password'}
@@ -210,7 +210,7 @@ export function RegisterForm() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 transition-colors"
                 aria-label={showConfirmPassword ? 'Sembunyikan password' : 'Tampilkan password'}
               >
                 {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}

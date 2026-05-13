@@ -124,13 +124,13 @@ export function UsersTable({ users }: UsersTableProps) {
             </div>
             <div className="flex items-center gap-2">
               <div className="relative flex-1 sm:flex-none">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-300" />
                 <Input
                   type="text"
                   placeholder="Cari user..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-400 w-full sm:w-56 text-xs sm:text-sm"
+                  className="pl-10 bg-slate-700/50 border-slate-600/50 text-white placeholder:text-slate-300 w-full sm:w-56 text-xs sm:text-sm"
                 />
               </div>
               <Button onClick={handleAdd} className="bg-blue-600 hover:bg-blue-700 text-xs sm:text-sm whitespace-nowrap">
@@ -153,8 +153,8 @@ export function UsersTable({ users }: UsersTableProps) {
                 <div className="font-medium text-white truncate text-xs sm:text-sm">
                   {user.display_name || 'Tanpa Nama'}
                 </div>
-                <div className="text-[10px] sm:text-xs text-slate-400 break-all">{user.email}</div>
-                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm text-slate-400">
+                <div className="text-[10px] sm:text-xs text-slate-300 break-all">{user.email}</div>
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 text-[10px] sm:text-sm text-slate-300">
                   {user.custom_slug ? (
                     <a
                       href={`/${user.custom_slug}`}
@@ -166,10 +166,10 @@ export function UsersTable({ users }: UsersTableProps) {
                       <span className="truncate">{user.custom_slug}</span>
                     </a>
                   ) : (
-                    <span className="text-slate-500">Belum ada slug</span>
+                    <span className="text-slate-300">Belum ada slug</span>
                   )}
                   <span className="hidden sm:inline text-slate-600">•</span>
-                  <span className="text-slate-500">Bergabung {new Date(user.created_at).toLocaleDateString('id-ID')}</span>
+                  <span className="text-slate-300">Bergabung {new Date(user.created_at).toLocaleDateString('id-ID')}</span>
                 </div>
               </div>
               <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 sm:flex-nowrap">
@@ -208,7 +208,7 @@ export function UsersTable({ users }: UsersTableProps) {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleEdit(user)}
-                    className="h-8 w-8 sm:h-9 sm:w-9 text-slate-400 hover:text-white hover:bg-slate-700/50"
+                    className="h-8 w-8 sm:h-9 sm:w-9 text-slate-300 hover:text-white hover:bg-slate-700/50"
                   >
                     <Edit className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                   </Button>
@@ -227,8 +227,8 @@ export function UsersTable({ users }: UsersTableProps) {
 
           {filteredUsers.length === 0 && (
             <div className="rounded-lg border-2 border-dashed border-slate-700/50 bg-slate-700/30 p-8 sm:p-12 text-center">
-              <UserIcon className="mx-auto mb-3 sm:mb-4 h-10 w-10 sm:h-12 sm:w-12 text-slate-500" />
-              <p className="text-xs sm:text-sm text-slate-400">
+              <UserIcon className="mx-auto mb-3 sm:mb-4 h-10 w-10 sm:h-12 sm:w-12 text-slate-300" />
+              <p className="text-xs sm:text-sm text-slate-300">
                 {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada pengguna'}
               </p>
             </div>

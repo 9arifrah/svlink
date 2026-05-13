@@ -121,7 +121,12 @@ body {
   }
 
   small {
-    @apply text-xs font-medium leading-none sm:text-sm;
+    @apply text-xs font-medium leading-relaxed sm:text-sm;
+  }
+
+  /* Paragraph spacing for readability (WCAG 1.4.12) */
+  p + p {
+    @apply mt-4;
   }
 }
 

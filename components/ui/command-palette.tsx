@@ -141,7 +141,7 @@ export function CommandPalette({ open: controlledOpen, onOpenChange }: CommandPa
         <div className="flex flex-col">
           {/* Search Input */}
           <div className="flex items-center border-b border-slate-200 px-4 py-4">
-            <Search className="mr-3 h-5 w-5 flex-shrink-0 text-slate-400" />
+            <Search className="mr-3 h-5 w-5 flex-shrink-0 text-slate-500" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}

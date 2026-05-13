@@ -48,12 +48,12 @@ export function BackfillActions() {
   return (
     <div className="rounded-lg border border-slate-700/50 bg-slate-800/50 backdrop-blur p-4 sm:p-6 shadow-soft-md">
       <div className="mb-4 sm:mb-6 flex items-center gap-3">
-        <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-amber-600">
+        <div className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-amber-700">
           <QrCode className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
         </div>
         <div>
           <h2 className="text-lg sm:text-xl font-semibold text-white">Migrasi Data</h2>
-          <p className="text-xs sm:text-sm text-slate-400">
+          <p className="text-xs sm:text-sm text-slate-300">
             Isi short code & QR code untuk link yang belum memiliki
           </p>
         </div>
@@ -68,7 +68,7 @@ export function BackfillActions() {
             </div>
             <div>
               <p className="text-sm font-medium text-white">Generate Short Code</p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-300">
                 Buat short code unik (6 karakter) untuk semua link yang belum memiliki
               </p>
             </div>
@@ -91,7 +91,7 @@ export function BackfillActions() {
             </div>
             <div>
               <p className="text-sm font-medium text-white">Generate QR Code</p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-300">
                 Buat QR code untuk semua link yang belum memiliki (lebih lambat)
               </p>
             </div>
@@ -99,7 +99,7 @@ export function BackfillActions() {
           <button
             onClick={() => handleBackfill('qr_code')}
             disabled={!!loading}
-            className="flex items-center gap-2 rounded-md bg-green-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            className="flex items-center gap-2 rounded-md bg-green-700 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
           >
             {loading === 'qr_code' && <Loader2 className="h-4 w-4 animate-spin" />}
             {loading === 'qr_code' ? 'Memproses...' : 'Generate'}
@@ -114,7 +114,7 @@ export function BackfillActions() {
             </div>
             <div>
               <p className="text-sm font-medium text-white">Generate Semua</p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-300">
                 Buat short code + QR code untuk semua link yang belum memiliki
               </p>
             </div>
@@ -122,7 +122,7 @@ export function BackfillActions() {
           <button
             onClick={() => handleBackfill('all')}
             disabled={!!loading}
-            className="flex items-center gap-2 rounded-md bg-amber-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+            className="flex items-center gap-2 rounded-md bg-amber-700 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-amber-800 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
           >
             {loading === 'all' && <Loader2 className="h-4 w-4 animate-spin" />}
             {loading === 'all' ? 'Memproses...' : 'Generate Semua'}
@@ -138,19 +138,19 @@ export function BackfillActions() {
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="rounded-md bg-slate-800/50 p-3">
-                <p className="text-slate-400 text-xs">Total Link</p>
+                <p className="text-slate-300 text-xs">Total Link</p>
                 <p className="text-white font-semibold text-lg">{result.totalLinks}</p>
               </div>
               <div className="rounded-md bg-slate-800/50 p-3">
-                <p className="text-slate-400 text-xs">Short Code Dibuat</p>
+                <p className="text-slate-300 text-xs">Short Code Dibuat</p>
                 <p className="text-blue-400 font-semibold text-lg">{result.shortCodesGenerated}</p>
               </div>
               <div className="rounded-md bg-slate-800/50 p-3">
-                <p className="text-slate-400 text-xs">QR Code Dibuat</p>
+                <p className="text-slate-300 text-xs">QR Code Dibuat</p>
                 <p className="text-green-400 font-semibold text-lg">{result.qrCodesGenerated}</p>
               </div>
               <div className="rounded-md bg-slate-800/50 p-3">
-                <p className="text-slate-400 text-xs">Error</p>
+                <p className="text-slate-300 text-xs">Error</p>
                 <p className={`font-semibold text-lg ${result.errors > 0 ? 'text-red-400' : 'text-white'}`}>
                   {result.errors}
                 </p>

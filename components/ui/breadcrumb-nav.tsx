@@ -44,7 +44,7 @@ export function BreadcrumbNav() {
 
       {breadcrumbs.map((crumb) => (
         <Fragment key={crumb.href}>
-          <ChevronRight className="h-4 w-4 text-slate-400" />
+          <ChevronRight className="h-4 w-4 text-slate-500" />
           {crumb.isLast ? (
             <span className="font-medium text-slate-900">{crumb.name}</span>
           ) : (

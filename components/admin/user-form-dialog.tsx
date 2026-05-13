@@ -178,7 +178,7 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
                 onChange={(e) => setFormData({ ...formData, custom_slug: e.target.value })}
                 className="text-sm"
               />
-              <p className="text-[10px] sm:text-xs text-slate-500">
+              <p className="text-[10px] sm:text-xs text-slate-300">
                 Digunakan untuk URL publik (misal: /u/john-doe)
               </p>
             </div>
@@ -188,7 +188,7 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
 
           {/* Admin Access */}
           <div className="flex items-start gap-2">
-            <Shield className="h-4 w-4 text-slate-500 mt-0.5" />
+            <Shield className="h-4 w-4 text-slate-300 mt-0.5" />
             <div className="space-y-1 flex-1">
               <div className="flex items-center space-x-2">
                 <input
@@ -202,7 +202,7 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
                   Berikan akses admin
                 </Label>
               </div>
-              <p className="text-[10px] sm:text-xs text-slate-500 ml-6">
+              <p className="text-[10px] sm:text-xs text-slate-300 ml-6">
                 Pengguna dengan akses admin dapat mengelola semua pengguna dan link.
               </p>
             </div>
@@ -212,7 +212,7 @@ export function UserFormDialog({ open, onOpenChange, user }: UserFormDialogProps
 
           {/* Password Section */}
           <div className="flex items-start gap-2">
-            <KeyRound className="h-4 w-4 sm:h-5 sm:w-5 text-slate-500 mt-0.5" />
+            <KeyRound className="h-4 w-4 sm:h-5 sm:w-5 text-slate-300 mt-0.5" />
             <div className="space-y-4 sm:space-y-6 flex-1">
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-xs sm:text-sm">

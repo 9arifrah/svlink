@@ -275,7 +275,7 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
                       className="h-full w-full object-cover"
                     />
                   ) : (
-                    <ImageIcon className="h-8 w-8 text-slate-400" />
+                    <ImageIcon className="h-8 w-8 text-slate-500" />
                   )}
                 </div>
                 <div className="flex flex-col gap-2 flex-1">

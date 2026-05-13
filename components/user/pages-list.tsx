@@ -59,7 +59,7 @@ export function PagesList({ pages }: PagesListProps) {
       <Card className="border-slate-200/60 overflow-hidden">
         <CardContent className="flex flex-col items-center justify-center py-8 sm:py-12">
           <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-100 flex items-center justify-center mb-3 sm:mb-4">
-            <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-slate-400" />
+            <FileText className="w-6 h-6 sm:w-8 sm:h-8 text-slate-500" />
           </div>
           <h3 className="text-base sm:text-lg font-semibold text-slate-900 mb-2">Belum ada Halaman Publik</h3>
           <p className="text-xs sm:text-sm text-slate-600 text-center mb-4 sm:mb-6 max-w-sm">
@@ -121,21 +121,21 @@ export function PagesList({ pages }: PagesListProps) {
                     href={`/${page.slug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                    className="p-2 text-slate-500 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
                     title="Buka di Tab Baru"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>
                   <a
                     href={`/dashboard/pages/${page.id}/edit`}
-                    className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                    className="p-2 text-slate-500 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
                     title="Edit"
                   >
                     <Edit className="w-4 h-4" />
                   </a>
                   <button
                     onClick={() => setDeleteId(page.id)}
-                    className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                     title="Hapus"
                   >
                     <Trash2 className="w-4 h-4" />
