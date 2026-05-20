@@ -6,18 +6,54 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Plus, Search, Pencil, Trash2, ExternalLink, QrCode } from 'lucide-react'
+import { Plus, Search, Pencil, Trash2, ExternalLink, QrCode, Copy, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
 import type { Link, Category } from '@/lib/supabase'
 import { LinkFormDialog } from './link-form-dialog'
 import { DeleteConfirmDialog } from '../admin/delete-confirm-dialog'
 import { QRCodeModal } from '@/components/shared/qr-code-modal'
-import { Copy } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
+
+type SortKey = 'title' | 'short_code' | 'category' | 'click_count' | 'status'
+type SortDirection = 'asc' | 'desc'
 
 type LinksTableProps = {
   links: Link[]
   categories: Category[]
   userId: string
+}
+
+function SortHeader({ label, sortKey: key, currentKey, direction, onSort, className = '' }: {
+  label: string
+  sortKey: SortKey
+  currentKey: SortKey | null
+  direction: SortDirection
+  onSort: (key: SortKey) => void
+  className?: string
+}) {
+  const isActive = currentKey === key
+
+  return (
+    <th className={`pb-3 pr-4 whitespace-nowrap ${className}`}>
+      <button
+        type="button"
+        onClick={() => onSort(key)}
+        className={`inline-flex items-center gap-1 text-sm font-medium transition-colors rounded px-1 -ml-1 ${
+          isActive
+            ? 'text-blue-700'
+            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+        }`}
+      >
+        {label}
+        {isActive ? (
+          direction === 'asc'
+            ? <ArrowUp className="h-3.5 w-3.5 text-blue-600" />
+            : <ArrowDown className="h-3.5 w-3.5 text-blue-600" />
+        ) : (
+          <ArrowUpDown className="h-3.5 w-3.5 text-slate-400 opacity-40" />
+        )}
+      </button>
+    </th>
+  )
 }
 
 export function LinksTable({ links: initialLinks, categories, userId }: LinksTableProps) {
@@ -32,6 +68,10 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
   const [qrLink, setQrLink] = useState<Link | null>(null)
   const [previousAddDialogState, setPreviousAddDialogState] = useState(false)
   const [previousEditDialogState, setPreviousEditDialogState] = useState(false)
+
+  // Sort state
+  const [sortKey, setSortKey] = useState<SortKey | null>(null)
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc')
 
   // Update local state when props change
   useEffect(() => {
@@ -77,6 +117,56 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
       link.url.toLowerCase().includes(searchQuery.toLowerCase())
     )
     : links
+
+  // Compare function for sorting
+  const compareLinks = (a: Link, b: Link, key: SortKey, dir: SortDirection): number => {
+    const multiplier = dir === 'asc' ? 1 : -1
+    let valA: string | number, valB: string | number
+
+    switch (key) {
+      case 'title':
+        valA = a.title.toLowerCase()
+        valB = b.title.toLowerCase()
+        return multiplier * (valA as string).localeCompare(valB as string)
+      case 'short_code':
+        valA = (a.short_code || '').toLowerCase()
+        valB = (b.short_code || '').toLowerCase()
+        return multiplier * (valA as string).localeCompare(valB as string)
+      case 'category':
+        valA = (a.category?.name || '').toLowerCase()
+        valB = (b.category?.name || '').toLowerCase()
+        return multiplier * (valA as string).localeCompare(valB as string)
+      case 'click_count':
+        valA = a.click_count || 0
+        valB = b.click_count || 0
+        return multiplier * ((valA as number) - (valB as number))
+      case 'status':
+        // Draf (0) < Private (1) < Publik (2)
+        const statusOrder = (link: Link) => {
+          if (!link.is_active) return 0  // Draf
+          if (!link.is_public) return 1  // Private
+          return 2                         // Publik
+        }
+        return multiplier * (statusOrder(a) - statusOrder(b))
+      default:
+        return 0
+    }
+  }
+
+  // Sort handler
+  const handleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      setSortDirection('asc')
+    }
+  }
+
+  // Apply sort after filter
+  const sortedLinks = sortKey
+    ? [...filteredLinks].sort((a, b) => compareLinks(a, b, sortKey, sortDirection))
+    : filteredLinks
 
   const handleDeleteClick = async (link: Link) => {
     try {
@@ -176,7 +266,7 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
       <CardContent>
         {/* Mobile View (Cards) */}
         <div className="flex w-full flex-col gap-3 sm:hidden">
-          {filteredLinks.map((link) => (
+          {sortedLinks.map((link) => (
             <Card key={link.id} className="w-full">
               <CardContent className="flex flex-col gap-2 p-4">
                 {/* Title and Category */}
@@ -291,16 +381,16 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
           <table className="w-full min-w-[600px]">
             <thead>
               <tr className="border-b border-slate-200 text-left text-sm font-medium text-slate-600">
-                <th className="pb-3 pr-4 whitespace-nowrap">Judul Link</th>
-                <th className="hidden md:table-cell pb-3 pr-4 whitespace-nowrap">Short Link</th>
-                <th className="hidden lg:table-cell pb-3 pr-4 whitespace-nowrap">Kategori</th>
-                <th className="pb-3 pr-4 whitespace-nowrap">Klik</th>
-                <th className="hidden lg:table-cell pb-3 pr-4 whitespace-nowrap">Status</th>
+                <SortHeader label="Judul Link" sortKey="title" currentKey={sortKey} direction={sortDirection} onSort={handleSort} />
+                <SortHeader label="Short Link" sortKey="short_code" currentKey={sortKey} direction={sortDirection} onSort={handleSort} className="hidden md:table-cell" />
+                <SortHeader label="Kategori" sortKey="category" currentKey={sortKey} direction={sortDirection} onSort={handleSort} className="hidden lg:table-cell" />
+                <SortHeader label="Klik" sortKey="click_count" currentKey={sortKey} direction={sortDirection} onSort={handleSort} />
+                <SortHeader label="Status" sortKey="status" currentKey={sortKey} direction={sortDirection} onSort={handleSort} className="hidden lg:table-cell" />
                 <th className="pb-3 whitespace-nowrap">Aksi</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
-              {filteredLinks.map((link, index) => (
+              {sortedLinks.map((link, index) => (
                 <tr
                   key={link.id}
                   className="text-sm group transition-all duration-200 hover:bg-slate-50/50 hover:shadow-sm"
@@ -402,7 +492,7 @@ export function LinksTable({ links: initialLinks, categories, userId }: LinksTab
             </tbody>
           </table>
 
-          {filteredLinks.length === 0 && (
+          {sortedLinks.length === 0 && (
             <div className="py-12 text-center text-slate-500 min-w-[300px] text-sm">
               {searchQuery ? 'Tidak ada hasil yang ditemukan' : 'Belum ada link'}
             </div>
