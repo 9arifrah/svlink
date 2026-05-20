@@ -1,7 +1,5 @@
 'use client'
 
-import React from "react"
-
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -23,7 +21,8 @@ import {
 } from '@/components/ui/select'
 import type { Link, Category } from '@/lib/supabase'
 import { LinkStatusSegmentedControl, linkStatusToFlags, flagsToLinkStatus } from '@/components/user/link-status-segmented-control'
-import { Link2, Settings2 } from 'lucide-react'
+import { Link2, Settings2, PlusCircle, Check, X } from 'lucide-react'
+import { IconPicker } from '@/components/shared/icon-picker'
 
 type LinkStatus = 'public' | 'private' | 'draft'
 
@@ -44,6 +43,20 @@ export function LinkFormDialog({ open, onOpenChange, link, categories }: LinkFor
     status: 'public' as LinkStatus
   })
 
+  // Quick category create state
+  const [quickCategoryOpen, setQuickCategoryOpen] = useState(false)
+  const [quickCategoryName, setQuickCategoryName] = useState('')
+  const [quickCategoryIcon, setQuickCategoryIcon] = useState('📁')
+  const [quickCategoryLoading, setQuickCategoryLoading] = useState(false)
+  const [localCategories, setLocalCategories] = useState<Category[]>([])
+
+  // Sync local categories from props when dialog opens
+  useEffect(() => {
+    if (open) {
+      setLocalCategories([...categories])
+    }
+  }, [open, categories])
+
   useEffect(() => {
     if (link) {
       setFormData({
@@ -61,6 +74,40 @@ export function LinkFormDialog({ open, onOpenChange, link, categories }: LinkFor
       })
     }
   }, [link, categories])
+
+  const handleQuickCreateCategory = async () => {
+    if (!quickCategoryName.trim()) return
+    setQuickCategoryLoading(true)
+
+    try {
+      const res = await fetch('/api/admin/categories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: quickCategoryName.trim(),
+          icon: quickCategoryIcon
+        })
+      })
+
+      if (res.ok) {
+        const data = await res.json()
+        const created = data.category || data
+        setLocalCategories(prev => [...prev, created])
+        setFormData(prev => ({ ...prev, category_id: created.id }))
+        setQuickCategoryOpen(false)
+        setQuickCategoryName('')
+        setQuickCategoryIcon('📁')
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Gagal membuat kategori')
+      }
+    } catch (error) {
+      console.error('[v0] Quick create category error:', error)
+      alert('Gagal membuat kategori')
+    } finally {
+      setQuickCategoryLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -141,8 +188,21 @@ export function LinkFormDialog({ open, onOpenChange, link, categories }: LinkFor
 
           <div className="border-t border-slate-100" />
 
-          <div className="space-y-2">
-            <Label htmlFor="category" className="text-xs sm:text-sm">Pilih Kategori</Label>
+          {/* Category Section */}
+          <div className="space-y-1.5 sm:space-y-2">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="category" className="text-xs sm:text-sm">Pilih Kategori</Label>
+              {!quickCategoryOpen && (
+                <button
+                  type="button"
+                  onClick={() => setQuickCategoryOpen(true)}
+                  className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 transition-colors"
+                >
+                  <PlusCircle className="h-3.5 w-3.5" />
+                  Baru
+                </button>
+              )}
+            </div>
             <Select
               value={formData.category_id}
               onValueChange={(value) => setFormData({ ...formData, category_id: value })}
@@ -151,13 +211,57 @@ export function LinkFormDialog({ open, onOpenChange, link, categories }: LinkFor
                 <SelectValue placeholder="Pilih kategori" />
               </SelectTrigger>
               <SelectContent>
-                {categories.map((category) => (
+                {localCategories.map((category) => (
                   <SelectItem key={category.id} value={category.id}>
                     {category.icon} {category.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+
+            {/* Inline Quick Create Category */}
+            {quickCategoryOpen && (
+              <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-3 space-y-2 animate-fade-in">
+                <div className="flex items-center gap-2">
+                  <IconPicker value={quickCategoryIcon} onChange={setQuickCategoryIcon} />
+                  <Input
+                    autoFocus
+                    placeholder="Nama kategori baru..."
+                    value={quickCategoryName}
+                    onChange={(e) => setQuickCategoryName(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleQuickCreateCategory() } }}
+                    className="h-8 text-sm"
+                  />
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setQuickCategoryOpen(false)
+                      setQuickCategoryName('')
+                      setQuickCategoryIcon('📁')
+                    }}
+                    disabled={quickCategoryLoading}
+                    className="h-7 text-xs"
+                  >
+                    <X className="h-3 w-3 mr-1" />
+                    Batal
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={handleQuickCreateCategory}
+                    disabled={quickCategoryLoading || !quickCategoryName.trim()}
+                    className="h-7 text-xs bg-blue-600 hover:bg-blue-700"
+                  >
+                    <Check className="h-3 w-3 mr-1" />
+                    {quickCategoryLoading ? 'Menyimpan...' : 'Simpan'}
+                  </Button>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="border-t border-slate-100" />
