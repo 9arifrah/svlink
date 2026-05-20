@@ -79,9 +79,7 @@ export function PageForm({ mode, pageId, initialData }: PageFormProps) {
   const [slugChecking, setSlugChecking] = useState(false)
 
   useEffect(() => {
-    if (mode === 'edit') {
-      fetchLinks()
-    }
+    fetchLinks()
   }, [mode])
 
   useEffect(() => {
