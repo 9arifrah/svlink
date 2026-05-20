@@ -8,26 +8,26 @@
 -- 1. Increment link click count (thread-safe)
 DROP FUNCTION IF EXISTS increment_click_count(TEXT);
 DROP FUNCTION IF EXISTS increment_click_count(UUID);
-CREATE OR REPLACE FUNCTION increment_click_count(p_link_id UUID)
+CREATE OR REPLACE FUNCTION increment_click_count(link_id UUID)
 RETURNS void AS $$
 BEGIN
     UPDATE links 
     SET click_count = click_count + 1,
         updated_at = NOW()
-    WHERE id = p_link_id;
+    WHERE id = link_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- 2. Increment public page click count (thread-safe)
 DROP FUNCTION IF EXISTS increment_public_page_clicks(TEXT);
 DROP FUNCTION IF EXISTS increment_public_page_clicks(UUID);
-CREATE OR REPLACE FUNCTION increment_public_page_clicks(p_page_id UUID)
+CREATE OR REPLACE FUNCTION increment_public_page_clicks(page_id UUID)
 RETURNS void AS $$
 BEGIN
     UPDATE public_pages 
     SET click_count = click_count + 1,
         updated_at = NOW()
-    WHERE id = p_page_id;
+    WHERE id = page_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

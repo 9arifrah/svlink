@@ -47,3 +47,5 @@ data/*.db
 
 # OS
 Thumbs.db*.sqlite
+# Local Pi runtime state
+.atl/

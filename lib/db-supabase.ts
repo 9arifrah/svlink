@@ -98,7 +98,7 @@ export const supabaseClient: DatabaseClient = {
   async getLinks(userId?: string) {
     let query = supabase
       .from('links')
-      .select('*, categories(name, icon)')
+      .select('*, category:categories(id, name, icon)')
       .order('created_at', { ascending: false })
 
     if (userId) {
@@ -112,7 +112,7 @@ export const supabaseClient: DatabaseClient = {
   async getLinkById(id: string) {
     const { data, error } = await supabase
       .from('links')
-      .select('*, categories(name, icon)')
+      .select('*, category:categories(id, name, icon)')
       .eq('id', id)
       .single()
     return error ? null : data
@@ -367,7 +367,7 @@ export const supabaseClient: DatabaseClient = {
   async adminGetAllLinks() {
     const { data, error } = await supabase
       .from('links')
-      .select('*, categories(name, icon)')
+      .select('*, category:categories(id, name, icon)')
       .order('created_at', { ascending: false })
     return error ? [] : data || []
   },
@@ -785,11 +785,13 @@ export const supabaseClient: DatabaseClient = {
       .eq('page_id', pageId)
       .order('sort_order', { ascending: true })
     if (error) throw error
-    return (data || []).map((item: any) => ({
-      ...item.links,
-      category: item.links?.categories || null,
-      page_sort_order: item.sort_order
-    }))
+    return (data || [])
+      .filter((item: any) => item.links !== null)
+      .map((item: any) => ({
+        ...item.links,
+        category: item.links?.categories || null,
+        page_sort_order: item.sort_order
+      }))
   },
 
   async setPublicPageLinks(pageId: string, linkIds: string[]) {
@@ -799,6 +801,7 @@ export const supabaseClient: DatabaseClient = {
     // Insert new links
     if (linkIds.length > 0) {
       const inserts = linkIds.map((linkId, i) => ({
+        id: crypto.randomUUID(),
         page_id: pageId,
         link_id: linkId,
         sort_order: i
@@ -964,11 +967,12 @@ export const supabaseClient: DatabaseClient = {
   },
 
   async getActiveAnnouncements() {
+    const now = new Date().toISOString()
     const { data } = await supabase
       .from('announcements')
       .select('*')
       .eq('is_active', 1)
-      .or('expires_at.is.null,expires_at.gt.' + new Date().toISOString())
+      .or(`expires_at.is.null,expires_at.gte.${now}`)
       .order('created_at', { ascending: false })
     return data || []
   },
@@ -1070,38 +1074,15 @@ export const supabaseClient: DatabaseClient = {
     actionsByType: Array<{ action: string; count: number }>;
     topUsers: Array<{ userId: string; email: string; count: number }>;
   }> {
-    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString()
-
-    const [{ count: totalActions }, { data: actionsData }, { data: usersData }] = await Promise.all([
-      supabase.from('audit_logs').select('id', { count: 'exact', head: true }).gte('created_at', since),
-      supabase.from('audit_logs').select('action, count').gte('created_at', since),
-      supabase.from('audit_logs').select('user_id, users(email)').gte('created_at', since),
-    ])
-
-    // Count by action type
-    const actionCounts: Record<string, number> = {}
-    for (const row of (actionsData || [])) {
-      actionCounts[row.action] = (actionCounts[row.action] || 0) + (row.count || 1)
+    const { data, error } = await supabase.rpc('get_audit_stats', { days_count: days })
+    if (error || !data) {
+      console.error('[db-supabase] getAuditStats RPC failed:', error)
+      return { totalActions: 0, actionsByType: [], topUsers: [] }
     }
-    const actionsByType = Object.entries(actionCounts)
-      .map(([action, count]) => ({ action, count }))
-      .sort((a, b) => b.count - a.count)
-
-    // Count by user
-    const userCounts: Record<string, { email: string; count: number }> = {}
-    for (const row of (usersData || [])) {
-      const uid = row.user_id
-      if (!userCounts[uid]) {
-        const userEmail = (row as any).users?.email || 'Unknown'
-        userCounts[uid] = { email: userEmail, count: 0 }
-      }
-      userCounts[uid].count++
+    return {
+      totalActions: data.totalActions || 0,
+      actionsByType: data.actionsByType || [],
+      topUsers: data.topUsers || [],
     }
-    const topUsers = Object.entries(userCounts)
-      .map(([userId, { email, count }]) => ({ userId, email, count }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 10)
-
-    return { totalActions: totalActions || 0, actionsByType, topUsers }
   }
 }
