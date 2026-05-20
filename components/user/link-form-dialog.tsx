@@ -323,7 +323,7 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
                 <button
                   type="button"
                   onClick={() => setQuickCategoryOpen(true)}
-                  className="inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 hover:bg-blue-50 active:bg-blue-100 rounded-md px-2 py-1 -mr-2 transition-all duration-150"
                 >
                   <PlusCircle className="h-3.5 w-3.5" />
                   Baru
@@ -348,7 +348,7 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
 
             {/* Inline Quick Create Category */}
             {quickCategoryOpen && (
-              <div className="rounded-lg border border-blue-200 bg-blue-50/50 p-3 space-y-2 animate-fade-in">
+              <div className="rounded-lg border border-blue-200/80 bg-gradient-to-b from-blue-50/80 to-blue-50/30 p-3 space-y-2.5 animate-fade-in shadow-sm">
                 <div className="flex items-center gap-2">
                   <IconPicker value={quickCategoryIcon} onChange={setQuickCategoryIcon} />
                   <Input
@@ -357,7 +357,7 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
                     value={quickCategoryName}
                     onChange={(e) => setQuickCategoryName(e.target.value)}
                     onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleQuickCreateCategory() } }}
-                    className="h-8 text-sm"
+                    className="h-8 text-sm border-blue-200/60 focus-visible:ring-blue-400"
                   />
                 </div>
                 <div className="flex justify-end gap-2">
@@ -371,9 +371,9 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
                       setQuickCategoryIcon('📁')
                     }}
                     disabled={quickCategoryLoading}
-                    className="h-7 text-xs"
+                    className="h-7 text-xs text-slate-500 hover:text-slate-700 hover:bg-slate-100"
                   >
-                    <X className="h-3 w-3 mr-1" />
+                    <X className="h-3.5 w-3.5 mr-1" />
                     Batal
                   </Button>
                   <Button
@@ -381,9 +381,9 @@ export function LinkFormDialog({ open, onOpenChange, link, categories, userId }:
                     size="sm"
                     onClick={handleQuickCreateCategory}
                     disabled={quickCategoryLoading || !quickCategoryName.trim()}
-                    className="h-7 text-xs bg-blue-600 hover:bg-blue-700"
+                    className="h-7 text-xs bg-blue-600 hover:bg-blue-700 active:bg-blue-800 transition-all duration-150 shadow-sm"
                   >
-                    <Check className="h-3 w-3 mr-1" />
+                    <Check className="h-3.5 w-3.5 mr-1" />
                     {quickCategoryLoading ? 'Menyimpan...' : 'Simpan'}
                   </Button>
                 </div>
