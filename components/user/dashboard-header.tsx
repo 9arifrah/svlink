@@ -24,29 +24,29 @@ export function DashboardHeader({ onMobileMenuOpen }: DashboardHeaderProps) {
 
   return (
     <header className="bg-white/80 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-50">
-      <div className="flex h-16 items-center justify-between px-4 lg:px-6">
-        <div className="flex items-center gap-3">
+      <div className="flex h-14 sm:h-16 items-center justify-between px-3 sm:px-4 lg:px-6">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           {onMobileMenuOpen && (
             <button
               onClick={onMobileMenuOpen}
-              className="lg:hidden flex h-10 w-10 items-center justify-center rounded-lg hover:bg-slate-100 transition-colors duration-200"
+              className="lg:hidden flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-lg hover:bg-slate-100 transition-colors duration-200 flex-shrink-0"
             >
-              <Menu className="h-6 w-6 text-slate-600" />
+              <Menu className="h-5 w-5 sm:h-6 sm:w-6 text-slate-600" />
             </button>
           )}
 
-          <Link href="/dashboard" className="hidden lg:flex items-center gap-2 group">
+          <Link href="/dashboard" className="hidden lg:flex items-center gap-2 group flex-shrink-0">
             <ExternalLink className="h-6 w-6 text-purple-600 transition-transform duration-200 group-hover:scale-110" />
             <span className="font-semibold text-slate-900">Link Manager</span>
           </Link>
 
-          <Link href="/dashboard" className="lg:hidden flex items-center gap-2 group">
-            <ExternalLink className="h-6 w-6 text-purple-600 transition-transform duration-200 group-hover:scale-110" />
-            <span className="font-semibold text-slate-900">Link Manager</span>
+          <Link href="/dashboard" className="lg:hidden flex items-center gap-2 group min-w-0">
+            <ExternalLink className="h-5 w-5 sm:h-6 sm:w-6 text-purple-600 transition-transform duration-200 group-hover:scale-110 flex-shrink-0" />
+            <span className="font-semibold text-slate-900 text-sm sm:text-base truncate">svlink</span>
           </Link>
         </div>
 
-        <div className="ml-auto flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
           <Button
             variant="outline"
             size="sm"
@@ -61,7 +61,8 @@ export function DashboardHeader({ onMobileMenuOpen }: DashboardHeaderProps) {
             variant="outline"
             size="sm"
             onClick={handleLogout}
-            className="sm:hidden flex h-9 w-9 items-center justify-center p-0 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200"
+            className="sm:hidden flex h-8 w-8 items-center justify-center p-0 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200"
+            title="Keluar"
           >
             <LogOut className="h-4 w-4" />
           </Button>

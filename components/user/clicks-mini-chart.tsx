@@ -19,9 +19,9 @@ export function ClicksMiniChart({ data }: ClicksMiniChartProps) {
         <CardTitle className="text-xs sm:text-base">Klik 7 Hari Terakhir</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-[160px] sm:h-[200px] overflow-hidden">
+        <div className="h-[140px] sm:h-[200px] -mx-2 sm:mx-0">
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart data={data}>
+            <AreaChart data={data} margin={{ top: 4, right: 4, left: -16, bottom: 0 }}>
               <defs>
                 <linearGradient id="clicksGradient" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor="#2563eb" stopOpacity={0.2} />
@@ -32,7 +32,9 @@ export function ClicksMiniChart({ data }: ClicksMiniChartProps) {
                 dataKey="date"
                 axisLine={false}
                 tickLine={false}
-                tick={{ fontSize: 12, fill: '#94a3b8' }}
+                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                interval="preserveStartEnd"
+                minTickGap={30}
               />
               <YAxis hide />
               <Tooltip
