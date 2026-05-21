@@ -4,6 +4,77 @@ All notable changes to svlink will be documented in this file.
 
 ## [Unreleased]
 
+### Added - 2026-05 (v1.5.x)
+
+#### v1.5.4 — Dashboard Mobile & Auth Fixes
+- Fixed global h1/h2/h3/p/small CSS overrides that caused mobile overflow and inconsistent text sizes
+- Added `min-w-0` to dashboard main flex area to prevent horizontal overflow
+- Standardized dashboard header sizing (`text-lg sm:text-xl font-bold`) across all pages
+- Fixed hydration mismatch on Settings form (deferred `window.location.origin` to useEffect+useState)
+- Standardized CardTitle with Globe icon on "Halaman Publik"
+- Removed redundant `bg-red-600` from destructive button (variant already handles color)
+- Made bottom nav labels consistent (Home/Link/Pages/Kategori/Setting) with `justify-around` layout
+- Fixed responsive gradient orbs and h1 sizing on login page
+- Fixed broken "Lupa password?" link pointing to non-existent `/forgot-password` route
+- Fixed category link count badge always showing 0 (added `link_count` to `getCategories` query in both SQLite and Supabase)
+
+#### v1.5.3 — PageForm UX Overhaul (Batch 1-3)
+- Auto-slug generation from title (real-time, debounced)
+- Emoji icon picker replaced with Lucide React icons
+- Switch toggle for is_active (replaced radio buttons)
+- Unsaved changes warning (beforeunload event)
+- Sticky submit button on mobile
+- Empty state CTAs with descriptive guidance
+- Removed GripVertical — drag-and-drop reorder deferred
+- Link limit: 15+ overflow with scroll warning
+- Visual layout SVGs for list/grid/compact preview
+- Color picker with preset swatches
+- Logo upload with hover-remove, preview
+- Phone mockup preview (PhoneFrame component inline)
+- Link order indicators (numbered badges)
+- Submit button states (idle/loading/success)
+- Back-navigation headers on new/edit page forms
+- Skeleton loading state on edit page
+- Error state with recovery link
+- Theme-color strip on page cards
+- Layout badges and link/click count metadata
+- Delete dialog with link count warning
+- Aggregate stats on pages list
+- Preview tab merged into Style tab with side-by-side layout
+- Link sorting via table headers on `/dashboard/links` and `/admin/links`
+- Inline quick-create category in link form dialog
+
+#### v1.5.2 — WCAG AA + Supabase Compatibility
+- WCAG 2.1 AA color contrast compliance across all components
+- Typography scaling for accessibility
+- Supabase boolean→integer compatibility (`is_active`, `is_public`, `show_categories`)
+- Supabase RPC fallbacks for audit log stats
+- Click tracker audit log fixes for Supabase
+- Category display fix for Supabase (nested object flattening)
+- Page links fix for Supabase (PostgREST query format)
+- Fixed PostgREST `.eq()` boolean queries
+- Fixed short code display domain (svlink.my.id)
+- Switched to DuckDuckGo favicons (lighter than Google)
+- Fixed SEO domain configuration
+- Fixed mounting guard flash in PublicPageHeader
+- Fixed hydration mismatch from `window.location.origin` in LinkCard
+
+#### v1.5.1 — Mobile Navigation & Layout
+- Mobile bottom nav made scrollable with safe-area inset support
+- Matched admin mobile nav pattern (outside `overflow-x-hidden` + `w-[72px]` items)
+- Responsive dashboard card padding
+- Landing page sticky navbar
+- Fixed register/login form centering (removed redundant `max-w-md` from inner card)
+
+### Changed - 2026-05
+- Unified session: `user_session` + `admin_session` → single `svlink_session` cookie
+- Session payload now always includes `isAdmin` property (checked from DB on login)
+- Admin login redirect to `/login` (unified endpoint), no separate `/admin/login` page
+- `custom_slug` deprecated — replaced by multi-page feature (N public pages per user)
+- `public_pages` + `public_page_links` junction table replaces single-profile model
+
+---
+
 ### Fixed - 2026-04-30
 
 #### v1.4.4 — Admin Pages Email Fix

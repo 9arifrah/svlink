@@ -41,6 +41,8 @@ DB_TYPE=sqlite  # or 'supabase' for production
 - JWT library: `jose` (SignJWT, jwtVerify) — NOT jsonwebtoken
 - Admin auth via `admin_users` junction table (not a column in users)
 
+**Session cookie:** Single `svlink_session` cookie (unified). Admin status is in JWT payload `isAdmin: true`, not a separate cookie. Both user and admin sessions share the same cookie name.
+
 **Key files:**
 - `lib/auth.ts` - JWT session management (getUserSession, setUserSession, getAdminSession, setAdminSession)
 - `lib/admin-auth.ts` - Admin verification helpers (getVerifiedAdminSession, verifyAdminAccess)
@@ -97,7 +99,7 @@ components/
 ├── ui/                   # 57 shadcn/ui primitives
 ├── auth/                 # Login/register forms (responsive)
 ├── user/                 # User dashboard components (all responsive)
-│   ├── page-form.tsx            # Multi-page CRUD form (679 lines)
+│   ├── page-form.tsx            # Multi-page CRUD form (~1000 lines, 3 tabs)
 │   ├── pages-list.tsx           # Public pages list
 │   ├── public-page-header.tsx   # Public page header
 │   ├── dashboard-layout.tsx     # Layout with responsive padding
@@ -122,7 +124,7 @@ components/
 **Reference implementations:**
 - `components/user/dashboard-sidebar.tsx` - Full-height sticky sidebar
 - `components/user/quick-create-result-modal.tsx` - Responsive modal with overflow handling
-- `components/user/page-form.tsx` - Largest component (679 lines), fully responsive across 4 tabs
+- `components/user/page-form.tsx` - Largest component (~1000 lines), 3 tabs (Info, Link, Gaya) with inline preview
 - `components/ui/card.tsx` - Card primitives with responsive padding (`p-4 sm:p-6`)
 
 **Responsive audit report:** `docs/responsive-audit-report.md`
@@ -175,7 +177,7 @@ className="h-screen sticky top-0 flex flex-col"
 
 | Table | Columns |
 |-------|---------|
-| `users` | id, email, password_hash, custom_slug, display_name, created_at |
+| `users` | id, email, password_hash, custom_slug, display_name, created_at, is_suspended, failed_login_count, last_failed_login, locked_until |
 | `user_settings` | id, user_id (UNIQUE), theme_color, logo_url, page_title, show_categories, profile_description, layout_style, created_at, updated_at |
 | `links` | id, user_id, title, url, description, short_code (UNIQUE, nullable), qr_code, click_count, is_public, is_active, category_id, created_at, updated_at |
 | `categories` | id, user_id, name, icon, sort_order, created_at |
@@ -302,6 +304,8 @@ if (resource.user_id !== userId) {
 4. **URL shortener:** Create link (auto-generate code) → edit to custom code → visit `/{code}` → verify redirect + click count increment
 5. **Admin:** Add user to `admin_users` table → login at `/admin/login` → access admin dashboard
 6. **Link deletion warning:** Delete link → check pageCount → show warning if link is in pages
+7. **Account lockout:** Login gagal 5x → akun terkunci 15 menit (`locked_until` flag)
+8. **Password strength:** Visual indicator (0-4) saat register, minimal 8 karakter + uppercase + angka
 
 ## Security Notes
 
@@ -342,6 +346,17 @@ Tidak perlu fix - cukup refresh browser jika log terlalu berisik.
 Short link dengan `is_active=false` (status Draft) akan mengembalikan 404.
 Halaman `/[slug]` menggunakan `dynamic = 'force-dynamic'` untuk memastikan
 status selalu fresh dari database tanpa caching.
+
+### Category Link Count
+
+`getCategories()` returns `link_count` via LEFT JOIN on `links` table. Component `categories-table.tsx` displays it as `{category.link_count || 0} link` badge.
+
+### Account Lockout
+
+- Login gagal 5x → `locked_until` set 15 menit ke depan
+- Login ditolak selama masa lockout dengan pesan "Akun terkunci"
+- `resetFailedLogin()` dipanggil saat login berhasil
+- `is_suspended` flag untuk admin suspend manual
 
 ### Logo Upload
 

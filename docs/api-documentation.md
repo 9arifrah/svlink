@@ -7,7 +7,7 @@
 > **Auth:** JWT cookie-based session (`svlink_session` cookie)
 > **DB:** SQLite (better-sqlite3) local / Supabase production
 > **Validation:** Zod schemas in `lib/validation.ts`
-> **Total Endpoints:** 27
+> **Total Endpoints:** 35
 
 ---
 
@@ -31,13 +31,12 @@
 ## Authentication Flow
 
 ### Session Management
-- **User cookie name:** `user_session`
-- **Admin cookie name:** `admin_session`
+- **Cookie name:** `svlink_session` (unified — user + admin dalam 1 cookie)
 - **Type:** JWT (jose library, HS256)
 - **Duration:** 7 days (default) / 30 days (remember me)
 - **HttpOnly:** Yes
 - **SameSite:** Lax
-- **Secure:** Yes (production)
+- **Secure:** false (dev) / true (production HTTPS)
 
 ### JWT Payload
 ```typescript
@@ -52,14 +51,14 @@ interface SessionPayload {
 ### Auth Middleware Pattern
 ```typescript
 // User endpoints
-const session = await getUserSession();  // reads 'user_session' cookie
+const session = await getUserSession();  // reads 'svlink_session' cookie, returns { userId, isAdmin } | null
 if (!session) {
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 }
 const userId = session.userId;
 
 // Admin endpoints
-const session = await getVerifiedAdminSession();  // reads 'admin_session' + DB check
+const session = await getVerifiedAdminSession();  // reads 'svlink_session' + verifies isAdmin in DB
 if (!session) {
   return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 }
@@ -233,7 +232,7 @@ Authenticate user with email/password.
   }
 }
 ```
-_Sets `user_session` cookie (7 or 30 days)._
+_Sets `svlink_session` cookie (7 or 30 days with rememberMe). Admin redirect: `/admin/dashboard`._
 
 **Response 401:**
 ```json
@@ -793,20 +792,22 @@ Admin panel authentication. Uses the same `users` table — admin status is gran
 2. Verify password with bcrypt
 3. Check `db.isAdminUser(userId)` — checks `admin_users` table
 4. If not admin → returns same "Email atau password salah" error (prevents enumeration)
-5. If admin → sets `admin_session` cookie via `setAdminSession()`
+5. If admin → sets `svlink_session` cookie with `isAdmin: true` in payload (same cookie as user)
 
 **Response 200:**
 ```json
 {
   "success": true,
-  "admin": {
+  "redirect": "/admin/dashboard",
+  "user": {
     "id": "uuid",
     "email": "admin@svlink.id",
-    "display_name": "Admin"
+    "display_name": "Admin",
+    "isAdmin": true
   }
 }
 ```
-_Sets `admin_session` cookie (7 days)._
+_Sets `svlink_session` cookie (7 days). Admin redirect to `/admin/dashboard`._
 
 ---
 
@@ -1121,7 +1122,7 @@ admin_users (user_id UNIQUE, created_at)
 ## Notes for Frontend Redesign
 
 1. **Session is cookie-based** — no need for Authorization headers. Browser handles it automatically.
-2. **Cookie names:** `user_session` (user) and `admin_session` (admin). NOT `svlink_session`.
+2. **Cookie name:** `svlink_session` (unified — single cookie for both user and admin roles). JWT payload includes `isAdmin` boolean.
 3. **All user endpoints require `getUserSession()`** — returns `{ userId, isAdmin }` or `null`.
 4. **Admin endpoints use `getVerifiedAdminSession()`** — verifies JWT + checks `admin_users` table via `db.isAdminUser()`.
 5. **Admin users are regular users** in the `users` table, plus a row in `admin_users` junction table. No separate admin credentials.

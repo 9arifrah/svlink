@@ -39,7 +39,7 @@ npm run migrate:shortener
 npm run migrate:sqlite
 ```
 
-**Note:** TypeScript errors diabaikan saat build (`typescript.ignoreBuildErrors: true` di next.config.mjs).
+**Note:** TypeScript errors **AKAN** gagalkan build (`typescript.ignoreBuildErrors: false` di next.config.mjs). Pastikan `npm run build` sukses sebelum commit.
 
 ---
 
@@ -48,36 +48,38 @@ npm run migrate:sqlite
 ### Authentication System
 
 **Implementasi Custom (Bukan Supabase Auth):**
-- Cookie-based session management dengan `user_session` dan `admin_session` cookies
+- Unified cookie-based session management dengan satu `svlink_session` cookie
 - Passwords dihash dengan bcryptjs (10 salt rounds)
-- Sessions disimpan sebagai httpOnly cookies dengan 7-day expiry
-- Admin authentication terpisah melalui tabel `admin_users`
+- Sessions disimpan sebagai httpOnly cookies dengan 7-day expiry (30 hari dengan remember me)
+- Admin users diidentifikasi via `admin_users` junction table — payload selalu punya `isAdmin`
+- Single `/login` endpoint — admin redirect ke `/admin/dashboard`, user ke `/dashboard`
+- JWT library: `jose` (SignJWT, jwtVerify, HS256)
 
 **JWT Session Pattern:**
 ```typescript
-// lib/auth.ts - Create session
-async function createSessionToken(userId: string, isAdmin: boolean = false) {
-  return await new SignJWT({ userId, isAdmin, type: isAdmin ? 'admin' : 'user' })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setExpirationTime('7d')
-    .sign(JWT_SECRET)
+// lib/auth.ts - Unified session payload
+interface SessionPayload {
+  userId: string;
+  isAdmin: boolean; // dicek dari DB saat login
+  iat: number;
+  exp: number;
 }
 
 // API routes extract session
-async function getUserSession() {
+async function getUserSession(): Promise<SessionPayload | null> {
   const cookieStore = await cookies()
-  const token = cookieStore.get('user_session')?.value
-  const payload = await verifyJWT(token)
-  return payload?.userId || null
+  const token = cookieStore.get('svlink_session')?.value
+  if (!token) return null
+  return await verifySessionToken(token)
 }
 ```
 
 **Key Files:**
-- `lib/auth.ts` - JWT session management
-- `app/api/auth/login/route.ts` - User login
-- `app/api/auth/register/route.ts` - Registration (creates user + user_settings)
-- `app/api/auth/logout/route.ts` - Clear session
-- `app/api/admin/login/route.ts` - Admin login
+- `lib/auth.ts` - JWT session management (unified `svlink_session` cookie)
+- `lib/admin-auth.ts` - Admin verification helpers (getVerifiedAdminSession, verifyAdminAccess)
+- `app/api/auth/login/route.ts` - User + admin login (unified endpoint)
+- `app/api/auth/register/route.ts` - Registration (creates user + user_settings otomatis)
+- `app/api/auth/logout/route.ts` - Clear session (hapus `svlink_session` + legacy cookies)
 
 ---
 
@@ -100,22 +102,40 @@ lib/
 DB_TYPE=sqlite  # atau 'supabase' untuk production
 ```
 
-**DatabaseClient Interface Methods:**
+**DatabaseClient Interface Methods (30+):**
 
 | Method | Purpose |
-|--------|---------|
+|--------|--------|
 | `getUserByEmail(email)` | Cari user by email |
 | `getUserById(id)` | Cari user by ID |
-| `getUserBySlug(slug)` | Cari user by custom_slug |
 | `createUser(user)` | Buat user baru |
 | `getUserSettings(userId)` | Ambil user settings |
+| `createUserSettings(settings)` | Buat user settings (otomatis saat register) |
+| `updateUserSettings(userId, data)` | Update user settings |
 | `getLinks(userId?)` | List links (optional filter by user) |
+| `getLinkById(id)` | Get single link |
 | `getLinkByShortCode(code)` | Cari link by short code |
 | `createLink(link)` | Buat link baru |
-| `incrementClickCount(id)` | Increment click count |
-| `getCategories(userId?)` | List categories |
+| `updateLink(id, data)` | Update link |
+| `deleteLink(id)` | Delete link |
+| `incrementClickCount(id)` | Increment link click count |
+| `getCategories(userId?)` | List categories (dengan `link_count`) |
+| `createCategory(category)` | Buat kategori |
+| `getPublicPages(userId?)` | List public pages |
+| `getPublicPageBySlug(slug)` | Cari page by slug |
+| `getPublicPageLinks(pageId)` | Ambil links untuk page |
+| `incrementPageClickCount(id)` | Increment page click count |
 | `isAdminUser(userId)` | Check apakah user adalah admin |
 | `getPlatformStats()` | Ambil platform-wide statistics |
+| `trackFailedLogin(userId)` | Increment counter gagal login |
+| `resetFailedLogin(userId)` | Reset counter setelah login sukses |
+| `suspendUser(userId)` | Suspend user |
+| `activateUser(userId)` | Activate user |
+| `adminGetAllUsers()` | List semua user untuk admin |
+| `adminGetAllLinks()` | List semua link untuk admin |
+| `adminGetAllCategories()` | List semua kategori untuk admin |
+| `adminGetAllPublicPages()` | List semua public pages untuk admin |
+| `getAuditLogs()` | Ambil audit trail |
 
 ---
 
@@ -127,19 +147,24 @@ DB_TYPE=sqlite  # atau 'supabase' untuk production
 | id | TEXT (UUID) | Primary key |
 | email | TEXT | Unique, required |
 | password_hash | TEXT | bcrypt hashed |
-| custom_slug | TEXT | Unique URL slug (nullable) |
+| custom_slug | TEXT | Unique URL slug (nullable, deprecated) |
 | display_name | TEXT | User's display name |
+| is_suspended | INTEGER | Suspended flag (1/0) |
+| failed_login_count | INTEGER | Failed login attempts (default 0) |
+| last_failed_login | DATETIME | Last failed login timestamp |
+| locked_until | DATETIME | Lock expiry after 5 failures |
 | created_at | DATETIME | Registration timestamp |
 
 **Tabel `user_settings`:**
 | Column | Type | Default |
-|--------|------|---------|
+|--------|------|--------|
 | user_id | TEXT (FK) | References users.id |
 | theme_color | TEXT | '#3b82f6' |
 | logo_url | TEXT | null |
 | page_title | TEXT | null |
 | profile_description | TEXT | null |
 | show_categories | INTEGER | 1 (true) |
+| layout_style | TEXT | 'list' (list/grid/compact) |
 
 **Tabel `links`:**
 | Column | Type | Description |
@@ -149,26 +174,54 @@ DB_TYPE=sqlite  # atau 'supabase' untuk production
 | url | TEXT | Target URL |
 | description | TEXT | Optional description |
 | category_id | TEXT (FK) | References categories.id |
-| is_public | INTEGER | Visibility flag (1/0) |
-| is_active | INTEGER | Active flag (1/0) |
+| is_public | INTEGER | Visibility (1/0) |
+| is_active | INTEGER | Active flag (1/0) — draft links return 404 |
 | click_count | INTEGER | Click tracking (default 0) |
 | qr_code | TEXT | Base64 QR code (nullable) |
 | short_code | TEXT | Unique short code (nullable) |
 | user_id | TEXT (FK) | References users.id |
+| created_at | DATETIME | Creation timestamp |
+| updated_at | DATETIME | Last update timestamp |
 
 **Tabel `categories`:**
 | Column | Type | Description |
 |--------|------|-------------|
 | id | TEXT (UUID) | Primary key |
 | name | TEXT | Category name |
-| icon | TEXT | Emoji/icon string |
+| icon | TEXT | Lucide icon name |
 | sort_order | INTEGER | Display order |
 | user_id | TEXT (FK) | References users.id (null = global) |
+
+**Tabel `public_pages`:**
+| Column | Type | Description |
+|--------|------|-------------|
+| id | TEXT (UUID) | Primary key |
+| user_id | TEXT (FK) | References users.id |
+| slug | TEXT | Unique, checked against reserved words |
+| title | TEXT | Page title |
+| description | TEXT | Optional |
+| logo_url | TEXT | Optional logo URL |
+| theme_color | TEXT | Hex color (default #3b82f6) |
+| layout_style | TEXT | 'list' / 'grid' / 'compact' |
+| show_categories | INTEGER | Show category headers (1/0) |
+| is_active | INTEGER | Active flag (1/0) |
+| click_count | INTEGER | Page visit count |
+| sort_order | INTEGER | Display order |
+
+**Tabel `public_page_links`:**
+| Column | Type | Description |
+|--------|------|-------------|
+| page_id | TEXT (FK) | References public_pages.id |
+| link_id | TEXT (FK) | References links.id |
+| sort_order | INTEGER | Link display order |
+| UNIQUE(page_id, link_id) |
 
 **Tabel `admin_users`:**
 | Column | Type | Description |
 |--------|------|-------------|
 | user_id | TEXT (FK, PK) | References users.id |
+
+**Additional tables:** `announcements`, `audit_logs`
 
 ---
 
@@ -177,47 +230,55 @@ DB_TYPE=sqlite  # atau 'supabase' untuk production
 **Organization:**
 ```
 components/
-├── ui/                    # 50+ shadcn/ui primitives
+├── ui/                    # 57 shadcn/ui primitives
 │   ├── button.tsx, card.tsx, dialog.tsx, input.tsx
-│   ├── chart.tsx, command-palette.tsx, breadcrumb-nav.tsx
-│   └── ... (50+ more)
-├── auth/                  # Authentication forms
+│   ├── chart.tsx, breadcrumb-nav.tsx, switch.tsx
+│   └── ...
+├── auth/                  # Authentication forms (2 components)
 │   ├── login-form.tsx
 │   └── register-form.tsx
-├── user/                  # User dashboard components
-│   ├── dashboard-layout.tsx
-│   ├── dashboard-header.tsx
-│   ├── dashboard-sidebar.tsx
-│   ├── links-table.tsx
-│   ├── links-table-skeleton.tsx
-│   ├── link-form-dialog.tsx
-│   ├── categories-table.tsx
-│   ├── category-form-dialog.tsx
-│   ├── settings-form.tsx
-│   ├── stats-cards.tsx
-│   ├── stats-skeleton.tsx
-│   ├── auto-refresh-stats.tsx
-│   └── public-page-header.tsx
-├── admin/                 # Admin dashboard components
+├── user/                  # User dashboard components (25 components)
+│   ├── dashboard-layout.tsx       # Layout with responsive padding
+│   ├── dashboard-header.tsx       # Header with breadcrumbs
+│   ├── dashboard-sidebar.tsx      # Full-height sticky sidebar
+│   ├── mobile-bottom-nav.tsx      # 5 items: Home|Link|Pages|Kategori|Setting
+│   ├── links-table.tsx            # Sortable links table
+│   ├── link-form-dialog.tsx       # CRUD dialog with inline category create
+│   ├── quick-create-dialog.tsx    # Quick create (link + QR)
+│   ├── quick-create-result-modal.tsx
+│   ├── page-form.tsx              # Multi-page CRUD (3-tab: Info|Link|Gaya)
+│   ├── pages-list.tsx             # Public pages list with stats
+│   ├── public-page-header.tsx     # Public page header
+│   ├── categories-table.tsx       # With link_count badge
+│   ├── category-form-dialog.tsx   # CRUD with icon picker
+│   ├── settings-form.tsx          # Profile settings
+│   ├── profile-forms.tsx          # Delete account, password forms
+│   ├── stats-cards.tsx            # Dashboard statistics
+│   ├── auto-refresh-stats.tsx     # Auto-refresh stats
+│   ├── recent-links.tsx           # 5 recent links
+│   ├── top-links.tsx              # Top performing links
+│   ├── clicks-mini-chart.tsx      # 7-day sparkline
+│   ├── empty-state-onboarding.tsx # New user welcome
+│   └── ...
+├── admin/                 # Admin dashboard (18 components)
 │   ├── dashboard-layout.tsx
 │   ├── admin-header.tsx
 │   ├── admin-sidebar.tsx
-│   ├── login-form.tsx
 │   ├── users-table.tsx
-│   ├── user-form-dialog.tsx
 │   ├── links-table.tsx
 │   ├── link-form-dialog.tsx
 │   ├── admin-categories-client.tsx
 │   ├── stats-cards.tsx
 │   ├── growth-chart.tsx
-│   └── delete-confirm-dialog.tsx
-├── shared/                # Shared domain components
+│   └── ...
+├── shared/                # Shared domain components (3 components)
 │   ├── icon-picker.tsx
-│   └── qr-code-modal.tsx
-├── link-card.tsx          # Click-tracking link card
-├── search-bar.tsx         # Search functionality
-├── structured-data-script.tsx
-└── theme-provider.tsx
+│   ├── qr-code-modal.tsx
+│   └── theme-toggle.tsx
+├── link-card.tsx          # Click-tracking link card (public + dashboard)
+├── search-bar.tsx         # Search with dropdown
+├── structured-data-script.tsx  # SEO JSON-LD
+└── theme-provider.tsx     # Dark mode context
 ```
 
 **Patterns:**
@@ -237,28 +298,33 @@ components/
 **Public Pages:**
 | Route | Purpose |
 |-------|---------|
-| `/` | Landing page |
-| `/login` | User login |
+| `/` | Landing page (CTA, social proof, demo) |
+| `/login` | User + admin login (unified endpoint) |
 | `/register` | User registration |
-| `/[slug]` | **MERGED route:** Short code redirect OR Public profile |
+| `/[slug]` | **MERGED route:** Short code redirect OR Public page render |
 
 **User Dashboard (Protected):**
 | Route | Purpose |
 |-------|---------|
-| `/dashboard` | Main dashboard dengan statistik |
-| `/dashboard/links` | Manajemen link |
-| `/dashboard/categories` | Manajemen kategori |
-| `/dashboard/settings` | Kustomisasi profil |
+| `/dashboard` | Main dashboard (stats, recent links, top links, quick create) |
+| `/dashboard/links` | Manajemen link (CRUD, sort, filter, inline category create) |
+| `/dashboard/pages` | Manajemen halaman publik (multi-page list) |
+| `/dashboard/pages/new` | Buat halaman publik (3-tab PageForm) |
+| `/dashboard/pages/[id]/edit` | Edit halaman publik |
+| `/dashboard/categories` | Manajemen kategori (link count badge) |
+| `/dashboard/settings` | Kustomisasi profil (logo upload, theme, layout) |
 
 **Admin Panel (Protected):**
 | Route | Purpose |
 |-------|---------|
-| `/admin/login` | Admin login |
-| `/admin/dashboard` | Platform statistics |
-| `/admin/users` | User management |
-| `/admin/categories` | Global categories |
-| `/admin/settings` | Admin settings |
-| `/admin/stats` | Analytics |
+| `/admin/dashboard` | Platform analytics (stats, growth chart, audit stats, top 10) |
+| `/admin/links` | Link management (CRUD, sort, filter, export CSV) |
+| `/admin/users` | User moderation (suspend, activate, bulk, export CSV) |
+| `/admin/categories` | Global categories (CRUD, icon, sort) |
+| `/admin/pages` | Public page moderation (activate/deactivate, delete) |
+| `/admin/stats` | Detailed analytics |
+| `/admin/audit-logs` | Audit trail |
+| `/admin/settings` | Platform settings (maintenance, announcements, backfill) |
 
 **Protection Pattern:**
 ```typescript
@@ -285,8 +351,8 @@ async function checkAuth() {
 
 | Method | Endpoint | Description | Request Body | Response |
 |--------|----------|-------------|--------------|----------|
-| POST | `/api/admin/login` | Admin login | `{ email: string, password: string }` | `{ user: User }` + admin_session cookie |
-| POST | `/api/admin/logout` | Clear admin session | - | `{ success: true }` |
+| POST | `/api/auth/login` | User + admin login (unified) | `{ email, password, rememberMe? }` | `{ success, redirect, user }` + svlink_session cookie |
+| POST | `/api/auth/logout` | Clear session | - | `{ success: true }` |
 
 ### User
 
@@ -355,12 +421,13 @@ async function checkAuth() {
 - Theme color customization via `user_settings.theme_color`
 - Design system via Tailwind config (`tailwind.config.ts`) + CSS variables (`app/globals.css`)
 
-### Public Profile Pages
-- Custom URL via `custom_slug` field (e.g., `/johndoe`)
-- **TIDAK ADA `/u/` PREFIX** - langsung `/{custom_slug}`
-- ISR dengan 60-second revalidation
-- Customizable: theme_color, logo_url, page_title, profile_description, show_categories
-- Search functionality untuk filtering links
+### Public Pages (Multi-Page Feature)
+- Setiap user bisa membuat **N public pages** dengan slug unik (bukan hanya 1 custom_slug)
+- Customizable: theme_color, logo_url, title, description, layout_style, show_categories
+- Layout: list, grid, compact
+- Link selection via junction table `public_page_links` (1 page → N links, 1 link → N pages)
+- Rendered at `/{slug}` via `app/[slug]/page.tsx` (no prefix)
+- Grouping link by category, search functionality
 
 ### URL Shortener Routing
 Route `/[slug]/page.tsx` menangani **DUA** kasus:
@@ -369,16 +436,18 @@ Route `/[slug]/page.tsx` menangani **DUA** kasus:
    ```typescript
    const link = await db.getLinkByShortCode(slug)
    if (link) {
+     if (!link.is_active) notFound()  // draft links return 404
      await db.incrementClickCount(link.id)
-     redirect(link.url, 302) // Temporary redirect
+     redirect(link.url, 302)
    }
    ```
 
-2. **User Profile (Priority 2):**
+2. **Public Page (Priority 2):**
    ```typescript
-   const user = await db.getUserBySlug(slug)
-   if (user) {
-     // Render public profile page
+   const page = await db.getPublicPageBySlug(slug)
+   if (page) {
+     await db.incrementPageClickCount(page.id)
+     // Render page: PublicPageHeader + SearchBar + LinkCard (grouped by category)
    }
    // else notFound()
    ```
@@ -504,10 +573,9 @@ Short code mengikuti pola validasi yang sama dengan `custom_slug`:
 - `lib/accessibility.ts` - A11y helpers
 
 ### Authentication
-- `app/api/auth/login/route.ts`
+- `app/api/auth/login/route.ts` (unified user + admin login)
 - `app/api/auth/register/route.ts`
 - `app/api/auth/logout/route.ts`
-- `app/api/admin/login/route.ts`
 
 ### Dashboard Layouts
 - `components/user/dashboard-layout.tsx`
@@ -545,15 +613,11 @@ DB_TYPE=sqlite              # 'sqlite' atau 'supabase'
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 
-# JWT Secret (generate random string)
-JWT_SECRET=your_random_secret_key_here
+# JWT Secret (generate random 32+ karakter)
+JWT_SECRET=your_random_secret_key_here_minimum_32_characters
 
 # Site URL
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
-
-# Optional: Redis untuk rate limiting production
-UPSTASH_REDIS_REST_URL=
-UPSTASH_REDIS_REST_TOKEN=
 
 NODE_ENV=development
 ```
