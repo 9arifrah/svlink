@@ -68,7 +68,7 @@ export function CategoriesTable({ categories, userId }: CategoriesTableProps) {
                   <div className="text-sm sm:text-base font-semibold text-slate-900 group-hover:text-brand-600 transition-colors">{category.name}</div>
                   <div className="text-xs sm:text-sm text-slate-500 flex items-center gap-2 mt-0.5">
                     <Badge variant="outline" className="border-slate-200 text-[10px] sm:text-xs">
-                      {category.links?.length || 0} link
+                      {category.link_count ?? category.links?.length ?? 0} link{((category.link_count ?? category.links?.length ?? 0) !== 1) ? 's' : ''}
                     </Badge>
                     <span className="text-slate-500">•</span>
                     <span className="text-[10px] sm:text-xs text-slate-500">Urutan {category.sort_order}</span>

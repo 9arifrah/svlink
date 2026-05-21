@@ -282,7 +282,7 @@ export const supabaseClient: DatabaseClient = {
   async getCategories(userId?: string) {
     let query = supabase
       .from('categories')
-      .select('*')
+      .select('*, link_count:links(count)')
       .order('sort_order', { ascending: true })
       .order('name', { ascending: true })
 
@@ -291,7 +291,13 @@ export const supabaseClient: DatabaseClient = {
     }
 
     const { data, error } = await query
-    return error ? [] : data || []
+    if (error) return []
+
+    // Supabase returns link_count as [{count: N}], flatten to number
+    return (data || []).map((cat: any) => ({
+      ...cat,
+      link_count: Array.isArray(cat.link_count) ? cat.link_count[0]?.count ?? 0 : cat.link_count ?? 0
+    }))
   },
 
   async getCategoryById(id: string) {

@@ -542,15 +542,15 @@ export const sqliteClient: DatabaseClient = {
 
   // Categories
   async getCategories(userId?: string) {
-    let query = 'SELECT * FROM categories'
+    let query = 'SELECT c.*, COUNT(l.id) as link_count FROM categories c LEFT JOIN links l ON l.category_id = c.id'
     const params: any[] = []
 
     if (userId) {
-      query += ' WHERE user_id = ?'
+      query += ' WHERE c.user_id = ?'
       params.push(userId)
     }
 
-    query += ' ORDER BY sort_order ASC, name ASC'
+    query += ' GROUP BY c.id ORDER BY c.sort_order ASC, c.name ASC'
 
     const stmt = db.prepare(query)
     const rows = stmt.all(...params)

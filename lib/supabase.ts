@@ -82,6 +82,7 @@ export type Category = {
   sort_order: number
   created_at: string
   user_id?: string | null
+  link_count?: number
   links?: any[]
 }
 
