@@ -315,7 +315,7 @@ export function DeleteAccountForm() {
         type="submit"
         disabled={loading || confirmText !== 'HAPUS'}
         variant="destructive"
-        className="w-full sm:w-auto bg-red-600 hover:bg-red-700"
+        className="w-full sm:w-auto"
       >
         {loading ? 'Menghapus...' : 'Hapus Akun Permanen'}
       </Button>

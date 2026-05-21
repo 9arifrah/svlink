@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Switch } from '@/components/ui/switch'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ExternalLink, Save, Upload, X, Image as ImageIcon, Loader2, Eye } from 'lucide-react'
+import { ExternalLink, Save, Upload, X, Image as ImageIcon, Loader2, Eye, Globe } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const MAX_FILE_SIZE = 500 * 1024 // 500KB
@@ -185,9 +185,15 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
     }
   }
 
-  const publicUrl = formData.customSlug
-    ? `${window.location.origin}/${formData.customSlug}`
-    : `${window.location.origin}/[belum diatur]`
+  const [publicUrl, setPublicUrl] = useState('')
+
+  useEffect(() => {
+    if (formData.customSlug) {
+      setPublicUrl(`${window.location.origin}/${formData.customSlug}`)
+    } else {
+      setPublicUrl(`${window.location.origin}/[belum diatur]`)
+    }
+  }, [formData.customSlug])
 
   return (
     <div className="space-y-4 sm:space-y-6">
@@ -238,7 +244,10 @@ export function SettingsForm({ user, settings, userId }: SettingsFormProps) {
       {/* Page Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Halaman Publik</CardTitle>
+                    <CardTitle className="flex items-center gap-2">
+            <Globe className="h-5 w-5" />
+            Halaman Publik
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-4 sm:p-6">
           <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">

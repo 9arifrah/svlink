@@ -31,8 +31,8 @@ export default async function UserCategories() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="font-bold text-slate-900">Kategori Saya</h1>
-          <p className="text-slate-600">Kelola kategori untuk mengorganisasi link Anda</p>
+          <h1 className="text-lg sm:text-xl font-bold text-slate-900">Kategori</h1>
+          <p className="text-xs sm:text-sm text-slate-500">Kelola kategori untuk mengorganisasi link Anda</p>
         </div>
 
         <CategoriesTable categories={categories} userId={userId} />

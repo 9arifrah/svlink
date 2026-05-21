@@ -36,8 +36,8 @@ export default async function UserSettings() {
     <DashboardLayout>
       <div className="space-y-6 max-w-2xl">
         <div>
-          <h1 className="font-bold text-slate-900">Pengaturan</h1>
-          <p className="text-slate-600">Kelola profil akun Anda</p>
+          <h1 className="text-lg sm:text-xl font-bold text-slate-900">Pengaturan</h1>
+          <p className="text-xs sm:text-sm text-slate-500">Kelola profil dan pengaturan akun Anda</p>
         </div>
 
         {/* Profil Saya */}

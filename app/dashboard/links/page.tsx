@@ -43,8 +43,8 @@ export default async function UserLinks() {
     <DashboardLayout>
       <div className="space-y-6">
         <div>
-          <h1 className="font-bold text-slate-900">Kelola Link</h1>
-          <p className="text-slate-600">Tambah, edit, dan hapus link Anda</p>
+          <h1 className="text-lg sm:text-xl font-bold text-slate-900">Kelola Link</h1>
+          <p className="text-xs sm:text-sm text-slate-500">Tambah, edit, dan hapus link Anda</p>
         </div>
 
         <LinksTable links={links} categories={categories} userId={userId} />
