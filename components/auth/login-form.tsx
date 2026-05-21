@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -131,12 +130,9 @@ export function LoginForm() {
                 Ingat saya
               </Label>
             </div>
-            <Link
-              href="/forgot-password"
-              className="text-xs sm:text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
-            >
-              Lupa password?
-            </Link>
+            <span className="text-xs sm:text-sm text-slate-500">
+              Lupa password? Hubungi admin
+            </span>
           </div>
 
           {error && (
