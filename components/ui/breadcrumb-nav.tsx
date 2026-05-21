@@ -12,6 +12,9 @@ const breadcrumbNames: Record<string, string> = {
   settings: 'Pengaturan',
   users: 'Pengguna',
   stats: 'Statistik',
+  pages: 'Halaman Publik',
+  new: 'Baru',
+  edit: 'Edit',
 }
 
 export function BreadcrumbNav() {
