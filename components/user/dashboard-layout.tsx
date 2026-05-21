@@ -35,7 +35,7 @@ export function DashboardLayout({ children, isAdmin }: DashboardLayoutProps) {
       <div className="flex flex-1">
         <DashboardSidebar isAdmin={isAdmin} />
 
-        <main className="flex-1 p-4 pt-4 pb-20 sm:p-6 sm:pt-6 sm:pb-24 lg:p-8 lg:pb-8 animate-fade-in">
+        <main className="flex-1 min-w-0 p-4 pt-4 pb-20 sm:p-6 sm:pt-6 sm:pb-24 lg:p-8 lg:pb-8 animate-fade-in">
           <BreadcrumbNav />
           {children}
         </main>

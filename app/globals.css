@@ -105,23 +105,15 @@ body {
   }
 
   h1 {
-    @apply text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl;
+    @apply font-bold tracking-tight;
   }
 
   h2 {
-    @apply text-xl font-semibold tracking-tight sm:text-2xl lg:text-3xl;
+    @apply font-semibold tracking-tight;
   }
 
   h3 {
-    @apply text-lg font-semibold tracking-tight sm:text-xl lg:text-2xl;
-  }
-
-  p {
-    @apply text-sm leading-7 text-slate-600 sm:text-base;
-  }
-
-  small {
-    @apply text-xs font-medium leading-relaxed sm:text-sm;
+    @apply font-semibold tracking-tight;
   }
 
   /* Paragraph spacing for readability (WCAG 1.4.12) */
